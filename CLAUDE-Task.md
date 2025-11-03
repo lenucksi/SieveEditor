@@ -12,6 +12,9 @@ Nice to have wäre:
 - Die Skripte von der Platte lokal laden und speichern zu können
 - Templating um bestimmte sich wiederholende Elemente einfach mit neuen parametern im skript einbauen zu können
 - mehrere accounts in der ui auswählen  können zu denen sich verbunden wird.
+- Script was alles mit dependencies baut. 
+- Flatpak für alles. Und ein Ding was ein DMG draus baut, aber das nur mit mindestprio. Vielleicht gibt's für beides ja ein MAvenplugin?
+
 
 Wichtig:
 - Das ist eine Mini-App. Sie ist kruschtig und nicht enterprise. Don't overdo patterns, decoupling und was weiß der geier.

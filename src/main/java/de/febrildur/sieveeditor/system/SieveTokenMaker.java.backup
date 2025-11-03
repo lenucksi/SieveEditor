@@ -42,34 +42,34 @@ public class SieveTokenMaker extends AbstractTokenMaker {
 
                 case TokenTypes.NULL:
 
-                    currentTokenStart = i; // Starting a new token here.
+                    currentTokenStart.set(i); // Starting a new token here.
 
                     switch (c) {
 
                         case ' ':
                         case '\t':
-                            currentTokenType = TokenTypes.WHITESPACE;
+                            currentTokenType.set(TokenTypes.WHITESPACE);
                             break;
 
                         case '"':
-                            currentTokenType = TokenTypes.LITERAL_STRING_DOUBLE_QUOTE;
+                            currentTokenType.set(TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
                             break;
 
                         case '#':
-                            currentTokenType = TokenTypes.COMMENT_EOL;
+                            currentTokenType.set(TokenTypes.COMMENT_EOL);
                             break;
 
                         default:
                             if (RSyntaxUtilities.isDigit(c)) {
-                                currentTokenType = TokenTypes.LITERAL_NUMBER_DECIMAL_INT;
+                                currentTokenType.set(TokenTypes.LITERAL_NUMBER_DECIMAL_INT);
                                 break;
                             } else if (RSyntaxUtilities.isLetter(c) || c == '/' || c == '_') {
-                                currentTokenType = TokenTypes.IDENTIFIER;
+                                currentTokenType.set(TokenTypes.IDENTIFIER);
                                 break;
                             }
 
                             // Anything not currently handled - mark as an identifier
-                            currentTokenType = TokenTypes.IDENTIFIER;
+                            currentTokenType.set(TokenTypes.IDENTIFIER);
                             break;
 
                     }
@@ -85,32 +85,32 @@ public class SieveTokenMaker extends AbstractTokenMaker {
                             break; // Still whitespace.
 
                         case '"':
-                            addToken(text, currentTokenStart, i - 1, TokenTypes.WHITESPACE, newStartOffset + currentTokenStart);
-                            currentTokenStart = i;
-                            currentTokenType = TokenTypes.LITERAL_STRING_DOUBLE_QUOTE;
+                            addToken(text, currentTokenStart.get(), i - 1, TokenTypes.WHITESPACE, newStartOffset + currentTokenStart.get());
+                            currentTokenStart.set(i);
+                            currentTokenType.set(TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
                             break;
 
                         case '#':
-                            addToken(text, currentTokenStart, i - 1, TokenTypes.WHITESPACE, newStartOffset + currentTokenStart);
-                            currentTokenStart = i;
-                            currentTokenType = TokenTypes.COMMENT_EOL;
+                            addToken(text, currentTokenStart.get(), i - 1, TokenTypes.WHITESPACE, newStartOffset + currentTokenStart.get());
+                            currentTokenStart.set(i);
+                            currentTokenType.set(TokenTypes.COMMENT_EOL);
                             break;
 
                         default: // Add the whitespace token and start anew.
 
-                            addToken(text, currentTokenStart, i - 1, TokenTypes.WHITESPACE, newStartOffset + currentTokenStart);
-                            currentTokenStart = i;
+                            addToken(text, currentTokenStart.get(), i - 1, TokenTypes.WHITESPACE, newStartOffset + currentTokenStart.get());
+                            currentTokenStart.set(i);
 
                             if (RSyntaxUtilities.isDigit(c)) {
-                                currentTokenType = TokenTypes.LITERAL_NUMBER_DECIMAL_INT;
+                                currentTokenType.set(TokenTypes.LITERAL_NUMBER_DECIMAL_INT);
                                 break;
                             } else if (RSyntaxUtilities.isLetter(c) || c == '/' || c == '_') {
-                                currentTokenType = TokenTypes.IDENTIFIER;
+                                currentTokenType.set(TokenTypes.IDENTIFIER);
                                 break;
                             }
 
                             // Anything not currently handled - mark as identifier
-                            currentTokenType = TokenTypes.IDENTIFIER;
+                            currentTokenType.set(TokenTypes.IDENTIFIER);
 
                     }
 
@@ -122,15 +122,15 @@ public class SieveTokenMaker extends AbstractTokenMaker {
 
                         case ' ':
                         case '\t':
-                            addToken(text, currentTokenStart, i - 1, TokenTypes.IDENTIFIER, newStartOffset + currentTokenStart);
-                            currentTokenStart = i;
-                            currentTokenType = TokenTypes.WHITESPACE;
+                            addToken(text, currentTokenStart.get(), i - 1, TokenTypes.IDENTIFIER, newStartOffset + currentTokenStart.get());
+                            currentTokenStart.set(i);
+                            currentTokenType.set(TokenTypes.WHITESPACE);
                             break;
 
                         case '"':
-                            addToken(text, currentTokenStart, i - 1, TokenTypes.IDENTIFIER, newStartOffset + currentTokenStart);
-                            currentTokenStart = i;
-                            currentTokenType = TokenTypes.LITERAL_STRING_DOUBLE_QUOTE;
+                            addToken(text, currentTokenStart.get(), i - 1, TokenTypes.IDENTIFIER, newStartOffset + currentTokenStart.get());
+                            currentTokenStart.set(i);
+                            currentTokenType.set(TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
                             break;
 
                         default:
@@ -149,17 +149,17 @@ public class SieveTokenMaker extends AbstractTokenMaker {
 
                         case ' ':
                         case '\t':
-                            addToken(text, currentTokenStart, i - 1, TokenTypes.LITERAL_NUMBER_DECIMAL_INT,
-                                    newStartOffset + currentTokenStart);
-                            currentTokenStart = i;
-                            currentTokenType = TokenTypes.WHITESPACE;
+                            addToken(text, currentTokenStart.get(), i - 1, TokenTypes.LITERAL_NUMBER_DECIMAL_INT,
+                                    newStartOffset + currentTokenStart.get());
+                            currentTokenStart.set(i);
+                            currentTokenType.set(TokenTypes.WHITESPACE);
                             break;
 
                         case '"':
-                            addToken(text, currentTokenStart, i - 1, TokenTypes.LITERAL_NUMBER_DECIMAL_INT,
-                                    newStartOffset + currentTokenStart);
-                            currentTokenStart = i;
-                            currentTokenType = TokenTypes.LITERAL_STRING_DOUBLE_QUOTE;
+                            addToken(text, currentTokenStart.get(), i - 1, TokenTypes.LITERAL_NUMBER_DECIMAL_INT,
+                                    newStartOffset + currentTokenStart.get());
+                            currentTokenStart.set(i);
+                            currentTokenType.set(TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
                             break;
 
                         default:
@@ -169,10 +169,10 @@ public class SieveTokenMaker extends AbstractTokenMaker {
                             }
 
                             // Otherwise, remember this was a number and start over.
-                            addToken(text, currentTokenStart, i - 1, TokenTypes.LITERAL_NUMBER_DECIMAL_INT,
-                                    newStartOffset + currentTokenStart);
+                            addToken(text, currentTokenStart.get(), i - 1, TokenTypes.LITERAL_NUMBER_DECIMAL_INT,
+                                    newStartOffset + currentTokenStart.get());
                             i--;
-                            currentTokenType = TokenTypes.NULL;
+                            currentTokenType.set(TokenTypes.NULL);
 
                     }
 
@@ -180,29 +180,29 @@ public class SieveTokenMaker extends AbstractTokenMaker {
 
                 case TokenTypes.COMMENT_EOL:
                     i = end - 1;
-                    addToken(text, currentTokenStart, i, currentTokenType, newStartOffset + currentTokenStart);
+                    addToken(text, currentTokenStart.get(), i, currentTokenType.get(), newStartOffset + currentTokenStart.get());
                     // We need to set token type to null so at the bottom we don't add one more
                     // TokenTypes.
-                    currentTokenType = TokenTypes.NULL;
+                    currentTokenType.set(TokenTypes.NULL);
                     break;
 
                 case TokenTypes.LITERAL_STRING_DOUBLE_QUOTE:
                     if (c == '"') {
-                        addToken(text, currentTokenStart, i, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE,
-                                newStartOffset + currentTokenStart);
-                        currentTokenType = TokenTypes.NULL;
+                        addToken(text, currentTokenStart.get(), i, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE,
+                                newStartOffset + currentTokenStart.get());
+                        currentTokenType.set(TokenTypes.NULL);
                     }
                     break;
 
                 default: // Should never happen
             }
-                }
+        });
 
-        switch (currentTokenType) {
+        switch (currentTokenType.get()) {
 
             // Remember what token type to begin the next line with.
             case TokenTypes.LITERAL_STRING_DOUBLE_QUOTE:
-                addToken(text, currentTokenStart, end - 1, currentTokenType, newStartOffset + currentTokenStart);
+                addToken(text, currentTokenStart.get(), end - 1, currentTokenType.get(), newStartOffset + currentTokenStart.get());
                 break;
 
             // Do nothing if everything was okay.
@@ -212,7 +212,7 @@ public class SieveTokenMaker extends AbstractTokenMaker {
 
             // All other token types don't continue to the next line...
             default:
-                addToken(text, currentTokenStart, end - 1, currentTokenType, newStartOffset + currentTokenStart);
+                addToken(text, currentTokenStart.get(), end - 1, currentTokenType.get(), newStartOffset + currentTokenStart.get());
                 addNullToken();
         }
 

@@ -3,15 +3,8 @@ package de.febrildur.sieveeditor.actions;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import de.febrildur.sieveeditor.Application;
-import de.febrildur.sieveeditor.system.ConnectAndListScripts;
 
 public class ActionSaveScriptAs extends AbstractAction {
 

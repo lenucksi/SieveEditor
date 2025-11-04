@@ -36,7 +36,7 @@ import de.febrildur.sieveeditor.system.SieveTokenMaker;
 public class Application extends JFrame {
 
 	private ConnectAndListScripts server;
-	private PropertiesSieve prop = new PropertiesSieve();
+	private PropertiesSieve prop;
 	private RSyntaxTextArea textArea;
 	private SieveScript script;
 
@@ -49,6 +49,13 @@ public class Application extends JFrame {
 	private AbstractAction actionReplace = new ActionReplace(this);
 
 	public Application() {
+
+		// Run migration once
+		PropertiesSieve.migrateOldProperties();
+
+		// Load last used profile
+		String lastProfile = PropertiesSieve.getLastUsedProfile();
+		prop = new PropertiesSieve(lastProfile);
 
 		try {
 			prop.load();
@@ -96,6 +103,10 @@ public class Application extends JFrame {
 
 	public PropertiesSieve getProp() {
 		return prop;
+	}
+
+	public void setProp(PropertiesSieve prop) {
+		this.prop = prop;
 	}
 
 	public static void main(String[] args) {

@@ -23,6 +23,25 @@ Or if already cloned:
 git submodule update --init --recursive
 ```
 
+### Updating Submodules
+
+To update ManageSieveJ to the latest version from the fork:
+
+```bash
+./update-submodules.sh
+```
+
+Or manually:
+
+```bash
+cd lib/ManageSieveJ
+git pull origin master
+cd ../..
+git add lib/ManageSieveJ
+git commit -m "Update ManageSieveJ submodule"
+./build.sh
+```
+
 ### Build
 
 Use the build script (recommended):

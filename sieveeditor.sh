@@ -6,12 +6,14 @@
 
 # Get the directory where the script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-JARFILE="$SCRIPT_DIR/target/SieveEditor-jar-with-dependencies.jar"
-
-# Check if JAR exists
-if [ ! -f "$JARFILE" ]; then
-    echo "Error: JAR file not found at $JARFILE"
-    echo "Please run 'mvn package' first to build the application."
+# Find JAR file (check multi-module location first, then fallback)
+if [ -f "$SCRIPT_DIR/app/target/SieveEditor-jar-with-dependencies.jar" ]; then
+    JARFILE="$SCRIPT_DIR/app/target/SieveEditor-jar-with-dependencies.jar"
+elif [ -f "$SCRIPT_DIR/target/SieveEditor-jar-with-dependencies.jar" ]; then
+    JARFILE="$SCRIPT_DIR/target/SieveEditor-jar-with-dependencies.jar"
+else
+    echo "Error: JAR file not found"
+    echo "Please run './build.sh' first to build the application."
     exit 1
 fi
 

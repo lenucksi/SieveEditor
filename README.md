@@ -44,21 +44,22 @@ git commit -m "Update ManageSieveJ submodule"
 
 ### Build
 
-Use the build script (recommended):
+This is a Maven multi-module project. Simply run:
 
 ```bash
 ./build.sh
 ```
 
-Or manually:
+Or use Maven directly:
 
 ```bash
-# Build ManageSieveJ dependency
-mvn -f lib/ManageSieveJ/pom.xml clean install -DskipTests -Dmaven.javadoc.skip=true
-
-# Build SieveEditor
-mvn clean package
+mvn clean package -Dmaven.javadoc.skip=true -DskipTests
 ```
+
+The build will:
+1. Compile ManageSieveJ (lib/ManageSieveJ/)
+2. Compile SieveEditor (app/)
+3. Create the standalone JAR
 
 ### Run
 
@@ -69,7 +70,7 @@ mvn clean package
 Or:
 
 ```bash
-java -jar target/SieveEditor-jar-with-dependencies.jar
+java -jar app/target/SieveEditor-jar-with-dependencies.jar
 ```
 
 ## Features

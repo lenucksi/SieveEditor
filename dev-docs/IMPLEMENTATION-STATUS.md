@@ -144,23 +144,24 @@ SieveEditor is a lightweight Java Swing application for editing Sieve mail filte
 git submodule update --init --recursive
 ```
 
-**Building:**
+**Building (multi-module):**
 ```bash
 # Recommended: Use build script
 ./build.sh
 
-# Or manually:
-# 1. Build ManageSieveJ dependency
-mvn -f lib/ManageSieveJ/pom.xml clean install -DskipTests -Dmaven.javadoc.skip=true
-
-# 2. Build SieveEditor
-mvn clean package
+# Or with Maven:
+mvn clean package -Dmaven.javadoc.skip=true -DskipTests
 ```
+
+The project uses a multi-module Maven build:
+- Parent POM (root): Coordinates the build
+- lib/ManageSieveJ: Java 11 compatible fork (submodule)
+- app/: SieveEditor application
 
 **Output JARs:**
 ```bash
-target/SieveEditor.jar                          # Minimal JAR
-target/SieveEditor-jar-with-dependencies.jar    # Standalone JAR
+app/target/SieveEditor.jar                          # Minimal JAR
+app/target/SieveEditor-jar-with-dependencies.jar    # Standalone JAR
 ```
 
 ### Running
@@ -182,7 +183,7 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 | commons-codec | 1.16.0 | ✅ Current | - |
 | jasypt | 1.9.3 | ⚠️ Slow (2014) | Used for password encryption |
 
-**ManageSieveJ Update:** Switched from abandoned Maven Central version (0.3.1, 2014) to actively maintained Zwixx fork (0.3.2-SNAPSHOT, Dec 2024). Fork is included as a **git submodule** in `lib/ManageSieveJ/` for reproducible builds. Provides Java 11 compatibility, bug fixes, and improved Unicode/UTF-8 handling. See [MANAGESIEVEJ-FORK-ANALYSIS.md](MANAGESIEVEJ-FORK-ANALYSIS.md) for details.
+**ManageSieveJ Update:** Switched from abandoned Maven Central version (0.3.1, 2014) to actively maintained Zwixx fork (0.3.2-SNAPSHOT, Dec 2024). Fork is included as a **git submodule** in `lib/ManageSieveJ/` and built as a Maven module for reproducible builds. Provides Java 11 compatibility, bug fixes, and improved Unicode/UTF-8 handling. See [MANAGESIEVEJ-FORK-ANALYSIS.md](MANAGESIEVEJ-FORK-ANALYSIS.md) for details.
 
 ## File Structure
 

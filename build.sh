@@ -1,17 +1,19 @@
 #!/bin/bash
-# SieveEditor build script
-# Builds ManageSieveJ submodule dependency first, then builds SieveEditor
+# SieveEditor multi-module build script
+# Builds ManageSieveJ and SieveEditor in one command
 
 set -e
 
-echo "Building ManageSieveJ dependency from submodule..."
-mvn -f lib/ManageSieveJ/pom.xml clean install -DskipTests -Dmaven.javadoc.skip=true
-
+echo "Building SieveEditor (multi-module)..."
+echo "  - lib/ManageSieveJ (Java 11 fork)"
+echo "  - app (SieveEditor application)"
 echo ""
-echo "Building SieveEditor..."
-mvn clean package
+
+mvn clean package -Dmaven.javadoc.skip=true -DskipTests
 
 echo ""
 echo "Build complete!"
+echo "Output: app/target/SieveEditor-jar-with-dependencies.jar"
+echo ""
 echo "Run with: ./sieveeditor.sh"
-echo "Or: java -jar target/SieveEditor-jar-with-dependencies.jar"
+echo "Or: java -jar app/target/SieveEditor-jar-with-dependencies.jar"

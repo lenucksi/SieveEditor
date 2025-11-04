@@ -2,13 +2,19 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>de.febrildur</groupId>
-	<artifactId>SieveEditor</artifactId>
+	<artifactId>sieveeditor-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>SieveEditor Parent</name>
+	<description>Parent POM for SieveEditor multi-module build</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.javadoc.skip>true</maven.javadoc.skip>
 	</properties>
 
 	<scm>
@@ -18,71 +24,8 @@
 		<tag>HEAD</tag>
 	</scm>
 
-	<build>
-		<finalName>${project.artifactId}</finalName>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.13.0</version>
-				<configuration>
-					<release>21</release>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.6.0</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>de.febrildur.sieveeditor.Application</mainClass>
-						</manifest>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-
-
-	<dependencies>
-		<!-- https://mvnrepository.com/artifact/com.fifesoft/rsyntaxtextarea -->
-		<dependency>
-			<groupId>com.fifesoft</groupId>
-			<artifactId>rsyntaxtextarea</artifactId>
-			<version>3.5.1</version>
-		</dependency>
-		<!-- ManageSieveJ: Using Java 11 compatible fork from Zwixx (git submodule)
-		     Source: https://github.com/Zwixx/ManageSieveJ (in lib/ManageSieveJ/)
-		     Benefits: Java 11+ support, bug fixes, active maintenance (Dec 2024)
-		     Build: mvn -f lib/ManageSieveJ/pom.xml clean install -DskipTests -Dmaven.javadoc.skip=true
-		     See: dev-docs/MANAGESIEVEJ-FORK-ANALYSIS.md -->
-		<dependency>
-			<groupId>com.fluffypeople</groupId>
-			<artifactId>managesievej</artifactId>
-			<version>0.3.2-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.16.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jasypt</groupId>
-			<artifactId>jasypt</artifactId>
-			<version>1.9.3</version>
-		</dependency>
-	</dependencies>
+	<modules>
+		<module>lib/ManageSieveJ</module>
+		<module>app</module>
+	</modules>
 </project>

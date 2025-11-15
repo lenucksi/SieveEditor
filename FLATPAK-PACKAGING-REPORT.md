@@ -372,18 +372,221 @@ flatpak install flathub de.febrildur.sieveeditor
 | `de.febrildur.sieveeditor.yml` | ✅ New | Flatpak manifest |
 | `flatpak/de.febrildur.sieveeditor.desktop` | ✅ New | Desktop entry |
 | `flatpak/de.febrildur.sieveeditor.metainfo.xml` | ✅ New | AppStream metadata |
-| `flatpak/de.febrildur.sieveeditor.png` | ⏳ Placeholder | Icon (needs replacement) |
+| `flatpak/de.febrildur.sieveeditor.svg` | ✅ New | Icon source (vector) |
+| `flatpak/de.febrildur.sieveeditor.png` | ⏳ Needs conversion | Icon (convert SVG→PNG) |
 
 ---
 
-## Next Steps
+## Action Items Checklist
 
-1. **Commit changes** to branch
-2. **Create icon** (256x256 PNG) - replace placeholder
-3. **Take screenshot** for metadata
-4. **Test local Flatpak build**
-5. **Push to trigger CI** - verify Flatpak builds
-6. **Submit to Flathub** (optional but recommended)
+### Completed ✅
+- [x] Fix macOS DMG version issue
+- [x] Implement Flatpak manifest
+- [x] Create desktop entry file
+- [x] Create AppStream metadata
+- [x] Create SVG icon source
+- [x] Integrate Flatpak into CI/CD workflow
+- [x] Add SLSA Level 3 attestations
+- [x] Update checksums generation
+
+### Immediate (Before Next Release)
+
+#### 1. Convert Icon to PNG ⏳
+**Status:** SVG created, needs PNG conversion
+
+**SVG Source:** `flatpak/de.febrildur.sieveeditor.svg`
+
+**Convert to PNG:**
+```bash
+# Option 1: Using ImageMagick (if available)
+cd flatpak
+convert -background none -density 300 de.febrildur.sieveeditor.svg \
+  -resize 256x256 de.febrildur.sieveeditor.png
+
+# Option 2: Using Inkscape
+inkscape de.febrildur.sieveeditor.svg \
+  --export-type=png \
+  --export-filename=de.febrildur.sieveeditor.png \
+  --export-width=256 --export-height=256
+
+# Option 3: Using rsvg-convert
+rsvg-convert -w 256 -h 256 de.febrildur.sieveeditor.svg \
+  -o de.febrildur.sieveeditor.png
+
+# Option 4: Online converter
+# Upload SVG to https://cloudconvert.com/svg-to-png
+```
+
+**Verification:**
+```bash
+file flatpak/de.febrildur.sieveeditor.png
+# Should show: PNG image data, 256 x 256
+```
+
+#### 2. Create Screenshot 📸
+**Status:** TODO (requires running application)
+
+**Requirements:**
+- Show main window with syntax highlighting
+- Professional appearance (example Sieve script loaded)
+- Recommended size: 1280x720 or higher
+- Save to: `screenshots/main-window.png`
+
+**Steps:**
+```bash
+# 1. Build and run application
+cd app && mvn package
+java -jar target/SieveEditor-jar-with-dependencies.jar
+
+# 2. Create appealing demo:
+# - Connect to example server (or mock)
+# - Load a sample Sieve script with colorful syntax
+# - Resize window to ~1280x720
+# - Take screenshot
+
+# 3. Save screenshot
+mkdir -p ../screenshots
+# Save as: screenshots/main-window.png
+
+# 4. Update metainfo.xml with actual URL
+# Edit: flatpak/de.febrildur.sieveeditor.metainfo.xml
+# Replace placeholder URL with:
+# https://raw.githubusercontent.com/lenucksi/SieveEditor/main/screenshots/main-window.png
+```
+
+#### 3. Test Local Flatpak Build (Optional) 🧪
+**Status:** TODO
+
+**Prerequisites:**
+```bash
+# Install Flatpak build tools
+sudo apt-get install flatpak flatpak-builder
+
+# Add Flathub remote
+flatpak remote-add --if-not-exists flathub \
+  https://flathub.org/repo/flathub.flatpakrepo
+
+# Install runtime and SDK
+flatpak install flathub org.freedesktop.Platform//23.08
+flatpak install flathub org.freedesktop.Sdk//23.08
+flatpak install flathub org.freedesktop.Sdk.Extension.openjdk21//23.08
+```
+
+**Build and Test:**
+```bash
+# 1. Build JAR first
+cd app && mvn clean package
+cd ..
+
+# 2. Build Flatpak
+flatpak-builder --force-clean --user \
+  build-dir de.febrildur.sieveeditor.yml
+
+# 3. Create bundle
+flatpak build-bundle build-dir \
+  SieveEditor.flatpak de.febrildur.sieveeditor
+
+# 4. Install locally
+flatpak install --user SieveEditor.flatpak
+
+# 5. Run and test
+flatpak run de.febrildur.sieveeditor
+
+# 6. Test functionality:
+# - GUI launches
+# - Network connections work
+# - Profile storage works (~/.sieveprofiles)
+# - Syntax highlighting works
+```
+
+**Uninstall after testing:**
+```bash
+flatpak uninstall de.febrildur.sieveeditor
+```
+
+### Short-Term (First Month)
+
+#### 4. Submit to Flathub 🚀
+**Status:** TODO (after icon and screenshot are ready)
+
+**Prerequisites:**
+- [ ] Icon converted to 256x256 PNG
+- [ ] Screenshot created and committed
+- [ ] Local Flatpak build tested successfully
+
+**Submission Steps:**
+
+1. **Fork Flathub repository:**
+   ```bash
+   # Go to https://github.com/flathub/flathub
+   # Click "Fork"
+   ```
+
+2. **Create application repository:**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/flathub.git
+   cd flathub
+   mkdir de.febrildur.sieveeditor
+   cd de.febrildur.sieveeditor
+   ```
+
+3. **Copy files:**
+   ```bash
+   # Copy manifest and supporting files
+   cp /path/to/SieveEditor/de.febrildur.sieveeditor.yml .
+   cp /path/to/SieveEditor/flatpak/de.febrildur.sieveeditor.desktop .
+   cp /path/to/SieveEditor/flatpak/de.febrildur.sieveeditor.metainfo.xml .
+   cp /path/to/SieveEditor/flatpak/de.febrildur.sieveeditor.png .
+   ```
+
+4. **Create flathub.json:**
+   ```json
+   {
+     "only-arches": ["x86_64", "aarch64"]
+   }
+   ```
+
+5. **Commit and push:**
+   ```bash
+   git add .
+   git commit -m "Add de.febrildur.sieveeditor"
+   git push origin main
+   ```
+
+6. **Create Pull Request:**
+   - Go to https://github.com/flathub/flathub
+   - Click "New Pull Request"
+   - Select your fork
+   - Fill in PR template
+
+7. **Respond to review:**
+   - Flathub reviewers will check your submission
+   - Respond to feedback
+   - Make requested changes
+   - Typical review time: 1-2 weeks
+
+**Flathub Benefits:**
+- ✅ Appears in GNOME Software / KDE Discover
+- ✅ Automatic updates for users
+- ✅ Wider distribution (millions of users)
+- ✅ Official Flathub badge for README
+
+**Resources:**
+- Submission guide: https://docs.flathub.org/docs/for-app-authors/submission/
+- Quality guidelines: https://docs.flathub.org/docs/for-app-authors/requirements/
+
+---
+
+## Next Steps Summary
+
+**To complete Flatpak packaging:**
+1. ✅ ~~Create SVG icon~~ (Done)
+2. ⏳ Convert SVG to 256x256 PNG (needs tool)
+3. 📸 Create application screenshot (needs running app)
+4. 🧪 Test local Flatpak build (optional)
+5. 🚀 Submit to Flathub (recommended for reach)
+
+**CI/CD will work with current setup**, but icon and screenshot improve the user experience and are required for Flathub submission.
 
 ---
 

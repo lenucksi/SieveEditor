@@ -84,7 +84,7 @@
 		<dependency>
 			<groupId>com.fifesoft</groupId>
 			<artifactId>rsyntaxtextarea</artifactId>
-			<version>3.5.1</version>
+			<version>3.6.0</version>
 		</dependency>
 		<!-- ManageSieveJ: Java 11 compatible fork from Zwixx (built as module)
 		     Source: https://github.com/Zwixx/ManageSieveJ (in ../lib/ManageSieveJ/)

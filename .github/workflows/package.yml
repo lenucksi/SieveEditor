@@ -347,7 +347,7 @@ jobs:
           cache-key: flatpak-builder-${{ github.sha }}
 
       - name: Upload Flatpak artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: sieveeditor-flatpak
           path: SieveEditor-${{ steps.version.outputs.version }}.flatpak

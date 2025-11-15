@@ -29,6 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+          submodules: recursive  # Initialize ManageSieveJ submodule
 
       - name: Run OpenSSF Scorecard
         uses: ossf/scorecard-action@v2.4.0

@@ -36,9 +36,23 @@ mvn --version | head -n 1
 echo "✅ Maven found"
 echo ""
 
+# Initialize submodules if needed
+echo "============================================"
+echo "Step 1: Initializing git submodules"
+echo "============================================"
+cd "$PROJECT_ROOT"
+if [ ! -f "lib/ManageSieveJ/pom.xml" ]; then
+    echo "ManageSieveJ submodule not initialized, initializing now..."
+    git submodule update --init --recursive
+    echo "✅ Submodules initialized"
+else
+    echo "✅ Submodules already initialized"
+fi
+echo ""
+
 # Build ManageSieveJ library
 echo "============================================"
-echo "Step 1: Building ManageSieveJ library"
+echo "Step 2: Building ManageSieveJ library"
 echo "============================================"
 cd "$PROJECT_ROOT/lib/ManageSieveJ"
 mvn clean install -DskipTests -q
@@ -52,7 +66,7 @@ echo ""
 
 # Run tests
 echo "============================================"
-echo "Step 2: Running tests"
+echo "Step 3: Running tests"
 echo "============================================"
 cd "$PROJECT_ROOT/app"
 mvn test -B
@@ -69,7 +83,7 @@ echo ""
 
 # Build JAR
 echo "============================================"
-echo "Step 3: Building JAR"
+echo "Step 4: Building JAR"
 echo "============================================"
 mvn package -DskipTests -B -q
 
@@ -86,7 +100,7 @@ echo ""
 # Optional: Coverage report
 if [ "$1" == "--coverage" ]; then
     echo "============================================"
-    echo "Step 4: Generating coverage report"
+    echo "Step 5: Generating coverage report"
     echo "============================================"
     # Uncomment when JaCoCo is working
     # mvn jacoco:report
@@ -98,7 +112,7 @@ fi
 # Optional: Security scan
 if [ "$1" == "--security" ]; then
     echo "============================================"
-    echo "Step 5: Running security scan"
+    echo "Step 6: Running security scan"
     echo "============================================"
     mvn org.owasp:dependency-check-maven:check
     echo "Security report: app/target/dependency-check-report.html"

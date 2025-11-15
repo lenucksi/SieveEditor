@@ -45,7 +45,7 @@ jobs:
           mvn clean package -DskipTests -B
 
       - name: Upload JAR for packaging
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: sieveeditor-jar
           path: app/target/SieveEditor-jar-with-dependencies.jar
@@ -130,7 +130,7 @@ jobs:
           ls -lh $PKG
 
       - name: Upload package artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: sieveeditor-${{ matrix.package-type }}
           path: ${{ steps.package.outputs.file }}
@@ -212,7 +212,7 @@ jobs:
           ls -lh $MSI
 
       - name: Upload MSI artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: sieveeditor-msi
           path: ${{ steps.package.outputs.file }}
@@ -284,7 +284,7 @@ jobs:
           ls -lh $DMG
 
       - name: Upload DMG artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: sieveeditor-dmg
           path: ${{ steps.package.outputs.file }}
@@ -317,7 +317,7 @@ jobs:
           cat checksums.txt
 
       - name: Upload checksums
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: checksums
           path: checksums.txt

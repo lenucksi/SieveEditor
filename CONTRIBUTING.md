@@ -46,6 +46,30 @@ cd lib/ManageSieveJ && mvn clean install -DskipTests
 cd ../../app && mvn test
 ```
 
+### Enable Git Hooks (REQUIRED)
+
+**Enable conventional commit validation:**
+
+```bash
+git config core.hooksPath .githooks
+```
+
+This activates the commit-msg hook that validates your commit messages against the Conventional Commits specification. All commits must pass validation before being accepted.
+
+**Verify hook is active:**
+```bash
+git config core.hooksPath
+# Should output: .githooks
+```
+
+**What the hook does:**
+- ✅ Validates commit message format
+- ✅ Ensures type is valid (`feat`, `fix`, `docs`, etc.)
+- ✅ Checks subject line length
+- ✅ Provides helpful error messages if validation fails
+
+**Hook location:** `.githooks/commit-msg`
+
 ### Run Application
 
 ```bash
@@ -65,6 +89,28 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 5. **Commit** using [Conventional Commits](#commit-message-convention)
 6. **Push** to your fork: `git push origin feature/my-feature`
 7. **Create** a Pull Request
+
+### Using Claude Code (Optional)
+
+If you're using [Claude Code](https://claude.ai/code), this project includes a `.claude/` harness for enhanced development:
+
+**Slash Commands:**
+- `/build` - Compile the project
+- `/test` - Run tests with coverage
+- `/clean` - Clean build artifacts
+- `/package` - Create JAR distribution
+- `/coverage` - Generate coverage report
+- `/verify` - Run complete verification
+
+**Skills:**
+- `conventional-commits` - Interactive helper to create well-formed commit messages
+
+**Session Hooks:**
+- Auto-verifies Java/Maven on session start
+- Configures git hooks automatically
+- Displays available commands
+
+See `.claude/README.md` for more details.
 
 ---
 
@@ -96,6 +142,10 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) for automate
 | `perf` | Performance improvement | Patch |
 | `security` | Security fix | Patch |
 | `deps` | Dependency update | Patch |
+| `build` | Build system changes | None |
+| `ci` | CI/CD configuration | None |
+
+**Need help?** If you're using Claude Code, invoke the `conventional-commits` skill for an interactive commit message builder.
 
 ### Examples
 
@@ -146,9 +196,26 @@ Common scopes:
 - `actions` - UI action handlers
 - `tokenizer` - Syntax highlighting
 - `connection` - ManageSieve protocol
-- `ui` - User interface
+- `ui` - User interface components
 - `security` - Security-related changes
 - `tests` - Test infrastructure
+- `build` - Build configuration
+- `release` - Release automation
+
+### Commit Message Validation
+
+All commits are validated by the git hook at `.githooks/commit-msg`. If your commit is rejected:
+
+1. Check the error message - it shows what's wrong
+2. Fix the format and try again
+3. Use the `conventional-commits` skill in Claude Code for help
+4. See examples above for reference
+
+**Common mistakes:**
+- ❌ `Added new feature` → ✅ `feat: add new feature` (use imperative mood)
+- ❌ `feat:added feature` → ✅ `feat: add feature` (space after colon)
+- ❌ `feature: add something` → ✅ `feat: add something` (wrong type name)
+- ❌ `Fix bug` → ✅ `fix: resolve issue` (missing type prefix)
 
 ---
 

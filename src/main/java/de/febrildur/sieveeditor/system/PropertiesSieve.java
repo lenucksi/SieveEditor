@@ -6,10 +6,26 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
@@ -18,7 +34,11 @@ import org.jasypt.properties.EncryptableProperties;
 
 public class PropertiesSieve {
 
-	private final StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+	private static final Logger LOGGER = Logger.getLogger(PropertiesSieve.class.getName());
+	private static final String ENCRYPTION_ALGORITHM = "PBEWITHHMACSHA512ANDAES_256";
+	private static final int KEY_OBTENTION_ITERATIONS = 10000;
+
+	private final StandardPBEStringEncryptor encryptor;
 	private String server;
 	private int port;
 	private String username;
@@ -33,19 +53,141 @@ public class PropertiesSieve {
 
 	public PropertiesSieve(String profileName) {
 		this.profileName = profileName;
+		this.encryptor = createEncryptor();
 		File profilesDir = new File(System.getProperty("user.home"), ".sieveprofiles");
 		if (!profilesDir.exists()) {
 			profilesDir.mkdirs();
+			setDirectoryPermissions(profilesDir.toPath());
 		}
 		this.propFileName = new File(profilesDir, profileName + ".properties").getAbsolutePath();
+	}
+
+	/**
+	 * Creates a configured encryptor with strong algorithm and machine-specific key.
+	 *
+	 * @return configured StandardPBEStringEncryptor
+	 */
+	private StandardPBEStringEncryptor createEncryptor() {
+		StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
+		enc.setAlgorithm(ENCRYPTION_ALGORITHM);
+		enc.setKeyObtentionIterations(KEY_OBTENTION_ITERATIONS);
+		enc.setPassword(getMachineSpecificEncryptionKey());
+		return enc;
+	}
+
+	/**
+	 * Generates a machine-specific encryption key based on username, hostname,
+	 * and hardware MAC address. This provides better security than a hardcoded key
+	 * while remaining deterministic for the same machine.
+	 *
+	 * @return Base64-encoded SHA-256 hash of machine-specific data
+	 */
+	private String getMachineSpecificEncryptionKey() {
+		try {
+			StringBuilder keyMaterial = new StringBuilder();
+
+			// Add username
+			keyMaterial.append(System.getProperty("user.name", "unknown"));
+
+			// Add hostname
+			try {
+				keyMaterial.append(InetAddress.getLocalHost().getHostName());
+			} catch (UnknownHostException e) {
+				LOGGER.log(Level.WARNING, "Could not get hostname, using fallback", e);
+				keyMaterial.append("localhost");
+			}
+
+			// Add MAC address for hardware binding
+			try {
+				InetAddress localHost = InetAddress.getLocalHost();
+				NetworkInterface network = NetworkInterface.getByInetAddress(localHost);
+
+				if (network != null) {
+					byte[] mac = network.getHardwareAddress();
+					if (mac != null) {
+						for (byte b : mac) {
+							keyMaterial.append(String.format("%02X", b));
+						}
+					}
+				} else {
+					// Fallback: iterate through network interfaces to find one with MAC
+					Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+					while (interfaces.hasMoreElements()) {
+						NetworkInterface ni = interfaces.nextElement();
+						byte[] mac = ni.getHardwareAddress();
+						if (mac != null && mac.length > 0) {
+							for (byte b : mac) {
+								keyMaterial.append(String.format("%02X", b));
+							}
+							break;
+						}
+					}
+				}
+			} catch (SocketException e) {
+				LOGGER.log(Level.WARNING, "Could not get MAC address, using fallback", e);
+				keyMaterial.append("NO-MAC-ADDRESS");
+			}
+
+			// Hash the key material to create consistent-length key
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			byte[] hash = digest.digest(keyMaterial.toString().getBytes(StandardCharsets.UTF_8));
+			return Base64.getEncoder().encodeToString(hash);
+
+		} catch (NoSuchAlgorithmException e) {
+			LOGGER.log(Level.SEVERE, "SHA-256 not available, using fallback", e);
+			// This should never happen on modern JVMs, but provide a fallback
+			return "FALLBACK-KEY-" + System.getProperty("user.name");
+		}
+	}
+
+	/**
+	 * Sets secure permissions on the profiles directory (700 - owner only).
+	 * On non-POSIX systems, this will be a no-op.
+	 *
+	 * @param dirPath path to the directory
+	 */
+	private void setDirectoryPermissions(Path dirPath) {
+		try {
+			Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwx------");
+			Files.setPosixFilePermissions(dirPath, perms);
+			LOGGER.log(Level.FINE, "Set directory permissions to 700 for: {0}", dirPath);
+		} catch (UnsupportedOperationException e) {
+			// Non-POSIX system (e.g., Windows) - permissions handled by OS
+			LOGGER.log(Level.FINE, "POSIX permissions not supported on this OS");
+		} catch (IOException e) {
+			LOGGER.log(Level.WARNING, "Failed to set directory permissions", e);
+		}
+	}
+
+	/**
+	 * Sets secure permissions on the profile file (600 - owner read/write only).
+	 * On non-POSIX systems, this will be a no-op.
+	 *
+	 * @param filePath path to the file
+	 */
+	private void setFilePermissions(Path filePath) {
+		try {
+			Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rw-------");
+			Files.setPosixFilePermissions(filePath, perms);
+			LOGGER.log(Level.FINE, "Set file permissions to 600 for: {0}", filePath);
+		} catch (UnsupportedOperationException e) {
+			// Non-POSIX system (e.g., Windows) - permissions handled by OS
+			LOGGER.log(Level.FINE, "POSIX permissions not supported on this OS");
+		} catch (IOException e) {
+			LOGGER.log(Level.WARNING, "Failed to set file permissions", e);
+		}
 	}
 	
 	public void load() throws IOException {
 		File propFile = new File(propFileName);
-		propFile.createNewFile();
+		if (propFile.createNewFile()) {
+			// New file created - set permissions
+			setFilePermissions(propFile.toPath());
+		}
+
 		try (InputStream input = new FileInputStream(propFileName)) {
-			encryptor.setPassword("KNQ4VnqF24WLe4HZJ9fB9Sth");
-			Properties prop = new EncryptableProperties(encryptor);  
+			// Encryptor is already configured with machine-specific key in constructor
+			Properties prop = new EncryptableProperties(encryptor);
 
 			prop.load(input);
 
@@ -55,14 +197,19 @@ public class PropertiesSieve {
 			try {
 				password = prop.getProperty("sieve.password", "");
 			} catch (EncryptionOperationNotPossibleException e) {
+				// Decryption failed - possibly encrypted with old key or corrupted
+				LOGGER.log(Level.WARNING, "Failed to decrypt password for profile: {0}", profileName);
 				password = "";
 			}
 		}
+
+		// Ensure existing files also have secure permissions
+		setFilePermissions(Paths.get(propFileName));
 	}
 
 	public void write() {
 		try (OutputStream output = new FileOutputStream(propFileName)) {
-			encryptor.setPassword("KNQ4VnqF24WLe4HZJ9fB9Sth");
+			// Encryptor is already configured with machine-specific key in constructor
 			Properties prop = new EncryptableProperties(encryptor);
 
 			// set the properties value - handle null values
@@ -74,8 +221,11 @@ public class PropertiesSieve {
 
 			prop.store(output, null);
 
+			// Ensure file has secure permissions after writing
+			setFilePermissions(Paths.get(propFileName));
+
 		} catch (IOException io) {
-			io.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Failed to write properties file: " + propFileName, io);
 		}
 	}
 	

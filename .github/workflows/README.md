@@ -12,7 +12,6 @@ This directory contains CI/CD workflows for SieveEditor.
 
 **Jobs:**
 - **test:** Run tests on Linux, Windows, macOS with Java 21
-- **security-scan:** OWASP dependency check
 - **test-summary:** Aggregate results
 
 **Matrix:**
@@ -22,11 +21,32 @@ This directory contains CI/CD workflows for SieveEditor.
 **Artifacts:**
 - Test reports (30 days)
 - JAR file (7 days)
-- OWASP security report (30 days)
+- Code coverage reports (Codecov)
 
-### 2. Scorecard - Security Scanning (`scorecard.yml`)
+**Code Coverage:**
+- JaCoCo generates coverage reports
+- Uploaded to Codecov (requires `CODECOV_TOKEN` secret)
+- Coverage displayed in pull requests
 
-**Trigger:** Weekly on Monday + manual
+### 2. CodeQL - Code Security Analysis (`codeql.yml`)
+
+**Trigger:** Push/PR to master/develop, weekly Monday 00:00 UTC, manual
+
+**Purpose:** Automated security vulnerability scanning
+
+**Languages Analyzed:**
+- **Java:** Source code security analysis
+- **Actions:** GitHub Actions workflow security analysis
+
+**Branches:**
+- master
+- develop
+
+**Output:** GitHub Security tab (Code Scanning Alerts)
+
+### 3. Scorecard - Security Scanning (`scorecard.yml`)
+
+**Trigger:** Weekly on Monday at 06:00 UTC + manual
 
 **Purpose:** OpenSSF security health metrics
 
@@ -41,7 +61,7 @@ This directory contains CI/CD workflows for SieveEditor.
 
 **Output:** GitHub Security tab (SARIF format)
 
-### 3. Package - Cross-Platform Builds (`package.yml`)
+### 4. Package - Cross-Platform Builds (`package.yml`)
 
 **Trigger:** Manual dispatch + release published
 
@@ -64,7 +84,7 @@ This directory contains CI/CD workflows for SieveEditor.
 
 **Attestations:** SLSA Level 3 provenance for all artifacts
 
-### 4. Release - Automated Releases (`release.yml`)
+### 5. Release - Automated Releases (`release.yml`)
 
 **Trigger:** Push to main branch
 
@@ -123,8 +143,7 @@ permissions:
 
 ### Dependency Management
 
-- **Dependabot:** Weekly automated updates
-- **OWASP Check:** Vulnerability scanning
+- **Dependabot:** Automated vulnerability scanning and updates
 - **Dependency pinning:** Actions pinned to SHA (recommended)
 
 ## Local Testing

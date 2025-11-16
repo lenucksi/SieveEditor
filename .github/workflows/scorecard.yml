@@ -1,9 +1,9 @@
 name: OpenSSF Scorecard
 
 on:
-  # Run weekly on Monday at 00:00 UTC
+  # Run weekly on Monday at 06:00 UTC (staggered to avoid conflict with CodeQL)
   schedule:
-    - cron: '0 0 * * 1'
+    - cron: '0 6 * * 1'
   # Allow manual trigger
   workflow_dispatch:
   # Run on branch protection rule changes

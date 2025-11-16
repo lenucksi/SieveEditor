@@ -67,10 +67,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
-      # Set up Java 21 for building the project (only needed if build-mode != 'none')
-      # Currently we use build-mode: none, but this is here for future flexibility
+      # Set up Java 21 for Java/Kotlin analysis
+      # Required even with build-mode: none because CodeQL still needs to compile code during analysis
       - name: Set up JDK 21
-        if: matrix.language == 'java-kotlin' && matrix.build-mode != 'none'
+        if: matrix.language == 'java-kotlin'
         uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
         with:
           java-version: '21'

@@ -8,7 +8,8 @@ on:
 permissions:
   contents: write  # For creating releases and updating CHANGELOG
   pull-requests: write  # For creating release PRs
-  id-token: write  # For attestations
+  id-token: write  # For artifact attestations
+  attestations: write  # For provenance generation
 
 jobs:
   release-please:

@@ -65,11 +65,12 @@ public class PropertiesSieve {
 			encryptor.setPassword("KNQ4VnqF24WLe4HZJ9fB9Sth");
 			Properties prop = new EncryptableProperties(encryptor);
 
-			// set the properties value
-			prop.setProperty("sieve.server", server);
+			// set the properties value - handle null values
+			prop.setProperty("sieve.server", server != null ? server : "");
 			prop.setProperty("sieve.port", Integer.toString(port));
-			prop.setProperty("sieve.user", username);
-			prop.setProperty("sieve.password", String.format("ENC(%s)", encryptor.encrypt(password)));
+			prop.setProperty("sieve.user", username != null ? username : "");
+			prop.setProperty("sieve.password", password != null ?
+				String.format("ENC(%s)", encryptor.encrypt(password)) : "");
 
 			prop.store(output, null);
 
@@ -136,7 +137,8 @@ public class PropertiesSieve {
 			return "default";
 		}
 		try {
-			return Files.readString(lastUsedFile.toPath()).trim();
+			String profile = Files.readString(lastUsedFile.toPath()).trim();
+			return profile.isEmpty() ? "default" : profile;
 		} catch (IOException e) {
 			return "default";
 		}

@@ -4,7 +4,7 @@ description: Run the JUnit test suite with coverage
 
 Run the complete test suite for SieveEditor with JaCoCo coverage.
 
-Execute: `cd app && mvn test`
+Execute: ` mvn test`
 
 After completion:
 1. Show test results summary (passed/failed/skipped)

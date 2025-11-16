@@ -218,7 +218,7 @@ mvn jacoco:report                                # Generate coverage report
 
 **Coverage Report Location:**
 ```
-app/target/site/jacoco/index.html
+target/site/jacoco/index.html
 ```
 
 **Test Naming Convention:**
@@ -440,7 +440,7 @@ See `CI-CD-STRATEGY-2025.md` for complete strategy.
 ### Improving Test Coverage
 
 1. Run coverage report: `mvn jacoco:report`
-2. Open `app/target/site/jacoco/index.html`
+2. Open `target/site/jacoco/index.html`
 3. Identify classes with < 70% coverage
 4. Add tests for uncovered code paths
 5. Re-run coverage to verify improvement
@@ -541,7 +541,7 @@ See issue tracker for current priorities.
 **Build:** `mvn clean package`
 **Test:** `mvn test`
 **Coverage:** `mvn jacoco:report`
-**Run:** `java -jar app/target/SieveEditor-jar-with-dependencies.jar`
+**Run:** `java -jar target/SieveEditor-jar-with-dependencies.jar`
 **Hook Setup:** `git config core.hooksPath .githooks`
 **Commit Format:** `type(scope): subject`
 

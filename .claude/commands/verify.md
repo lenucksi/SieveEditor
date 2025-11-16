@@ -4,7 +4,7 @@ description: Run complete Maven verification lifecycle
 
 Run the complete Maven verification lifecycle (clean, compile, test, package).
 
-Execute: `cd app && mvn clean verify`
+Execute: ` mvn clean verify`
 
 This performs:
 1. Clean build artifacts

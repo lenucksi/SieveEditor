@@ -38,15 +38,13 @@ jobs:
           cache: 'maven'
 
       - name: Build JAR
-        run: |
-          cd app
-          mvn clean package -DskipTests -B
+        run: mvn clean package -DskipTests -B
 
       - name: Upload JAR for packaging
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: sieveeditor-jar
-          path: app/target/SieveEditor-jar-with-dependencies.jar
+          path: target/SieveEditor-jar-with-dependencies.jar
           retention-days: 1
 
   # Linux packaging: DEB, RPM
@@ -87,7 +85,7 @@ jobs:
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: sieveeditor-jar
-          path: app/target
+          path: target
 
       - name: Get version
         id: version
@@ -106,7 +104,7 @@ jobs:
       - name: Create package
         run: |
           jpackage \
-            --input app/target \
+            --input target \
             --main-jar SieveEditor-jar-with-dependencies.jar \
             --main-class de.febrildur.sieveeditor.Application \
             --name SieveEditor \
@@ -174,7 +172,7 @@ jobs:
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: sieveeditor-jar
-          path: app/target
+          path: target
 
       - name: Get version
         id: version
@@ -256,7 +254,7 @@ jobs:
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: sieveeditor-jar
-          path: app/target
+          path: target
 
       - name: Get version
         id: version
@@ -310,7 +308,7 @@ jobs:
       - name: Create DMG package
         run: |
           jpackage \
-            --input app/target \
+            --input target \
             --main-jar SieveEditor-jar-with-dependencies.jar \
             --main-class de.febrildur.sieveeditor.Application \
             --name SieveEditor \
@@ -365,7 +363,7 @@ jobs:
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: sieveeditor-jar
-          path: app/target
+          path: target
 
       - name: Get version
         id: version

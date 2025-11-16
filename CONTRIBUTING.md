@@ -360,7 +360,7 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 sudo apt-get install fakeroot
 
 # Build JAR first
-cd app && mvn clean package
+ mvn clean package
 
 # Create DEB package
 jpackage --input target \
@@ -398,7 +398,7 @@ jpackage --input target `
 # Prerequisites: Xcode Command Line Tools
 
 # Build JAR first
-cd app && mvn clean package
+ mvn clean package
 
 # Create DMG
 jpackage --input target \

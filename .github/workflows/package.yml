@@ -270,16 +270,20 @@ jobs:
             VERSION="0.0.1"
           fi
 
+          # Strip any suffix like -SNAPSHOT for macOS compatibility
+          # macOS versions must be numeric with periods only
+          CLEAN_VERSION="${VERSION%%-*}"
+
           # macOS requires versions starting with 1+ (not 0)
           # Transform 0.x.y to 1.0.x for macOS compatibility
-          if [[ "$VERSION" =~ ^0\.([0-9]+)\.([0-9]+)$ ]]; then
+          if [[ "$CLEAN_VERSION" =~ ^0\.([0-9]+)\.([0-9]+)$ ]]; then
             MAC_VERSION="1.0.${BASH_REMATCH[1]}"
-            echo "Original version $VERSION starts with 0, using $MAC_VERSION for macOS"
-          elif [[ "$VERSION" =~ ^0\.([0-9]+)$ ]]; then
+            echo "Original version $VERSION (cleaned: $CLEAN_VERSION) starts with 0, using $MAC_VERSION for macOS"
+          elif [[ "$CLEAN_VERSION" =~ ^0\.([0-9]+)$ ]]; then
             MAC_VERSION="1.0.${BASH_REMATCH[1]}"
-            echo "Original version $VERSION starts with 0, using $MAC_VERSION for macOS"
+            echo "Original version $VERSION (cleaned: $CLEAN_VERSION) starts with 0, using $MAC_VERSION for macOS"
           else
-            MAC_VERSION="$VERSION"
+            MAC_VERSION="$CLEAN_VERSION"
           fi
 
           echo "version=$VERSION" >> $GITHUB_OUTPUT
@@ -336,6 +340,11 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+
+      - name: Install Flatpak dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder xvfb
 
       - name: Download JAR
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
@@ -408,3 +417,44 @@ jobs:
           name: checksums
           path: checksums.txt
           retention-days: 90
+
+  # Upload artifacts to GitHub release
+  upload-to-release:
+    name: Upload Artifacts to Release
+    runs-on: ubuntu-latest
+    needs: [checksums]
+    if: github.event_name == 'release'
+    permissions:
+      contents: write
+
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
+        with:
+          egress-policy: audit
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        with:
+          path: artifacts
+
+      - name: Upload artifacts to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd artifacts
+
+          # Find all package files
+          FILES=$(find . -type f \( -name "*.jar" -o -name "*.deb" -o -name "*.rpm" -o -name "*.msi" -o -name "*.dmg" -o -name "*.flatpak" \))
+
+          # Upload each file to the release
+          for file in $FILES; do
+            echo "Uploading $file to release ${{ github.event.release.tag_name }}"
+            gh release upload "${{ github.event.release.tag_name }}" "$file" --repo "${{ github.repository }}"
+          done
+
+          # Upload checksums
+          if [ -f checksums/checksums.txt ]; then
+            echo "Uploading checksums.txt to release"
+            gh release upload "${{ github.event.release.tag_name }}" checksums/checksums.txt --repo "${{ github.repository }}"
+          fi

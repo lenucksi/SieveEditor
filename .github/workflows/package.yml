@@ -363,9 +363,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y flatpak flatpak-builder xvfb
 
-      - name: Add Flathub repository
+      - name: Add Flathub repository (user mode)
         run: |
-          sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+      - name: Pre-install SDK and runtime (user mode)
+        run: |
+          flatpak install --user -y flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.freedesktop.Sdk.Extension.openjdk21//24.08
 
       - name: Download JAR
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
@@ -392,7 +396,8 @@ jobs:
         with:
           bundle: SieveEditor-${{ steps.version.outputs.version }}.flatpak
           manifest-path: de.febrildur.sieveeditor.yml
-          cache-key: flatpak-builder-${{ github.sha }}
+          cache-key: flatpak-builder-${{ hashFiles('de.febrildur.sieveeditor.yml') }}
+          arch: x86_64
 
       - name: Upload Flatpak artifact
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0

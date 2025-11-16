@@ -274,16 +274,33 @@ jobs:
           # macOS versions must be numeric with periods only
           CLEAN_VERSION="${VERSION%%-*}"
 
-          # macOS requires versions starting with 1+ (not 0)
-          # Transform 0.x.y to 1.0.x for macOS compatibility
-          if [[ "$CLEAN_VERSION" =~ ^0\.([0-9]+)\.([0-9]+)$ ]]; then
-            MAC_VERSION="1.0.${BASH_REMATCH[1]}"
-            echo "Original version $VERSION (cleaned: $CLEAN_VERSION) starts with 0, using $MAC_VERSION for macOS"
-          elif [[ "$CLEAN_VERSION" =~ ^0\.([0-9]+)$ ]]; then
-            MAC_VERSION="1.0.${BASH_REMATCH[1]}"
-            echo "Original version $VERSION (cleaned: $CLEAN_VERSION) starts with 0, using $MAC_VERSION for macOS"
+          # Extract up to 3 numeric components for macOS compatibility
+          # macOS jpackage requires versions in format: 1, 1.2, or 1.2.3
+          if [[ "$CLEAN_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]]; then
+            # 3 components: x.y.z (take only first 3, ignore any 4th component)
+            MAC_VERSION="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}"
+          elif [[ "$CLEAN_VERSION" =~ ^([0-9]+)\.([0-9]+) ]]; then
+            # 2 components: x.y
+            MAC_VERSION="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+          elif [[ "$CLEAN_VERSION" =~ ^([0-9]+)$ ]]; then
+            # 1 component: x
+            MAC_VERSION="${BASH_REMATCH[1]}"
           else
-            MAC_VERSION="$CLEAN_VERSION"
+            # Invalid format, use default
+            MAC_VERSION="1.0.0"
+          fi
+
+          # macOS prefers versions starting with 1 or higher
+          # Transform versions starting with 0 to start with 1
+          if [[ "$MAC_VERSION" =~ ^0\.([0-9]+)\.([0-9]+)$ ]]; then
+            MAC_VERSION="1.${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"
+            echo "Transformed version $CLEAN_VERSION to $MAC_VERSION for macOS compatibility"
+          elif [[ "$MAC_VERSION" =~ ^0\.([0-9]+)$ ]]; then
+            MAC_VERSION="1.${BASH_REMATCH[1]}"
+            echo "Transformed version $CLEAN_VERSION to $MAC_VERSION for macOS compatibility"
+          elif [[ "$MAC_VERSION" = "0" ]]; then
+            MAC_VERSION="1.0.0"
+            echo "Transformed version $CLEAN_VERSION to $MAC_VERSION for macOS compatibility"
           fi
 
           echo "version=$VERSION" >> $GITHUB_OUTPUT

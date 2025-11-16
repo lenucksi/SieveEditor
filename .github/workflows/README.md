@@ -63,16 +63,18 @@ This directory contains CI/CD workflows for SieveEditor.
 
 ### 4. Package - Cross-Platform Builds (`package.yml`)
 
-**Trigger:** Manual dispatch + release published
+**Trigger:** Called by release.yml + manual dispatch + release published
 
-**Purpose:** Build native packages for all platforms
+**Purpose:** Build native packages for all platforms and upload to GitHub Releases
 
 **Jobs:**
 - **build-jar:** Create uber JAR
 - **package-linux:** Build DEB and RPM
 - **package-windows:** Build MSI
 - **package-macos:** Build DMG
+- **package-flatpak:** Build Flatpak (universal Linux)
 - **checksums:** Generate SHA256 checksums
+- **upload-to-release:** Upload all artifacts to GitHub Release
 
 **Artifacts:**
 - `SieveEditor.jar` (all platforms)
@@ -80,13 +82,14 @@ This directory contains CI/CD workflows for SieveEditor.
 - `SieveEditor.rpm` (Fedora/RHEL)
 - `SieveEditor.msi` (Windows)
 - `SieveEditor.dmg` (macOS)
+- `SieveEditor.flatpak` (Linux universal)
 - `checksums.txt`
 
 **Attestations:** SLSA Level 3 provenance for all artifacts
 
 ### 5. Release - Automated Releases (`release.yml`)
 
-**Trigger:** Push to main branch
+**Trigger:** Push to master branch
 
 **Purpose:** Automate version bumps, changelogs, and releases
 
@@ -98,9 +101,8 @@ This directory contains CI/CD workflows for SieveEditor.
    - Updated pom.xml
 3. When Release PR merged:
    - Creates GitHub Release
-   - Triggers package workflow
-   - Uploads all platform packages
-   - Adds installation instructions
+   - Calls package.yml workflow with version and tag
+   - Package workflow builds all artifacts and uploads to release
 
 **Conventional Commits:**
 - `feat:` → minor version bump
@@ -201,7 +203,7 @@ Push/PR → Checkout → Setup Java → Cache → Build Library → Run Tests �
 
 ### Release Flow
 ```
-Push to main → Release Please → Create/Update PR → Merge → Create Release → Package → Upload Assets
+Push to master → Release Please → Create/Update PR → Merge → Create Release → package.yml (Build + Upload)
 ```
 
 ## Best Practices

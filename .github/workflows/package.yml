@@ -11,9 +11,8 @@ on:
         description: 'Release tag name'
         required: true
         type: string
-    secrets:
-      GITHUB_TOKEN:
-        required: true
+    # Note: secrets are inherited from caller via 'secrets: inherit'
+    # GITHUB_TOKEN is automatically provided and cannot be explicitly defined
   workflow_dispatch:  # Manual trigger for testing
     inputs:
       version:

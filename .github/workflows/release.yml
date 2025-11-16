@@ -45,7 +45,4 @@ jobs:
       version: ${{ needs.release-please.outputs.version }}
       tag_name: ${{ needs.release-please.outputs.tag_name }}
     secrets: inherit
-    permissions:
-      contents: write  # Required for package.yml to upload to release
-      id-token: write
-      attestations: write
+    # Note: permissions are inherited from workflow-level permissions (lines 8-12)

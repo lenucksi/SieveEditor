@@ -13,12 +13,13 @@ name: "CodeQL"
 
 on:
   push:
-    branches: ["master"]
+    branches: ["master", "develop"]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: ["master"]
+    branches: ["master", "develop"]
   schedule:
     - cron: "0 0 * * 1"
+  workflow_dispatch:  # Allow manual trigger
 
 permissions:
   contents: read
@@ -35,9 +36,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ["java"]
+        language: ["java", "actions"]
         # CodeQL supports [ $supported-codeql-languages ]
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
+        # "actions" scans GitHub Actions workflow files for security issues
 
     steps:
       - name: Harden the runner (Audit all outbound calls)

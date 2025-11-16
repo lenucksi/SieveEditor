@@ -389,6 +389,7 @@ jobs:
           cache-key: flatpak-builder-${{ hashFiles('de.febrildur.sieveeditor.yml') }}
           arch: x86_64
           branch: master
+          upload-artifact: false
 
       - name: Upload Flatpak artifact
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0

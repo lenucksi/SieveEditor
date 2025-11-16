@@ -346,6 +346,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y flatpak flatpak-builder xvfb
 
+      - name: Add Flathub repository
+        run: |
+          sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
       - name: Download JAR
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:

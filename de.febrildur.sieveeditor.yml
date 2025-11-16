@@ -60,7 +60,7 @@ modules:
     sources:
       # JAR file from build
       - type: file
-        path: app/target/SieveEditor-jar-with-dependencies.jar
+        path: target/SieveEditor-jar-with-dependencies.jar
 
       # Desktop file
       - type: file

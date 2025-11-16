@@ -53,27 +53,23 @@ jobs:
         run: mvn --version
 
       - name: Run tests
-        run: |
-          cd app
-          mvn test -B -V
+        run: mvn test -B -V
         shell: bash
         env:
           MAVEN_OPTS: -Xmx1024m
 
       - name: Build JAR
-        run: |
-          cd app
-          mvn package -DskipTests -B
+        run: mvn package -DskipTests -B
         shell: bash
 
       - name: Verify JAR was created
         run: |
-          if [ ! -f "app/target/SieveEditor-jar-with-dependencies.jar" ]; then
+          if [ ! -f "target/SieveEditor-jar-with-dependencies.jar" ]; then
             echo "❌ JAR file not found!"
             exit 1
           fi
           echo "✅ JAR file created successfully"
-          ls -lh app/target/SieveEditor-jar-with-dependencies.jar
+          ls -lh target/SieveEditor-jar-with-dependencies.jar
         shell: bash
 
       # Upload test results for analysis
@@ -83,8 +79,8 @@ jobs:
         with:
           name: test-results-${{ matrix.os }}-java-${{ matrix.java-version }}
           path: |
-            app/target/surefire-reports/
-            app/target/site/jacoco/
+            target/surefire-reports/
+            target/site/jacoco/
           retention-days: 30
 
       # Upload coverage to Codecov (Linux only to avoid duplicates)
@@ -92,7 +88,7 @@ jobs:
         uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.3.1
         if: matrix.os == 'ubuntu-latest'
         with:
-          files: ./app/target/site/jacoco/jacoco.xml
+          files: ./target/site/jacoco/jacoco.xml
           flags: unittests
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -103,7 +99,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         with:
           name: sieveeditor-jar-${{ github.sha }}
-          path: app/target/SieveEditor-jar-with-dependencies.jar
+          path: target/SieveEditor-jar-with-dependencies.jar
           retention-days: 7
 
   # Summary job - require all tests to pass

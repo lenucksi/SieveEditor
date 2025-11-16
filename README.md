@@ -72,7 +72,7 @@ The build will:
 Or:
 
 ```bash
-java -jar app/target/SieveEditor-jar-with-dependencies.jar
+java -jar target/SieveEditor-jar-with-dependencies.jar
 ```
 
 ## Features

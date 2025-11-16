@@ -86,14 +86,14 @@
 			<artifactId>rsyntaxtextarea</artifactId>
 			<version>3.6.0</version>
 		</dependency>
-		<!-- ManageSieveJ: Java 11 compatible fork from Zwixx (built as module)
-		     Source: https://github.com/Zwixx/ManageSieveJ (in ../lib/ManageSieveJ/)
-		     Benefits: Java 11+ support, bug fixes, active maintenance (Dec 2024)
-		     See: ../dev-docs/MANAGESIEVEJ-FORK-ANALYSIS.md -->
+		<!-- ManageSieveJ: Java 11 compatible fork from lenucksi (via JitPack)
+		     Source: https://github.com/lenucksi/managesievej
+		     Benefits: Java 11+ support, bug fixes, modernized build
+		     JitPack builds from GitHub releases automatically -->
 		<dependency>
-			<groupId>com.fluffypeople</groupId>
-			<artifactId>managesievej</artifactId>
-			<version>0.3.2-SNAPSHOT</version>
+			<groupId>com.github.lenucksi</groupId>
+			<artifactId>ManageSieveJ</artifactId>
+			<version>managesievej-v0.3.3</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>

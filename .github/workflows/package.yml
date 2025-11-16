@@ -45,7 +45,7 @@ jobs:
         with:
           name: sieveeditor-jar
           path: target/SieveEditor-jar-with-dependencies.jar
-          retention-days: 1
+          retention-days: 7
 
   # Linux packaging: DEB, RPM
   package-linux:
@@ -193,7 +193,7 @@ jobs:
         shell: cmd
         run: |
           jpackage ^
-            --input app\target ^
+            --input target ^
             --main-jar SieveEditor-jar-with-dependencies.jar ^
             --main-class de.febrildur.sieveeditor.Application ^
             --name SieveEditor ^

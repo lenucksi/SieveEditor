@@ -19,6 +19,7 @@ updates:
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
+    directory: "/.github/workflows"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -31,8 +32,3 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
-
-  - package-ecosystem: maven
-    directory: /
-    schedule:
-      interval: daily

@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     branches:
-      - main
+      - master
 
 permissions:
   contents: write  # For creating releases and updating CHANGELOG
@@ -33,18 +33,7 @@ jobs:
         with:
           release-type: maven
           package-name: sieveeditor
-          # Changelog sections configuration
-          changelog-types: |
-            [
-              {"type":"feat","section":"Features","hidden":false},
-              {"type":"fix","section":"Bug Fixes","hidden":false},
-              {"type":"perf","section":"Performance Improvements","hidden":false},
-              {"type":"security","section":"Security","hidden":false},
-              {"type":"deps","section":"Dependencies","hidden":false},
-              {"type":"docs","section":"Documentation","hidden":true},
-              {"type":"test","section":"Tests","hidden":true},
-              {"type":"chore","section":"Miscellaneous","hidden":true}
-            ]
+          # Changelog configuration is in .github/release-please-config.json
 
   # Build and package for all platforms
   build-release-artifacts:

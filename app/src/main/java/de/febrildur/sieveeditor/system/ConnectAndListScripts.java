@@ -1,19 +1,23 @@
 package de.febrildur.sieveeditor.system;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
-import java.security.KeyStore;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-import java.io.FileInputStream;
-import javax.net.ssl.TrustManagerFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
 
 import com.fluffypeople.managesieve.ManageSieveClient;
 import com.fluffypeople.managesieve.ManageSieveResponse;
@@ -36,8 +40,9 @@ public class ConnectAndListScripts {
 			throw new IOException("Can't connect to server: " + resp.getMessage());
 		}
 
-		// resp = client.starttls();
-		resp = client.starttls(getInsecureSSLFactory(), false);
+		// Use secure SSL factory with system CA certificates
+		// To use a custom certificate, call: getSecureSSLSocketFactory("/path/to/cert.pem")
+		resp = client.starttls(getSecureSSLSocketFactory(null), false);
 		if (!resp.isOk()) {
 			client = null;
 			throw new IOException("Can't start SSL:" + resp.getMessage());
@@ -97,25 +102,52 @@ public class ConnectAndListScripts {
 	}
 
 	/**
-	 * Returns an SSLSocketFactory that trusts CA certificates from system or,
-	 * optionally, a specified self-signed certificate.
-	 * 
-	 * @param certificatePath the path to a specific certificate to trust, or null to use system CAs
-	 * @return SSLSocketFactory configured with trusted certificates, or null if something fails
+	 * Returns an SSLSocketFactory with proper certificate validation enabled.
+	 * This method is deprecated - use {@link #getSecureSSLSocketFactory(String)} instead.
+	 *
+	 * @deprecated The name "insecure" was misleading. This method now provides
+	 *             secure certificate validation. Use {@link #getSecureSSLSocketFactory(String)}
+	 *             with null parameter for the same behavior.
+	 * @return SSLSocketFactory with system CA certificate validation
+	 * @throws RuntimeException if SSL initialization fails
+	 */
+	@Deprecated
+	public static SSLSocketFactory getInsecureSSLFactory() {
+		return getSecureSSLSocketFactory(null);
+	}
+
+	/**
+	 * Returns an SSLSocketFactory that validates certificates using system CAs or,
+	 * optionally, a specified custom certificate.
+	 *
+	 * <p>This method enables proper SSL/TLS certificate validation to prevent
+	 * man-in-the-middle attacks. By default (when certificatePath is null), it uses
+	 * the system's trusted CA certificates.
+	 *
+	 * @param certificatePath the path to a custom certificate to trust (e.g., self-signed),
+	 *                        or null to use only system CA certificates
+	 * @return SSLSocketFactory configured with certificate validation enabled
+	 * @throws RuntimeException if SSL initialization fails (wraps underlying exceptions)
 	 */
 	public static SSLSocketFactory getSecureSSLSocketFactory(String certificatePath) {
 		try {
-			SSLContext sc = SSLContext.getInstance("TLS");
+			SSLContext sc = SSLContext.getInstance("TLSv1.3");
 			TrustManagerFactory tmf;
+
 			if (certificatePath != null) {
 				// Load custom certificate into KeyStore
+				Logger.getLogger(ConnectAndListScripts.class.getName())
+					.log(Level.INFO, "Loading custom certificate from: {0}", certificatePath);
+
 				KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 				keyStore.load(null, null);
+
 				try (FileInputStream fis = new FileInputStream(certificatePath)) {
 					X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance("X.509")
 							.generateCertificate(fis);
 					keyStore.setCertificateEntry("custom", certificate);
 				}
+
 				tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 				tmf.init(keyStore);
 			} else {
@@ -123,10 +155,30 @@ public class ConnectAndListScripts {
 				tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 				tmf.init((KeyStore) null);
 			}
+
 			sc.init(null, tmf.getTrustManagers(), new SecureRandom());
 			return sc.getSocketFactory();
-		} catch (Exception ex) {
-			return null;
+
+		} catch (NoSuchAlgorithmException ex) {
+			// TLSv1.3 not available, fall back to TLSv1.2
+			Logger.getLogger(ConnectAndListScripts.class.getName())
+				.log(Level.WARNING, "TLSv1.3 not available, falling back to TLSv1.2");
+			try {
+				SSLContext sc = SSLContext.getInstance("TLSv1.2");
+				TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+				tmf.init((KeyStore) null);
+				sc.init(null, tmf.getTrustManagers(), new SecureRandom());
+				return sc.getSocketFactory();
+			} catch (Exception fallbackEx) {
+				Logger.getLogger(ConnectAndListScripts.class.getName())
+					.log(Level.SEVERE, "Failed to initialize SSL with TLSv1.2 fallback", fallbackEx);
+				throw new RuntimeException("SSL initialization failed: " + fallbackEx.getMessage(), fallbackEx);
+			}
+
+		} catch (KeyStoreException | CertificateException | IOException | KeyManagementException ex) {
+			Logger.getLogger(ConnectAndListScripts.class.getName())
+				.log(Level.SEVERE, "Failed to create secure SSL socket factory", ex);
+			throw new RuntimeException("SSL initialization failed: " + ex.getMessage(), ex);
 		}
 	}
 

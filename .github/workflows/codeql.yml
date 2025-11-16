@@ -9,6 +9,13 @@
 # the `language` matrix defined below to confirm you have the correct set of
 # supported CodeQL languages.
 #
+# ******** IMPORTANT ********
+# This is an ADVANCED CodeQL configuration. If you have CodeQL default setup
+# enabled in your repository settings, you MUST disable it to use this workflow.
+# Go to: Settings -> Code security and analysis -> CodeQL analysis -> Configure -> Disable default setup
+# Otherwise, you'll get the error: "CodeQL analyses from advanced configurations
+# cannot be processed when the default setup is enabled"
+#
 name: "CodeQL"
 
 on:
@@ -49,6 +56,15 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+
+      # Set up Java 21 for building the project
+      - name: Set up JDK 21
+        if: matrix.language == 'java'
+        uses: actions/setup-java@7a6d8a8234af8eb26422e24e3006232cccaa061b # v4.6.0
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL

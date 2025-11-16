@@ -103,15 +103,37 @@ class PropertiesSieveTest {
 
     @Test
     void shouldCreateProfilesDirectoryIfNotExists() throws IOException {
-        // Given
-        File profilesDir = new File(tempDir.toFile(), ".sieveprofiles");
-        assertThat(profilesDir).doesNotExist();
+        // Given - Use a different temp directory to avoid collision with setUp()
+        // setUp() already creates a PropertiesSieve instance which creates the directory
+        Path newTempDir = Files.createTempDirectory("sieve-test-isolated");
+        try {
+            String originalUserHome = System.getProperty("user.home");
+            System.setProperty("user.home", newTempDir.toString());
 
-        // When
-        PropertiesSieve props = new PropertiesSieve("test");
+            File profilesDir = new File(newTempDir.toFile(), ".sieveprofiles");
+            assertThat(profilesDir).doesNotExist();
 
-        // Then
-        assertThat(profilesDir).exists().isDirectory();
+            // When
+            PropertiesSieve props = new PropertiesSieve("test");
+
+            // Then
+            assertThat(profilesDir).exists().isDirectory();
+
+            // Cleanup
+            System.setProperty("user.home", originalUserHome);
+        } finally {
+            // Clean up temp directory
+            java.util.Comparator<Path> reverseOrder = java.util.Comparator.reverseOrder();
+            Files.walk(newTempDir)
+                .sorted(reverseOrder)
+                .forEach(path -> {
+                    try {
+                        Files.delete(path);
+                    } catch (IOException e) {
+                        // Ignore cleanup errors
+                    }
+                });
+        }
     }
 
     @Test
@@ -224,8 +246,16 @@ class PropertiesSieveTest {
 
     @Test
     void shouldReturnDefaultProfileWhenDirectoryIsEmpty() throws IOException {
-        // Given - Create empty profiles directory
-        Files.createDirectory(tempDir.resolve(".sieveprofiles"));
+        // Given - Directory already exists from PropertiesSieve constructor in setUp()
+        // Just ensure it's empty (delete any files created by setUp)
+        File profilesDir = tempDir.resolve(".sieveprofiles").toFile();
+        if (profilesDir.exists()) {
+            for (File f : profilesDir.listFiles()) {
+                if (f.isFile()) {
+                    f.delete();
+                }
+            }
+        }
 
         // When
         List<String> profiles = PropertiesSieve.getAvailableProfiles();

@@ -12,7 +12,6 @@ This directory contains CI/CD workflows for SieveEditor.
 
 **Jobs:**
 - **test:** Run tests on Linux, Windows, macOS with Java 21
-- **security-scan:** OWASP dependency check
 - **test-summary:** Aggregate results
 
 **Matrix:**
@@ -22,7 +21,6 @@ This directory contains CI/CD workflows for SieveEditor.
 **Artifacts:**
 - Test reports (30 days)
 - JAR file (7 days)
-- OWASP security report (30 days)
 
 ### 2. Scorecard - Security Scanning (`scorecard.yml`)
 
@@ -123,8 +121,7 @@ permissions:
 
 ### Dependency Management
 
-- **Dependabot:** Weekly automated updates
-- **OWASP Check:** Vulnerability scanning
+- **Dependabot:** Automated vulnerability scanning and updates
 - **Dependency pinning:** Actions pinned to SHA (recommended)
 
 ## Local Testing

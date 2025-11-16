@@ -348,6 +348,9 @@ jobs:
     name: Package Flatpak (Linux Universal)
     runs-on: ubuntu-latest
     needs: build-jar
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
+      options: --privileged
 
     steps:
       - name: Harden the runner (Audit all outbound calls)
@@ -357,19 +360,6 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
-
-      - name: Install Flatpak dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y flatpak flatpak-builder xvfb
-
-      - name: Add Flathub repository (user mode)
-        run: |
-          flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-
-      - name: Pre-install SDK and runtime (user mode)
-        run: |
-          flatpak install --user -y flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.freedesktop.Sdk.Extension.openjdk21//24.08
 
       - name: Download JAR
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
@@ -392,28 +382,13 @@ jobs:
           echo "Building Flatpak version: $VERSION"
 
       - name: Build Flatpak
-        run: |
-          echo "Building the flatpak..."
-          xvfb-run --auto-servernum flatpak-builder \
-            --user \
-            --repo=repo \
-            --disable-rofiles-fuse \
-            --install-deps-from=flathub \
-            --force-clean \
-            --default-branch=master \
-            --arch=x86_64 \
-            flatpak_app \
-            de.febrildur.sieveeditor.yml
-
-      - name: Export Flatpak bundle
-        run: |
-          echo "Exporting flatpak bundle..."
-          flatpak build-bundle \
-            --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo \
-            repo \
-            SieveEditor-${{ steps.version.outputs.version }}.flatpak \
-            de.febrildur.sieveeditor \
-            master
+        uses: flatpak/flatpak-github-actions/flatpak-builder@92ae9851ad316786193b1fd3f40c4b51eb5cb101 # v6.6
+        with:
+          bundle: SieveEditor-${{ steps.version.outputs.version }}.flatpak
+          manifest-path: de.febrildur.sieveeditor.yml
+          cache-key: flatpak-builder-${{ hashFiles('de.febrildur.sieveeditor.yml') }}
+          arch: x86_64
+          branch: master
 
       - name: Upload Flatpak artifact
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0

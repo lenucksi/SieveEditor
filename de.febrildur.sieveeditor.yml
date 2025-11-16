@@ -29,6 +29,9 @@ modules:
       # Create application directory
       - install -d /app/sieveeditor
 
+      # Create bin directory
+      - install -d /app/bin
+
       # Install JAR
       - install -Dm644 SieveEditor-jar-with-dependencies.jar /app/sieveeditor/SieveEditor.jar
 

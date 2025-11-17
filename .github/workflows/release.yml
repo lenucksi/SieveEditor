@@ -5,16 +5,18 @@ on:
     branches:
       - master
 
-permissions:
-  contents: write  # For creating releases and updating CHANGELOG
-  pull-requests: write  # For creating release PRs
-  id-token: write  # For artifact attestations
-  attestations: write  # For provenance generation
+# No workflow-level permissions - use job-level for least privilege
+permissions: {}
 
 jobs:
   release-please:
     name: Release Please
     runs-on: ubuntu-latest
+
+    # Job-level permissions: only what Release Please needs
+    permissions:
+      contents: write  # For creating releases, updating CHANGELOG, creating tags
+      pull-requests: write  # For creating release PRs
 
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
@@ -40,9 +42,10 @@ jobs:
     name: Build Release Artifacts
     needs: release-please
     if: needs.release-please.outputs.release_created == 'true'
+    # Note: package.yml defines its own restrictive permissions
+    # (contents: read, id-token: write, attestations: write)
     uses: ./.github/workflows/package.yml
     with:
       version: ${{ needs.release-please.outputs.version }}
       tag_name: ${{ needs.release-please.outputs.tag_name }}
     secrets: inherit
-    # Note: permissions are inherited from workflow-level permissions (lines 8-12)

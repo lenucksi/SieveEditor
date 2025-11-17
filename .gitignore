@@ -31,3 +31,9 @@ SieveEditor.iml
 .settings
 
 **/target/
+
+# Flatpak build artifacts
+flatpak-build/
+flatpak-repo/
+.flatpak-builder/
+*.flatpak

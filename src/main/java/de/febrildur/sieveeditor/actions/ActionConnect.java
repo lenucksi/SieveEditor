@@ -153,7 +153,9 @@ public class ActionConnect extends AbstractAction {
 			String selectedProfile = (String) profileCombo.getSelectedItem();
 			PropertiesSieve propsToSave = new PropertiesSieve(selectedProfile);
 
-			parentFrame.setServer(new ConnectAndListScripts());
+			ConnectAndListScripts server = new ConnectAndListScripts();
+			server.setParentComponent(frame); // Enable interactive certificate validation
+			parentFrame.setServer(server);
 			try {
 				propsToSave.setServer(tfServer.getText());
 				propsToSave.setPort(Integer.valueOf(tfPort.getText()));

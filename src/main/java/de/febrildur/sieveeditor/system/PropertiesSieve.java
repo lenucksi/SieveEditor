@@ -90,11 +90,19 @@ public class PropertiesSieve {
 	 */
 	private StandardPBEStringEncryptor createEncryptor() {
 		String machineKey = getMachineSpecificEncryptionKey();
+		LOGGER.log(Level.INFO, "Machine key generated: {0} characters",
+			machineKey != null ? machineKey.length() : "NULL");
+
+		if (machineKey == null || machineKey.isEmpty()) {
+			throw new RuntimeException("Machine-specific encryption key is null or empty");
+		}
+
 		Exception lastException = null;
 
 		// Tier 1: Try AES algorithms (require IV generator)
 		for (String algorithm : AES_ALGORITHMS) {
 			try {
+				LOGGER.log(Level.INFO, "Attempting AES algorithm: {0}", algorithm);
 				StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
 				enc.setAlgorithm(algorithm);
 				enc.setIvGenerator(new RandomIvGenerator()); // REQUIRED for AES algorithms
@@ -102,11 +110,11 @@ public class PropertiesSieve {
 				enc.setPassword(machineKey);
 				// Test the algorithm by encrypting a test string
 				enc.encrypt("test");
-				LOGGER.log(Level.INFO, "Using AES encryption algorithm: {0}", algorithm);
+				LOGGER.log(Level.INFO, "Successfully using AES encryption algorithm: {0}", algorithm);
 				return enc;
 			} catch (Exception e) {
-				LOGGER.log(Level.FINE, "AES algorithm {0} not available: {1}",
-					new Object[]{algorithm, e.getMessage()});
+				LOGGER.log(Level.WARNING, "AES algorithm {0} failed: {1} - {2}",
+					new Object[]{algorithm, e.getClass().getSimpleName(), e.getMessage()});
 				lastException = e;
 			}
 		}
@@ -114,6 +122,7 @@ public class PropertiesSieve {
 		// Tier 2: Try TripleDES algorithms (no IV generator needed)
 		for (String algorithm : TRIPLEDES_ALGORITHMS) {
 			try {
+				LOGGER.log(Level.INFO, "Attempting TripleDES algorithm: {0}", algorithm);
 				StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
 				enc.setAlgorithm(algorithm);
 				// No IV generator needed for TripleDES
@@ -121,11 +130,11 @@ public class PropertiesSieve {
 				enc.setPassword(machineKey);
 				// Test the algorithm by encrypting a test string
 				enc.encrypt("test");
-				LOGGER.log(Level.INFO, "Using TripleDES encryption algorithm: {0}", algorithm);
+				LOGGER.log(Level.INFO, "Successfully using TripleDES encryption algorithm: {0}", algorithm);
 				return enc;
 			} catch (Exception e) {
-				LOGGER.log(Level.FINE, "TripleDES algorithm {0} not available: {1}",
-					new Object[]{algorithm, e.getMessage()});
+				LOGGER.log(Level.WARNING, "TripleDES algorithm {0} failed: {1} - {2}",
+					new Object[]{algorithm, e.getClass().getSimpleName(), e.getMessage()});
 				lastException = e;
 			}
 		}
@@ -133,6 +142,7 @@ public class PropertiesSieve {
 		// Tier 3: Last resort - DES algorithm (weak but universally compatible)
 		for (String algorithm : DES_ALGORITHMS) {
 			try {
+				LOGGER.log(Level.INFO, "Attempting DES algorithm: {0}", algorithm);
 				StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
 				enc.setAlgorithm(algorithm);
 				// No IV generator needed for DES
@@ -144,16 +154,22 @@ public class PropertiesSieve {
 					"Consider upgrading JCE for stronger encryption.", algorithm);
 				return enc;
 			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Even DES algorithm {0} failed: {1}",
-					new Object[]{algorithm, e.getMessage()});
+				LOGGER.log(Level.SEVERE, "DES algorithm {0} failed: {1} - {2}",
+					new Object[]{algorithm, e.getClass().getSimpleName(), e.getMessage()});
 				lastException = e;
 			}
 		}
 
 		// None of the algorithms worked
-		LOGGER.log(Level.SEVERE, "No encryption algorithm available", lastException);
+		String errorMsg = String.format(
+			"No encryption algorithm available. Last exception: %s - %s",
+			lastException != null ? lastException.getClass().getSimpleName() : "null",
+			lastException != null ? lastException.getMessage() : "null"
+		);
+		LOGGER.log(Level.SEVERE, errorMsg, lastException);
 		throw new RuntimeException("No suitable encryption algorithm available. " +
-			"Please ensure Java Cryptography Extension (JCE) is properly configured.", lastException);
+			"Please ensure Java Cryptography Extension (JCE) is properly configured. " +
+			"Last error: " + errorMsg, lastException);
 	}
 
 	/**

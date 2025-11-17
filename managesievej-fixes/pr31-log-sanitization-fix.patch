@@ -1,0 +1,40 @@
+From: Claude AI Assistant
+Subject: [PATCH] fix(security): narrow log redaction pattern to SASL auth only
+
+The previous pattern 'startsWith("{")' was too broad and could
+redact legitimate protocol data. New pattern matches only SASL
+authentication format: {digit+}CRLF
+
+Pattern: ^\\{\\d+\\+?\\}(\\r?\\n.*)?
+
+This matches ManageSieve SASL authentication literals like:
+- {16}\r\nusername:password
+- {8+}\r\ncontinue
+
+Refs: RFC 5804 Section 1.2, CWE-532
+
+---
+ .../fluffypeople/managesieve/ManageSieveClient.java | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/src/main/java/com/fluffypeople/managesieve/ManageSieveClient.java b/src/main/java/com/fluffypeople/managesieve/ManageSieveClient.java
+index xxxxx..yyyyy 100644
+--- a/src/main/java/com/fluffypeople/managesieve/ManageSieveClient.java
++++ b/src/main/java/com/fluffypeople/managesieve/ManageSieveClient.java
+@@ -xxx,8 +xxx,12 @@ public class ManageSieveClient {
+
+     private void sendLine(String line) throws IOException {
+-        if (line.startsWith("{")) {
+-            log.log(Level.FINEST, "Sending line: <redacted>");
++        // Redact SASL authentication data from logs
++        // Pattern matches: {digit+}\r\n or {digit+}+\r\n (continuation)
++        // Examples: {16}\r\nplaintext-auth, {8+}\r\ncontinued
++        if (line.matches("^\\{\\d+\\+?\\}(\\r?\\n.*)?")) {
++            log.log(Level.FINEST, "Sending line: <redacted SASL authentication data>");
++        } else {
++            log.log(Level.FINEST, "Sending line: {0}", line);
+         }
+
+         writer.write(line);
+--
+2.43.0

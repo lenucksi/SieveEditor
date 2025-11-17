@@ -14,6 +14,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import com.fluffypeople.managesieve.ParseException;
@@ -101,7 +102,8 @@ public class ActionConnect extends AbstractAction {
 
 		JLabel labelPassword = new JLabel("Password");
 		panel.add(labelPassword);
-		JTextField tfPassword = new JTextField(properties.getPassword(), 15);
+		JPasswordField tfPassword = new JPasswordField(properties.getPassword(), 15);
+		tfPassword.setEchoChar('•');
 		panel.add(tfPassword);
 
 		// Track the currently displayed profile to save its data when switching
@@ -125,7 +127,7 @@ public class ActionConnect extends AbstractAction {
 				oldProps.setPort(4190);
 			}
 			oldProps.setUsername(tfUsername.getText());
-			oldProps.setPassword(tfPassword.getText());
+			oldProps.setPassword(new String(tfPassword.getPassword()));
 			oldProps.write();
 
 			// Load and display new profile
@@ -151,12 +153,14 @@ public class ActionConnect extends AbstractAction {
 			String selectedProfile = (String) profileCombo.getSelectedItem();
 			PropertiesSieve propsToSave = new PropertiesSieve(selectedProfile);
 
-			parentFrame.setServer(new ConnectAndListScripts());
+			ConnectAndListScripts server = new ConnectAndListScripts();
+			server.setParentComponent(frame); // Enable interactive certificate validation
+			parentFrame.setServer(server);
 			try {
 				propsToSave.setServer(tfServer.getText());
 				propsToSave.setPort(Integer.valueOf(tfPort.getText()));
 				propsToSave.setUsername(tfUsername.getText());
-				propsToSave.setPassword(tfPassword.getText());
+				propsToSave.setPassword(new String(tfPassword.getPassword()));
 				parentFrame.getServer().connect(propsToSave);
 				propsToSave.write();
 

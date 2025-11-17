@@ -1,16 +1,24 @@
 package de.febrildur.sieveeditor.system;
 
+import java.awt.Component;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import com.fluffypeople.managesieve.ManageSieveClient;
@@ -21,12 +29,38 @@ import com.fluffypeople.managesieve.SieveScript;
 public class ConnectAndListScripts {
 
 	private ManageSieveClient client;
+	private Component parentComponent;
+
+	/**
+	 * Sets the parent component for showing certificate dialogs.
+	 *
+	 * @param parent the parent component
+	 */
+	public void setParentComponent(Component parent) {
+		this.parentComponent = parent;
+	}
 
 	public void connect(PropertiesSieve prop) throws IOException, ParseException {
 		connect(prop.getServer(), prop.getPort(), prop.getUsername(), prop.getPassword());
 	}
-	
+
 	public void connect(String server, int port, String username, String password) throws IOException, ParseException {
+		connect(server, port, username, password, true);
+	}
+
+	/**
+	 * Connects to a ManageSieve server with optional interactive certificate validation.
+	 *
+	 * @param server the server hostname
+	 * @param port the server port
+	 * @param username the username
+	 * @param password the password
+	 * @param allowInteractiveCertValidation if true, shows dialog for unknown certificates
+	 * @throws IOException if connection fails
+	 * @throws ParseException if protocol parsing fails
+	 */
+	public void connect(String server, int port, String username, String password,
+			boolean allowInteractiveCertValidation) throws IOException, ParseException {
 		client = new ManageSieveClient();
 		ManageSieveResponse resp = client.connect(server, port);
 		if (!resp.isOk()) {
@@ -34,8 +68,16 @@ public class ConnectAndListScripts {
 			throw new IOException("Can't connect to server: " + resp.getMessage());
 		}
 
-		// resp = client.starttls();
-		resp = client.starttls(getInsecureSSLFactory(), false);
+		// Use interactive SSL factory that prompts user for unknown certificates
+		SSLSocketFactory sslFactory;
+		if (allowInteractiveCertValidation && parentComponent != null) {
+			sslFactory = getInteractiveSSLSocketFactory(server, parentComponent);
+		} else {
+			// Fallback to strict validation without user interaction
+			sslFactory = getSecureSSLSocketFactory(null);
+		}
+
+		resp = client.starttls(sslFactory, false);
 		if (!resp.isOk()) {
 			client = null;
 			throw new IOException("Can't start SSL:" + resp.getMessage());
@@ -94,31 +136,139 @@ public class ConnectAndListScripts {
 		return client != null;
 	}
 
+	/**
+	 * Returns an SSLSocketFactory with proper certificate validation enabled.
+	 * This method is deprecated - use {@link #getSecureSSLSocketFactory(String)} instead.
+	 *
+	 * @deprecated The name "insecure" was misleading. This method now provides
+	 *             secure certificate validation. Use {@link #getSecureSSLSocketFactory(String)}
+	 *             with null parameter for the same behavior.
+	 * @return SSLSocketFactory with system CA certificate validation
+	 * @throws RuntimeException if SSL initialization fails
+	 */
+	@Deprecated
 	public static SSLSocketFactory getInsecureSSLFactory() {
+		return getSecureSSLSocketFactory(null);
+	}
+
+	/**
+	 * Returns an SSLSocketFactory that validates certificates using system CAs or,
+	 * optionally, a specified custom certificate.
+	 *
+	 * <p>This method enables proper SSL/TLS certificate validation to prevent
+	 * man-in-the-middle attacks. By default (when certificatePath is null), it uses
+	 * the system's trusted CA certificates.
+	 *
+	 * @param certificatePath the path to a custom certificate to trust (e.g., self-signed),
+	 *                        or null to use only system CA certificates
+	 * @return SSLSocketFactory configured with certificate validation enabled
+	 * @throws RuntimeException if SSL initialization fails (wraps underlying exceptions)
+	 */
+	public static SSLSocketFactory getSecureSSLSocketFactory(String certificatePath) {
 		try {
-			// Create a trust manager that does not validate certificate chains
-			TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-				@Override
-				public X509Certificate[] getAcceptedIssuers() {
-					return new X509Certificate[0];
+			SSLContext sc = SSLContext.getInstance("TLSv1.3");
+			TrustManagerFactory tmf;
+
+			if (certificatePath != null) {
+				// Load custom certificate into KeyStore
+				Logger.getLogger(ConnectAndListScripts.class.getName())
+					.log(Level.INFO, "Loading custom certificate from: {0}", certificatePath);
+
+				KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+				keyStore.load(null, null);
+
+				try (FileInputStream fis = new FileInputStream(certificatePath)) {
+					X509Certificate certificate = (X509Certificate) CertificateFactory.getInstance("X.509")
+							.generateCertificate(fis);
+					keyStore.setCertificateEntry("custom", certificate);
 				}
 
-				@Override
-				public void checkClientTrusted(X509Certificate[] certs, String authType) {
-				}
+				tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+				tmf.init(keyStore);
+			} else {
+				// Use default trust store (system CAs)
+				tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+				tmf.init((KeyStore) null);
+			}
 
-				@Override
-				public void checkServerTrusted(X509Certificate[] certs, String authType) {
-				}
-			} };
-
-			SSLContext sc = SSLContext.getInstance("SSL");
-			sc.init(null, trustAllCerts, new SecureRandom());
+			sc.init(null, tmf.getTrustManagers(), new SecureRandom());
 			return sc.getSocketFactory();
-		} catch (NoSuchAlgorithmException | KeyManagementException ex) {
-			return null;
+
+		} catch (NoSuchAlgorithmException ex) {
+			// TLSv1.3 not available, fall back to TLSv1.2
+			Logger.getLogger(ConnectAndListScripts.class.getName())
+				.log(Level.WARNING, "TLSv1.3 not available, falling back to TLSv1.2");
+			try {
+				SSLContext sc = SSLContext.getInstance("TLSv1.2");
+				TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+				tmf.init((KeyStore) null);
+				sc.init(null, tmf.getTrustManagers(), new SecureRandom());
+				return sc.getSocketFactory();
+			} catch (Exception fallbackEx) {
+				Logger.getLogger(ConnectAndListScripts.class.getName())
+					.log(Level.SEVERE, "Failed to initialize SSL with TLSv1.2 fallback", fallbackEx);
+				throw new RuntimeException("SSL initialization failed: " + fallbackEx.getMessage(), fallbackEx);
+			}
+
+		} catch (KeyStoreException | CertificateException | IOException | KeyManagementException ex) {
+			Logger.getLogger(ConnectAndListScripts.class.getName())
+				.log(Level.SEVERE, "Failed to create secure SSL socket factory", ex);
+			throw new RuntimeException("SSL initialization failed: " + ex.getMessage(), ex);
 		}
-    }
+	}
+
+	/**
+	 * Returns an SSLSocketFactory with interactive certificate validation.
+	 * When an unknown certificate is encountered, the user is prompted to accept or reject it.
+	 *
+	 * @param serverName the server name (for display in dialogs)
+	 * @param parentComponent parent component for showing dialogs
+	 * @return SSLSocketFactory with interactive certificate validation
+	 * @throws RuntimeException if SSL initialization fails
+	 */
+	public static SSLSocketFactory getInteractiveSSLSocketFactory(String serverName, Component parentComponent) {
+		try {
+			// Get the default trust manager
+			TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+			tmf.init((KeyStore) null);
+			X509TrustManager defaultTrustManager = (X509TrustManager) tmf.getTrustManagers()[0];
+
+			// Wrap it with our interactive trust manager
+			InteractiveTrustManager interactiveTrustManager =
+				new InteractiveTrustManager(defaultTrustManager, serverName, parentComponent);
+
+			// Create SSL context with TLS 1.3
+			SSLContext sc = SSLContext.getInstance("TLSv1.3");
+			sc.init(null, new X509TrustManager[]{interactiveTrustManager}, new SecureRandom());
+			return sc.getSocketFactory();
+
+		} catch (NoSuchAlgorithmException ex) {
+			// TLSv1.3 not available, fall back to TLSv1.2
+			Logger.getLogger(ConnectAndListScripts.class.getName())
+				.log(Level.WARNING, "TLSv1.3 not available, falling back to TLSv1.2");
+			try {
+				TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+				tmf.init((KeyStore) null);
+				X509TrustManager defaultTrustManager = (X509TrustManager) tmf.getTrustManagers()[0];
+
+				InteractiveTrustManager interactiveTrustManager =
+					new InteractiveTrustManager(defaultTrustManager, serverName, parentComponent);
+
+				SSLContext sc = SSLContext.getInstance("TLSv1.2");
+				sc.init(null, new X509TrustManager[]{interactiveTrustManager}, new SecureRandom());
+				return sc.getSocketFactory();
+			} catch (Exception fallbackEx) {
+				Logger.getLogger(ConnectAndListScripts.class.getName())
+					.log(Level.SEVERE, "Failed to initialize SSL with TLSv1.2 fallback", fallbackEx);
+				throw new RuntimeException("SSL initialization failed: " + fallbackEx.getMessage(), fallbackEx);
+			}
+
+		} catch (KeyStoreException | KeyManagementException ex) {
+			Logger.getLogger(ConnectAndListScripts.class.getName())
+				.log(Level.SEVERE, "Failed to create interactive SSL socket factory", ex);
+			throw new RuntimeException("SSL initialization failed: " + ex.getMessage(), ex);
+		}
+	}
 
 	public void activateScript(String script) throws IOException, ParseException {
 		ManageSieveResponse resp = client.setactive(script);

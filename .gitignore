@@ -32,6 +32,9 @@ SieveEditor.iml
 
 **/target/
 
+# Legacy directories (from old multi-module/submodule structure)
+lib/
+
 # Flatpak build artifacts
 flatpak-build/
 flatpak-repo/

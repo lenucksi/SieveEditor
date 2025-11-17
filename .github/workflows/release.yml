@@ -33,8 +33,7 @@ jobs:
         uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4.4.0
         with:
           release-type: maven
-          package-name: sieveeditor
-          # Changelog configuration is in .github/release-please-config.json
+          # Package name and changelog configuration is in .github/release-please-config.json
 
   # Build and package for all platforms
   build-release-artifacts:

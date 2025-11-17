@@ -34,36 +34,56 @@ cp -r ~/.sieveprofiles ~/.sieveprofiles.backup
 
 **What Happens:** Old passwords fail to decrypt gracefully and become empty strings. No error messages will appear.
 
-### 2. Self-Signed Certificates Now Rejected
+### 2. Self-Signed Certificates Now Require User Approval
 
 **Why:** SSL certificate validation is now properly enforced to prevent MITM attacks.
 
-**Impact:** Connections to servers with self-signed or invalid certificates will fail.
+**Impact:** Connections to servers with self-signed or invalid certificates will prompt for user approval.
+
+**What Happens:**
+
+When you connect to a server with an unknown certificate, you'll see a dialog showing:
+- Certificate subject and issuer
+- Validity period
+- SHA-256 fingerprint
+- Three options:
+  - **Trust & Connect**: Accept the certificate permanently
+  - **Reject**: Reject the certificate permanently
+  - **Cancel**: Abort this connection without storing a decision
 
 **Action Required:**
 
-#### Option 1: Use a Valid CA-Signed Certificate (Recommended)
-- Obtain a certificate from Let's Encrypt (free)
+#### Option 1: Trust Your Self-Signed Certificate (Recommended)
+1. Connect to your server
+2. When the certificate dialog appears, verify the fingerprint matches your server
+3. Click "Trust & Connect"
+4. Certificate will be remembered for future connections
+
+**Verifying the Fingerprint:**
+```bash
+# On your server, get the certificate fingerprint
+openssl s_client -connect localhost:4190 -starttls imap < /dev/null 2>/dev/null | \
+  openssl x509 -fingerprint -sha256 -noout
+
+# Compare with the fingerprint shown in the dialog
+```
+
+#### Option 2: Use a Valid CA-Signed Certificate (Most Secure)
+- Obtain a free certificate from Let's Encrypt
 - Or purchase a certificate from a trusted CA
 - Configure your mail server with the valid certificate
+- No user interaction needed - works automatically
 
-#### Option 2: Wait for Custom Certificate Support
-- Version 1.1.0 will include UI for trusting custom certificates
-- Infrastructure is already in place (`getSecureSSLSocketFactory(certPath)`)
-- For now, use a valid certificate
+#### Managing Trusted Certificates
 
-#### Option 3: Temporary Workaround (NOT RECOMMENDED)
+Your certificate decisions are stored in:
+```
+~/.sieveprofiles/certificates.properties
+```
+
+To reset all trust decisions:
 ```bash
-# This is INSECURE and only for testing
-# Checkout v0.9.x temporarily
-git checkout v0.9.2.6
-mvn package
-java -jar target/SieveEditor-jar-with-dependencies.jar
-```
-
-**Error You Might See:**
-```
-Can't start SSL: Certificate validation failed
+rm ~/.sieveprofiles/certificates.properties
 ```
 
 ## What's Fixed

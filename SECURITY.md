@@ -136,12 +136,56 @@ We aim to respond within 48 hours and release a fix within 7 days for critical i
 | N/A    | HIGH     | Password UI | v1.0.0 | 2025-11-17 |
 | N/A    | MEDIUM   | File Permissions | v1.0.0 | 2025-11-17 |
 
+## Certificate Trust Management
+
+### Interactive Certificate Validation (v1.0.0)
+
+SieveEditor now includes a user-friendly certificate trust dialog for handling self-signed certificates:
+
+**Features:**
+- Displays certificate details (subject, issuer, validity dates)
+- Shows SHA-256 fingerprint for manual verification
+- Three trust options:
+  - **Trust & Connect**: Permanently accept certificate
+  - **Reject**: Permanently reject certificate
+  - **Cancel**: Abort connection without storing decision
+
+**How It Works:**
+1. CA-signed certificates are validated automatically (system trust store)
+2. Unknown certificates trigger the trust dialog
+3. User decisions are stored in `~/.sieveprofiles/certificates.properties`
+4. File permissions set to 600 (owner-only access)
+
+**Verifying Certificates:**
+```bash
+# Get your server's certificate fingerprint
+openssl s_client -connect your-server:4190 -starttls imap < /dev/null 2>/dev/null | \
+  openssl x509 -fingerprint -sha256 -noout
+
+# Compare with the fingerprint shown in SieveEditor's dialog
+```
+
+**Managing Trust Decisions:**
+```bash
+# View stored certificates
+cat ~/.sieveprofiles/certificates.properties
+
+# Reset all trust decisions
+rm ~/.sieveprofiles/certificates.properties
+```
+
 ## Security Roadmap
+
+### Completed Enhancements
+
+- [x] Custom certificate trust store UI (v1.0.0)
+- [x] Interactive certificate validation dialog (v1.0.0)
+- [x] SHA-256 fingerprint verification (v1.0.0)
 
 ### Planned Enhancements
 
-- [ ] Custom certificate trust store UI
 - [ ] Certificate pinning for known servers
+- [ ] Certificate expiration warnings
 - [ ] Hardware security module (HSM) support
 - [ ] Two-factor authentication support
 - [ ] Audit logging of all ManageSieve operations

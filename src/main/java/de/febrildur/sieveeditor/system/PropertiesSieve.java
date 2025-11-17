@@ -30,15 +30,27 @@ import java.util.stream.Collectors;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
+import org.jasypt.iv.RandomIvGenerator;
 import org.jasypt.properties.EncryptableProperties;
 
 public class PropertiesSieve {
 
 	private static final Logger LOGGER = Logger.getLogger(PropertiesSieve.class.getName());
-	// Encryption algorithms in order of preference (strongest to most compatible)
-	private static final String ENCRYPTION_ALGORITHM_STRONG = "PBEWITHHMACSHA512ANDAES_256";
-	private static final String ENCRYPTION_ALGORITHM_MEDIUM = "PBEWITHHMACSHA256ANDAES_256";
-	private static final String ENCRYPTION_ALGORITHM_BASIC = "PBEWITHHMACSHA1ANDAES_128";
+	// Encryption algorithms in order of preference
+	// AES-based (strongest, require IV generator)
+	private static final String[] AES_ALGORITHMS = {
+		"PBEWITHHMACSHA512ANDAES_256",  // Strongest
+		"PBEWITHHMACSHA256ANDAES_256"   // Strong
+	};
+	// TripleDES-based (strong, no IV needed, widely compatible)
+	private static final String[] TRIPLEDES_ALGORITHMS = {
+		"PBEWithSHA1AndDESede",         // TripleDES with SHA1
+		"PBEWithMD5AndTripleDES"        // TripleDES with MD5
+	};
+	// DES-based (weak but universally compatible, last resort)
+	private static final String[] DES_ALGORITHMS = {
+		"PBEWithMD5AndDES"              // Original algorithm (weak)
+	};
 	private static final int KEY_OBTENTION_ITERATIONS = 10000;
 
 	private final StandardPBEStringEncryptor encryptor;
@@ -69,32 +81,70 @@ public class PropertiesSieve {
 	 * Creates a configured encryptor with strong algorithm and machine-specific key.
 	 * Tries algorithms in order of strength, falling back to more compatible options.
 	 *
+	 * Algorithm tiers:
+	 * 1. AES-based (strongest, requires IV generator)
+	 * 2. TripleDES-based (strong, widely compatible, no IV needed)
+	 * 3. DES-based (weak but universal, last resort)
+	 *
 	 * @return configured StandardPBEStringEncryptor
 	 */
 	private StandardPBEStringEncryptor createEncryptor() {
 		String machineKey = getMachineSpecificEncryptionKey();
-
-		// Try algorithms in order of preference
-		String[] algorithms = {
-			ENCRYPTION_ALGORITHM_STRONG,  // SHA512+AES256 (strongest)
-			ENCRYPTION_ALGORITHM_MEDIUM,  // SHA256+AES256 (strong)
-			ENCRYPTION_ALGORITHM_BASIC    // SHA1+AES128 (compatible)
-		};
-
 		Exception lastException = null;
 
-		for (String algorithm : algorithms) {
+		// Tier 1: Try AES algorithms (require IV generator)
+		for (String algorithm : AES_ALGORITHMS) {
 			try {
 				StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
 				enc.setAlgorithm(algorithm);
+				enc.setIvGenerator(new RandomIvGenerator()); // REQUIRED for AES algorithms
 				enc.setKeyObtentionIterations(KEY_OBTENTION_ITERATIONS);
 				enc.setPassword(machineKey);
 				// Test the algorithm by encrypting a test string
 				enc.encrypt("test");
-				LOGGER.log(Level.INFO, "Using encryption algorithm: {0}", algorithm);
+				LOGGER.log(Level.INFO, "Using AES encryption algorithm: {0}", algorithm);
 				return enc;
 			} catch (Exception e) {
-				LOGGER.log(Level.WARNING, "Encryption algorithm {0} not available: {1}",
+				LOGGER.log(Level.FINE, "AES algorithm {0} not available: {1}",
+					new Object[]{algorithm, e.getMessage()});
+				lastException = e;
+			}
+		}
+
+		// Tier 2: Try TripleDES algorithms (no IV generator needed)
+		for (String algorithm : TRIPLEDES_ALGORITHMS) {
+			try {
+				StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
+				enc.setAlgorithm(algorithm);
+				// No IV generator needed for TripleDES
+				enc.setKeyObtentionIterations(KEY_OBTENTION_ITERATIONS);
+				enc.setPassword(machineKey);
+				// Test the algorithm by encrypting a test string
+				enc.encrypt("test");
+				LOGGER.log(Level.INFO, "Using TripleDES encryption algorithm: {0}", algorithm);
+				return enc;
+			} catch (Exception e) {
+				LOGGER.log(Level.FINE, "TripleDES algorithm {0} not available: {1}",
+					new Object[]{algorithm, e.getMessage()});
+				lastException = e;
+			}
+		}
+
+		// Tier 3: Last resort - DES algorithm (weak but universally compatible)
+		for (String algorithm : DES_ALGORITHMS) {
+			try {
+				StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
+				enc.setAlgorithm(algorithm);
+				// No IV generator needed for DES
+				enc.setKeyObtentionIterations(KEY_OBTENTION_ITERATIONS);
+				enc.setPassword(machineKey);
+				// Test the algorithm by encrypting a test string
+				enc.encrypt("test");
+				LOGGER.log(Level.WARNING, "Using weak DES encryption algorithm: {0}. " +
+					"Consider upgrading JCE for stronger encryption.", algorithm);
+				return enc;
+			} catch (Exception e) {
+				LOGGER.log(Level.SEVERE, "Even DES algorithm {0} failed: {1}",
 					new Object[]{algorithm, e.getMessage()});
 				lastException = e;
 			}

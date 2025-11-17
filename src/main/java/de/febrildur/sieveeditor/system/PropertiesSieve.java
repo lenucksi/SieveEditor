@@ -35,7 +35,8 @@ import org.jasypt.properties.EncryptableProperties;
 public class PropertiesSieve {
 
 	private static final Logger LOGGER = Logger.getLogger(PropertiesSieve.class.getName());
-	private static final String ENCRYPTION_ALGORITHM = "PBEWITHHMACSHA512ANDAES_256";
+	private static final String ENCRYPTION_ALGORITHM_STRONG = "PBEWITHHMACSHA512ANDAES_256";
+	private static final String ENCRYPTION_ALGORITHM_FALLBACK = "PBEWITHHMACSHA256ANDAES_256";
 	private static final int KEY_OBTENTION_ITERATIONS = 10000;
 
 	private final StandardPBEStringEncryptor encryptor;
@@ -64,15 +65,42 @@ public class PropertiesSieve {
 
 	/**
 	 * Creates a configured encryptor with strong algorithm and machine-specific key.
+	 * Falls back to SHA256 if SHA512 is not available.
 	 *
 	 * @return configured StandardPBEStringEncryptor
 	 */
 	private StandardPBEStringEncryptor createEncryptor() {
 		StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
-		enc.setAlgorithm(ENCRYPTION_ALGORITHM);
-		enc.setKeyObtentionIterations(KEY_OBTENTION_ITERATIONS);
-		enc.setPassword(getMachineSpecificEncryptionKey());
-		return enc;
+		String machineKey = getMachineSpecificEncryptionKey();
+
+		// Try strong algorithm first
+		try {
+			enc.setAlgorithm(ENCRYPTION_ALGORITHM_STRONG);
+			enc.setKeyObtentionIterations(KEY_OBTENTION_ITERATIONS);
+			enc.setPassword(machineKey);
+			// Test the algorithm by encrypting a test string
+			enc.encrypt("test");
+			LOGGER.log(Level.FINE, "Using encryption algorithm: {0}", ENCRYPTION_ALGORITHM_STRONG);
+			return enc;
+		} catch (Exception e) {
+			// Strong algorithm not available, try fallback
+			LOGGER.log(Level.WARNING, "Strong encryption algorithm not available, using fallback", e);
+		}
+
+		// Fallback to more compatible algorithm
+		try {
+			enc = new StandardPBEStringEncryptor();
+			enc.setAlgorithm(ENCRYPTION_ALGORITHM_FALLBACK);
+			enc.setKeyObtentionIterations(KEY_OBTENTION_ITERATIONS);
+			enc.setPassword(machineKey);
+			// Test the algorithm
+			enc.encrypt("test");
+			LOGGER.log(Level.INFO, "Using encryption algorithm: {0}", ENCRYPTION_ALGORITHM_FALLBACK);
+			return enc;
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Fallback encryption algorithm also failed", e);
+			throw new RuntimeException("No suitable encryption algorithm available", e);
+		}
 	}
 
 	/**

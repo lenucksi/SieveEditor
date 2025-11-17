@@ -35,8 +35,10 @@ import org.jasypt.properties.EncryptableProperties;
 public class PropertiesSieve {
 
 	private static final Logger LOGGER = Logger.getLogger(PropertiesSieve.class.getName());
+	// Encryption algorithms in order of preference (strongest to most compatible)
 	private static final String ENCRYPTION_ALGORITHM_STRONG = "PBEWITHHMACSHA512ANDAES_256";
-	private static final String ENCRYPTION_ALGORITHM_FALLBACK = "PBEWITHHMACSHA256ANDAES_256";
+	private static final String ENCRYPTION_ALGORITHM_MEDIUM = "PBEWITHHMACSHA256ANDAES_256";
+	private static final String ENCRYPTION_ALGORITHM_BASIC = "PBEWITHHMACSHA1ANDAES_128";
 	private static final int KEY_OBTENTION_ITERATIONS = 10000;
 
 	private final StandardPBEStringEncryptor encryptor;
@@ -65,42 +67,43 @@ public class PropertiesSieve {
 
 	/**
 	 * Creates a configured encryptor with strong algorithm and machine-specific key.
-	 * Falls back to SHA256 if SHA512 is not available.
+	 * Tries algorithms in order of strength, falling back to more compatible options.
 	 *
 	 * @return configured StandardPBEStringEncryptor
 	 */
 	private StandardPBEStringEncryptor createEncryptor() {
-		StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
 		String machineKey = getMachineSpecificEncryptionKey();
 
-		// Try strong algorithm first
-		try {
-			enc.setAlgorithm(ENCRYPTION_ALGORITHM_STRONG);
-			enc.setKeyObtentionIterations(KEY_OBTENTION_ITERATIONS);
-			enc.setPassword(machineKey);
-			// Test the algorithm by encrypting a test string
-			enc.encrypt("test");
-			LOGGER.log(Level.FINE, "Using encryption algorithm: {0}", ENCRYPTION_ALGORITHM_STRONG);
-			return enc;
-		} catch (Exception e) {
-			// Strong algorithm not available, try fallback
-			LOGGER.log(Level.WARNING, "Strong encryption algorithm not available, using fallback", e);
+		// Try algorithms in order of preference
+		String[] algorithms = {
+			ENCRYPTION_ALGORITHM_STRONG,  // SHA512+AES256 (strongest)
+			ENCRYPTION_ALGORITHM_MEDIUM,  // SHA256+AES256 (strong)
+			ENCRYPTION_ALGORITHM_BASIC    // SHA1+AES128 (compatible)
+		};
+
+		Exception lastException = null;
+
+		for (String algorithm : algorithms) {
+			try {
+				StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
+				enc.setAlgorithm(algorithm);
+				enc.setKeyObtentionIterations(KEY_OBTENTION_ITERATIONS);
+				enc.setPassword(machineKey);
+				// Test the algorithm by encrypting a test string
+				enc.encrypt("test");
+				LOGGER.log(Level.INFO, "Using encryption algorithm: {0}", algorithm);
+				return enc;
+			} catch (Exception e) {
+				LOGGER.log(Level.WARNING, "Encryption algorithm {0} not available: {1}",
+					new Object[]{algorithm, e.getMessage()});
+				lastException = e;
+			}
 		}
 
-		// Fallback to more compatible algorithm
-		try {
-			enc = new StandardPBEStringEncryptor();
-			enc.setAlgorithm(ENCRYPTION_ALGORITHM_FALLBACK);
-			enc.setKeyObtentionIterations(KEY_OBTENTION_ITERATIONS);
-			enc.setPassword(machineKey);
-			// Test the algorithm
-			enc.encrypt("test");
-			LOGGER.log(Level.INFO, "Using encryption algorithm: {0}", ENCRYPTION_ALGORITHM_FALLBACK);
-			return enc;
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Fallback encryption algorithm also failed", e);
-			throw new RuntimeException("No suitable encryption algorithm available", e);
-		}
+		// None of the algorithms worked
+		LOGGER.log(Level.SEVERE, "No encryption algorithm available", lastException);
+		throw new RuntimeException("No suitable encryption algorithm available. " +
+			"Please ensure Java Cryptography Extension (JCE) is properly configured.", lastException);
 	}
 
 	/**

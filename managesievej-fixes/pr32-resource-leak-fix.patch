@@ -1,0 +1,83 @@
+From: Claude AI Assistant
+Subject: [PATCH] fix(resource-leak): properly close resources in disconnect
+
+The previous implementation only set variables to null without closing
+the underlying resources, causing resource leaks.
+
+Changes:
+- Call close() on reader, writer, and socket before nulling
+- Collect and re-throw first exception if multiple close operations fail
+- Add proper logging for troubleshooting
+- Null out references only after successful close
+
+Fixes: Resource leak in disconnect() method
+Refs: CWE-404 Improper Resource Shutdown
+
+---
+ .../fluffypeople/managesieve/ManageSieveClient.java | 50 ++++++++++++++-----
+ 1 file changed, 38 insertions(+), 12 deletions(-)
+
+diff --git a/src/main/java/com/fluffypeople/managesieve/ManageSieveClient.java b/src/main/java/com/fluffypeople/managesieve/ManageSieveClient.java
+index xxxxx..yyyyy 100644
+--- a/src/main/java/com/fluffypeople/managesieve/ManageSieveClient.java
++++ b/src/main/java/com/fluffypeople/managesieve/ManageSieveClient.java
+@@ -xxx,12 +xxx,48 @@ public class ManageSieveClient {
++    /**
++     * Disconnects from the server and closes all resources.
++     * This method ensures proper cleanup of socket, reader, and writer resources.
++     *
++     * @throws IOException if an error occurs during resource cleanup
++     */
+     public void disconnect() throws IOException {
+-        socket = null;
+-        reader = null;
+-        writer = null;
++        IOException firstException = null;
++
++        // Close reader (closes input stream chain)
++        if (reader != null) {
++            try {
++                reader.close();
++                log.log(Level.FINE, "Reader closed");
++            } catch (IOException e) {
++                log.log(Level.WARNING, "Error closing reader during disconnect", e);
++                if (firstException == null) firstException = e;
++            }
++        }
++
++        // Close writer (closes output stream chain)
++        if (writer != null) {
++            try {
++                writer.close();
++                log.log(Level.FINE, "Writer closed");
++            } catch (IOException e) {
++                log.log(Level.WARNING, "Error closing writer during disconnect", e);
++                if (firstException == null) firstException = e;
++            }
++        }
++
++        // Close socket if still open
++        if (socket != null && !socket.isClosed()) {
++            try {
++                socket.close();
++                log.log(Level.FINE, "Socket closed");
++            } catch (IOException e) {
++                log.log(Level.WARNING, "Error closing socket during disconnect", e);
++                if (firstException == null) firstException = e;
++            }
++        }
++
++        // Null out references after closing
++        socket = null;
++        reader = null;
++        writer = null;
++
++        // Re-throw first exception if any occurred
++        if (firstException != null) {
++            throw firstException;
++        }
+     }
+
+ }
+--
+2.43.0

@@ -123,7 +123,7 @@ public class PropertiesSieve {
 						}
 					}
 				}
-			} catch (SocketException e) {
+			} catch (SocketException | UnknownHostException e) {
 				LOGGER.log(Level.WARNING, "Could not get MAC address, using fallback", e);
 				keyMaterial.append("NO-MAC-ADDRESS");
 			}

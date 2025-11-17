@@ -15,6 +15,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
+		<mockito.version>5.20.0</mockito.version>
 	</properties>
 
 	<scm>
@@ -72,6 +73,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.5.4</version>
+				<configuration>
+					<argLine>-javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</argLine>
+				</configuration>
 			</plugin>
 
 			<!-- JaCoCo for code coverage -->
@@ -111,7 +115,7 @@
 		<dependency>
 			<groupId>com.github.lenucksi</groupId>
 			<artifactId>ManageSieveJ</artifactId>
-			<version>managesievej-v0.3.3</version>
+			<version>managesievej-v0.3.6</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
@@ -137,13 +141,13 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>5.20.0</version>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
-			<version>5.20.0</version>
+			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 

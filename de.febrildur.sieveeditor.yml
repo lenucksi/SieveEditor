@@ -10,6 +10,8 @@ command: sieveeditor
 finish-args:
   # X11 access for Swing GUI
   - --socket=x11
+  # IPC namespace (required for X11)
+  - --share=ipc
   # Network access for ManageSieve connections
   - --share=network
   # Allow access to home directory for profile storage
@@ -40,7 +42,7 @@ modules:
         cat > /app/bin/sieveeditor <<'EOF'
         #!/bin/sh
         # SieveEditor launcher script
-        exec /usr/lib/sdk/openjdk21/jvm/openjdk-21/bin/java \
+        exec /app/jre/bin/java \
           -Dsun.java2d.uiScale=2.0 \
           -jar /app/sieveeditor/SieveEditor.jar "$@"
         EOF

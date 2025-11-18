@@ -45,15 +45,24 @@
     <keyword>script</keyword>
   </keywords>
 
-  <!-- Screenshots will be added in future releases -->
-  <!--
   <screenshots>
     <screenshot type="default">
       <caption>Main window with syntax highlighting</caption>
-      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/main/screenshots/main-window.png</image>
+      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/master/screenshots/mainwindow.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Server connection dialog</caption>
+      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/master/screenshots/connect.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>File menu options</caption>
+      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/master/screenshots/menu1.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Search and replace functionality</caption>
+      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/master/screenshots/searchreplace.png</image>
     </screenshot>
   </screenshots>
-  -->
 
   <content_rating type="oars-1.1">
     <content_attribute id="social-info">mild</content_attribute>

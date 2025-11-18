@@ -17,6 +17,15 @@ repos:
   hooks:
     - id: conventional-precommit-linter
       stages: [commit-msg]
+- repo: https://github.com/rvben/rumdl-pre-commit
+  rev: v0.0.177  # Use the latest release tag
+  hooks:
+    - id: rumdl
+      # To only check (default):
+      # args: []
+      # To automatically fix issues:
+      args: [--fix]
+
 
 minimum_pre_commit_version: 3.3.0
 default_install_hook_types: [pre-commit, commit-msg]

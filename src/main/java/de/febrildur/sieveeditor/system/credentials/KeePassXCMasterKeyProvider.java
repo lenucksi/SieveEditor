@@ -4,7 +4,6 @@ import org.purejava.KeepassProxyAccess;
 import org.purejava.KeepassProxyAccessException;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,8 +67,9 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 			}
 		}
 
-		throw new CredentialException("Master key not found in KeePassXC. " +
-			"Please create an entry with Title='" + ENTRY_TITLE + "' and URL='" + ENTRY_URL + "'");
+		// Entry doesn't exist yet (first run) - return null so caller can generate and store one
+		LOGGER.log(Level.INFO, "Master key entry not found in KeePassXC (first run), will generate new key");
+		return null;
 	}
 
 	@Override
@@ -113,14 +113,41 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 	}
 
 	/**
+	 * Retrieves association credentials that were automatically loaded by the library.
+	 * The KeepassProxyAccess library automatically persists credentials to disk after
+	 * successful association and loads them on construction.
+	 *
+	 * @return true if valid credentials exist, false otherwise
+	 */
+	private boolean hasValidSavedCredentials() {
+		try {
+			String id = kpa.getAssociateId();
+			String key = kpa.getIdKeyPairPublicKey();
+
+			if (id != null && !id.isEmpty() && key != null && !key.isEmpty()) {
+				this.associationId = id;
+				this.publicKey = key;
+				LOGGER.log(Level.INFO, "Found credentials auto-loaded by library");
+				return true;
+			}
+		} catch (Exception e) {
+			LOGGER.log(Level.FINE, "No saved credentials available: {0}", e.getMessage());
+		}
+
+		return false;
+	}
+
+	/**
 	 * Ensures KeePassXC is connected and the database is unlocked.
 	 * Shows dialogs to guide the user through starting and unlocking KeePassXC if needed.
 	 *
 	 * Proper workflow:
-	 * 1. Connect to KeePassXC
-	 * 2. Check if database is locked (BEFORE association)
-	 * 3. If locked, prompt user to unlock
-	 * 4. Associate with KeePassXC
+	 * 1. Create KeepassProxyAccess (auto-loads saved credentials from disk)
+	 * 2. Connect to KeePassXC
+	 * 3. Check if database is locked (BEFORE association)
+	 * 4. If locked, prompt user to unlock
+	 * 5. Check if saved credentials exist and are valid
+	 * 6. If invalid or missing, perform new association (auto-saves credentials)
 	 *
 	 * @throws CredentialException if connection fails or user cancels
 	 */
@@ -130,6 +157,7 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 			return;
 		}
 
+		// Create KeepassProxyAccess instance - this automatically loads saved credentials
 		kpa = new KeepassProxyAccess();
 
 		// Step 1: Connect to KeePassXC
@@ -164,10 +192,32 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 			LOGGER.log(Level.INFO, "KeePassXC database unlocked successfully");
 		}
 
-		// Step 3: Associate with KeePassXC (now that database is unlocked)
+		// Step 3: Check if we have saved credentials (auto-loaded by library)
+		if (hasValidSavedCredentials()) {
+			// We have saved credentials - test if they're still valid
+			LOGGER.log(Level.INFO, "Testing saved association credentials...");
+
+			try {
+				boolean valid = kpa.testAssociate(associationId, publicKey);
+
+				if (valid) {
+					LOGGER.log(Level.INFO, "Existing association is valid, no re-association needed");
+					return;
+				} else {
+					LOGGER.log(Level.WARNING, "Saved association credentials are no longer valid, will re-associate");
+					// Fall through to associate
+				}
+			} catch (Exception e) {
+				LOGGER.log(Level.WARNING, "Failed to test saved credentials: " + e.getMessage() + ", will re-associate");
+				// Fall through to associate
+			}
+		}
+
+		// Step 4: Associate with KeePassXC (either first time or credentials invalid)
 		// Note: KeePassXC issue #7099 causes delayed association responses from Java apps
 		// The library handles this by delaying the response lookup, but we need to retry
 		associateWithRetry();
+		// The library automatically saves credentials after successful association
 
 		LOGGER.log(Level.INFO, "Successfully connected and associated with KeePassXC");
 	}

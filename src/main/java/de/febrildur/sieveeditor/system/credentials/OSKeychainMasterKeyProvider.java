@@ -45,14 +45,24 @@ public class OSKeychainMasterKeyProvider implements MasterKeyProvider {
 
 		try {
 			String password = keyring.getPassword(SERVICE_NAME, ACCOUNT_NAME);
-			if (password == null || password.isEmpty()) {
-				throw new CredentialException("Master key not found in OS keychain");
+			if (password != null && !password.isEmpty()) {
+				LOGGER.log(Level.INFO, "Retrieved master key from OS keychain");
+				return password;
 			}
-			LOGGER.log(Level.INFO, "Retrieved master key from OS keychain");
-			return password;
+			// Password is null or empty - fall through to return null
 		} catch (PasswordAccessException e) {
+			// Check if it's a "not found" error (first run scenario)
+			if (e.getMessage() != null && e.getMessage().contains("No stored credentials match")) {
+				LOGGER.log(Level.INFO, "Master key not found in OS keychain (first run), will generate new key");
+				return null; // Return null so caller can generate and store a new key
+			}
+			// Some other error - rethrow
 			throw new CredentialException("Failed to retrieve master key from OS keychain", e);
 		}
+
+		// Entry doesn't exist yet (first run) - return null so caller can generate and store one
+		LOGGER.log(Level.INFO, "Master key not found in OS keychain (first run), will generate new key");
+		return null;
 	}
 
 	@Override

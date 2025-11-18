@@ -350,7 +350,7 @@ sieve.password=ENC(sYXp9BxGqN7... base64 data ...)
 
 ### Issue #1: Association Fails When Database Locked
 
-**Status:** 🔴 **CRITICAL - In Progress**
+**Status:** ✅ **FIXED**
 
 **Symptoms:**
 ```
@@ -382,19 +382,87 @@ if (kpa.isDatabaseLocked()) {
 kpa.associate();  // Now succeeds
 ```
 
-**Fix Strategy:**
-1. Write failing test: `testAssociateWithLockedDatabase()`
-2. Refactor `ensureConnected()` to check lock status BEFORE association
-3. Show clear user message: "Please unlock your KeePassXC database"
-4. Retry association after unlock
-5. Verify test passes
+**Fix Applied:**
+1. ✅ Added test documenting expected behavior
+2. ✅ Refactored `ensureConnected()` to check lock status BEFORE association
+3. ✅ Added user message: "Please unlock your KeePassXC database"
+4. ✅ Trigger unlock with `getDatabasehash(true)`
+5. ✅ Tests pass
 
-**Files to Modify:**
-- `KeePassXCMasterKeyProvider.java:125-198` (ensureConnected method)
+**Files Modified:**
+- `KeePassXCMasterKeyProvider.java:127-173` (ensureConnected method)
 
-### Issue #2: SLF4J Binding Missing
+**Commit:** `8651080` fix(credentials): check database lock status before KeePassXC association
 
-**Status:** 🟡 **MINOR - Quick Fix**
+### Issue #2: Association Delayed Response (KeePassXC #7099)
+
+**Status:** ✅ **FIXED**
+
+**Symptoms:**
+```
+[AWT-EventQueue-0] INFO org.purejava.KeepassProxyAccess -
+org.purejava.KeepassProxyAccessException: Delaying association dialog
+response lookup due to https://github.com/keepassxreboot/keepassxc/issues/7099
+
+de.febrildur.sieveeditor.system.credentials.CredentialException:
+Failed to associate with KeePassXC. Please allow the association request...
+```
+
+**Root Cause:**
+KeePassXC issue #7099 causes association dialog responses to be delayed when
+triggered from Java applications. The `keepassxc-proxy-access` library tries
+to handle this by delaying response lookup, but `associate()` may still
+return `false` before the user's "Allow" click is processed.
+
+**Original Flow (Broken):**
+```java
+boolean associated = kpa.associate();  // Shows dialog
+// User clicks "Allow" in KeePassXC
+// But response is delayed!
+if (!associated) {  // Checks immediately - returns false
+    throw new CredentialException();  // Fails even though user allowed
+}
+```
+
+**Fix Applied:**
+Added `associateWithRetry()` method that:
+1. Calls `associate()` to trigger dialog
+2. If returns `false`, calls `exportConnection()` anyway (credentials might be available despite false return)
+3. If no credentials, waits 2 seconds and retries
+4. Repeats up to 3 times (6 seconds total)
+5. Provides helpful error message if all attempts fail
+
+**New Flow (Fixed):**
+```java
+for (attempt = 1; attempt <= 3; attempt++) {
+    boolean associated = kpa.associate();
+    if (associated) {
+        // Save credentials and return
+    }
+
+    // Check if credentials available despite false return
+    Map<String, String> connection = kpa.exportConnection();
+    if (connection has valid id and key) {
+        // Success! Save and return
+    }
+
+    // Wait 2 seconds before retry
+    Thread.sleep(2000);
+}
+```
+
+**Files Modified:**
+- `KeePassXCMasterKeyProvider.java:185-240` (associateWithRetry method)
+
+**Commit:** `5325a01` fix(credentials): add retry logic for KeePassXC association delays
+
+**Related:**
+- https://github.com/keepassxreboot/keepassxc/issues/7099
+- keepassxc-proxy-access library workaround for Java/Qt threading issue
+
+### Issue #3: SLF4J Binding Missing
+
+**Status:** ✅ **FIXED**
 
 **Symptoms:**
 ```
@@ -406,8 +474,8 @@ SLF4J(W): Defaulting to no-operation (NOP) logger implementation
 - `keepassxc-proxy-access` uses SLF4J for logging
 - No SLF4J implementation provided in dependencies
 
-**Fix:**
-Add SLF4J simple binding to `pom.xml`:
+**Fix Applied:**
+Added SLF4J simple binding to `pom.xml`:
 ```xml
 <dependency>
     <groupId>org.slf4j</groupId>
@@ -415,6 +483,11 @@ Add SLF4J simple binding to `pom.xml`:
     <version>2.0.17</version>
 </dependency>
 ```
+
+**Files Modified:**
+- `pom.xml:150-155`
+
+**Commit:** `fc3b037` fix(deps): add SLF4J simple binding to resolve logging warnings
 
 ## Testing Strategy
 

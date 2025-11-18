@@ -55,7 +55,7 @@ Help the developer create a well-formed conventional commit message.
 
 7. **Generate and display the commit message**:
 
-```
+```text
 <type>(<scope>): <subject>
 
 <body>
@@ -63,35 +63,39 @@ Help the developer create a well-formed conventional commit message.
 <footer>
 ```
 
-8. **Validate the message**:
+1. **Validate the message**:
    - Check format matches conventional commits spec
    - Verify subject length <= 80 chars
    - Ensure type is valid
    - Confirm breaking change notation if needed
 
-9. **Provide git command**:
+2. **Provide git command**:
+
    ```bash
    git commit -m "<generated message>"
    ```
 
    Or for multi-line commits:
+
    ```bash
    git commit -m "<subject>" -m "<body>" -m "<footer>"
    ```
 
-10. **Remind about the git hook**:
-    - The commit-msg hook will validate this format
-    - If hook is not enabled: `git config core.hooksPath .githooks`
+3. **Remind about the git hook**:
+   - The commit-msg hook will validate this format
+   - If hook is not enabled: `git config core.hooksPath .githooks`
 
 ## Examples to Show
 
 ### Simple Feature
-```
+
+```text
 feat(profiles): add profile import functionality
 ```
 
 ### Bug Fix with Issue Reference
-```
+
+```text
 fix(connection): prevent timeout on slow networks
 
 Add configurable timeout parameter (default 30s) to avoid
@@ -101,7 +105,8 @@ Fixes #57
 ```
 
 ### Breaking Change
-```
+
+```text
 feat!: enforce SSL certificate validation
 
 BREAKING CHANGE: Self-signed certificates are now rejected by default.
@@ -114,7 +119,8 @@ Closes #23
 ```
 
 ### Security Fix
-```
+
+```text
 security: remove hardcoded encryption key
 
 Move encryption key to environment variable SIEVE_ENCRYPTION_KEY.
@@ -125,7 +131,8 @@ Fixes CVE-2025-XXXXX
 ```
 
 ### Dependency Update
-```
+
+```text
 deps: update rsyntaxtextarea to 3.6.0
 
 Includes bug fixes and improved syntax highlighting for Sieve scripts.
@@ -144,6 +151,7 @@ Includes bug fixes and improved syntax highlighting for Sieve scripts.
 ## Error Messages to Help With
 
 If the git hook rejects a commit, help the developer understand:
+
 - What's wrong with the format
 - How to fix it
 - Provide the corrected version

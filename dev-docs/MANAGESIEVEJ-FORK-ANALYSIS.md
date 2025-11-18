@@ -1,8 +1,8 @@
 # ManageSieveJ Fork Analysis
 
 **Date:** 2025-11-04
-**Analyzed Fork:** https://github.com/Zwixx/ManageSieveJ
-**Original (archived):** https://github.com/ksahnine/ManageSieveJ (repository deleted/not accessible)
+**Analyzed Fork:** <https://github.com/Zwixx/ManageSieveJ>
+**Original (archived):** <https://github.com/ksahnine/ManageSieveJ> (repository deleted/not accessible)
 
 ---
 
@@ -11,6 +11,7 @@
 **Recommendation: SWITCH TO FORK**
 
 The Zwixx fork provides significant improvements over the Maven Central version (0.3.1):
+
 - **Java 11 compatibility** (critical for modernization)
 - **Very recent updates** (December 2024 - last commit was just weeks ago!)
 - **57 commits since 2014** with important bug fixes
@@ -25,7 +26,7 @@ The Zwixx fork provides significant improvements over the Maven Central version 
 
 ### A. Commit History Comparison
 
-```
+```text
 Original: Last accessible commit ~2014 (repository no longer available)
 Fork: Last commit 2024-12-25 (VERY RECENT!)
 
@@ -56,6 +57,7 @@ Pre-2024 commits (2015-2020):
 ### B. Changes Overview
 
 **Bug Fixes:**
+
 - ✅ Socket existence check before `isConnected()` call (prevents NPE)
 - ✅ UTF-8 encoding explicitly set on print writer (fixes encoding issues)
 - ✅ GETSCRIPT now handles NO/BYE server responses properly
@@ -64,6 +66,7 @@ Pre-2024 commits (2015-2020):
 - ✅ Fixed JavaDoc errors
 
 **Features:**
+
 - ✅ Java 11 module system support (`module-info.java`)
 - ✅ Support for `subjectAlternativeNames` in SSL certificates
 - ✅ Socket timeout get/set methods
@@ -71,18 +74,21 @@ Pre-2024 commits (2015-2020):
 - ✅ Improved Unicode handling
 
 **Security/Protocol Improvements:**
+
 - ✅ RFC 5804 Cyrus compatibility improvements (quoted vs literal forms)
 - ✅ Better SSL certificate handling (subjectAlternativeNames)
 - ✅ Proper string escaping (security issue if not handled correctly)
 - ✅ UTF-8 encoding enforcement
 
 **Dependencies:**
+
 - ✅ Updated to Java 11 (`<release>11</release>`)
 - ✅ Updated Maven plugins (compiler 3.11.0, surefire 3.2.5)
 - ✅ No new runtime dependencies (still zero dependencies!)
 - ✅ Cleaned up old IDE files
 
 **Build System:**
+
 - ✅ Modernized POM with Java 11 target
 - ✅ GitHub Actions workflow added
 - ✅ Nexus staging plugin updated
@@ -99,6 +105,7 @@ Pre-2024 commits (2015-2020):
 | `ManageSieveResponse` | ✅ Updated | Internal improvements, same API | ✅ YES |
 
 **Methods SieveEditor uses:**
+
 - ✅ `connect(String, int)` - Compatible
 - ✅ `starttls(SSLSocketFactory, boolean)` - Compatible (already uses this signature)
 - ✅ `authenticate(String, String)` - Compatible (overloaded version added)
@@ -115,12 +122,13 @@ Pre-2024 commits (2015-2020):
 **Deprecations:** ❌ NONE
 
 **New methods we could use (optional):**
+
 - `authenticate(String username, String password, String authId)` - delegate authentication
 - `setSocketTimeout(int)` / `getSocketTimeout()` - configure timeouts
 
 ### D. Build and Test Results
 
-```
+```text
 Fork build: ✅ SUCCESS
 - Built with: Maven 3.x, Java 11+
 - Output: managesievej-0.3.2-SNAPSHOT.jar (40 KB)
@@ -138,7 +146,7 @@ SieveEditor integration: ⚠️ Not tested yet (next step if approved)
 
 ### E. Maintenance Status
 
-```
+```text
 Last commit: 2024-12-25 (< 1 month ago!)
 Commit frequency: Active in late 2024, sporadic 2014-2020
 Open issues: Not checked (GitHub repo accessible)
@@ -148,7 +156,8 @@ Maintainer: Zwixx (actively working on it as of Dec 2024)
 ```
 
 **Fork lineage:**
-```
+
+```text
 Original (ksahnine) → Moosemorals fork → Zwixx fork
                       ↓                   ↓
                    0.3.1 (2020)      0.3.2-SNAPSHOT (2024)
@@ -234,6 +243,7 @@ Original (ksahnine) → Moosemorals fork → Zwixx fork
 We added the ManageSieveJ fork as a **git submodule** for a reproducible, version-controlled build.
 
 **Why submodule?**
+
 - ✅ Reproducible: Anyone cloning the repo gets the exact same code
 - ✅ Version locked: Submodule points to specific commit
 - ✅ No external services: No dependency on JitPack/Maven Central
@@ -243,21 +253,25 @@ We added the ManageSieveJ fork as a **git submodule** for a reproducible, versio
 ### Build Process
 
 1. **Initial setup** (one-time for new clones):
+
 ```bash
 git submodule update --init --recursive
 ```
 
-2. **Build ManageSieveJ** (builds and installs to local Maven repo):
+1. **Build ManageSieveJ** (builds and installs to local Maven repo):
+
 ```bash
 mvn -f lib/ManageSieveJ/pom.xml clean install -DskipTests -Dmaven.javadoc.skip=true
 ```
 
-3. **Build SieveEditor**:
+1. **Build SieveEditor**:
+
 ```bash
 mvn clean package
 ```
 
 Or use the convenience script:
+
 ```bash
 ./build.sh
 ```
@@ -267,6 +281,7 @@ Or use the convenience script:
 ## Alternative Options (Not Used)
 
 ### Option A: Build and install to local Maven repo
+
 ```bash
 cd /tmp/managesievej-fork
 mvn clean install -DskipTests -Dmaven.javadoc.skip=true
@@ -284,6 +299,7 @@ mvn clean install -DskipTests -Dmaven.javadoc.skip=true
 JitPack builds GitHub repos on-demand and serves them as Maven artifacts.
 **Status:** JitPack couldn't build the Zwixx fork (build failure or not indexed).
 Would require adding JitPack repository to `pom.xml`:
+
 ```xml
 <repositories>
     <repository>
@@ -302,6 +318,7 @@ Would require adding JitPack repository to `pom.xml`:
 **Option C: Include fork as Git submodule**
 
 More complex but gives us full control:
+
 ```bash
 cd /home/jo/kit/sieve/SieveEditor
 git submodule add https://github.com/Zwixx/ManageSieveJ.git lib/ManageSieveJ
@@ -312,6 +329,7 @@ Then add as module dependency in pom.xml.
 **Option D: Copy JAR to lib/ directory (Simplest)**
 
 For a "mini-app", this might be the pragmatic choice:
+
 ```bash
 mkdir -p /home/jo/kit/sieve/SieveEditor/lib
 cp /tmp/managesievej-fork/target/managesievej-0.3.2-SNAPSHOT.jar \
@@ -354,6 +372,7 @@ mvn clean package
 ### 4. Document the Change
 
 Update `dev-docs/IMPLEMENTATION-STATUS.md`:
+
 ```markdown
 ## Dependencies
 
@@ -414,6 +433,7 @@ References:
 **Switch to the Zwixx fork.**
 
 This is a clear win:
+
 - ✅ Low effort (~1 hour)
 - ✅ Low risk (100% compatible)
 - ✅ High benefit (Java 11, bug fixes, maintenance)

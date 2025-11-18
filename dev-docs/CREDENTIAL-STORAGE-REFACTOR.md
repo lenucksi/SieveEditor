@@ -33,7 +33,7 @@ Replaced broken machine-specific encryption key derivation with a secure, cross-
 
 ### High-Level Design
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │           MasterKeyProviderFactory                  │
 │  (Auto-detection, Selection Dialog, Preference)    │
@@ -92,6 +92,7 @@ Platform-specific directory resolution using `net.harawata:appdirs`:
 | **macOS** | `~/Library/Preferences/sieveeditor` | `~/Library/Application Support/sieveeditor` |
 
 **Key Features:**
+
 - Auto-creates directories with secure permissions (700/600 on POSIX)
 - Auto-migrates from legacy `~/.sieveprofiles`
 - Respects `XDG_CONFIG_HOME` and `XDG_DATA_HOME` environment variables
@@ -99,6 +100,7 @@ Platform-specific directory resolution using `net.harawata:appdirs`:
 #### 3. MasterKeyProviderFactory
 
 **Responsibilities:**
+
 - Auto-detects available backends
 - Shows selection dialog on first run
 - Saves user preference to `<config-dir>/.storage-backend`
@@ -106,7 +108,8 @@ Platform-specific directory resolution using `net.harawata:appdirs`:
 - Handles backend unavailability gracefully
 
 **Selection Dialog:**
-```
+
+```text
 ┌─────────────────────────────────────────────────┐
 │ How should SieveEditor store your master       │
 │ password?                                       │
@@ -134,6 +137,7 @@ Platform-specific directory resolution using `net.harawata:appdirs`:
 **Library:** `org.purejava:keepassxc-proxy-access:1.3.0`
 
 **How It Works:**
+
 1. Connects to KeePassXC via native messaging proxy
 2. Associates with KeePassXC (user approves connection)
 3. Stores/retrieves master key as password in KeePassXC entry:
@@ -143,16 +147,19 @@ Platform-specific directory resolution using `net.harawata:appdirs`:
    - Password: `<256-bit random master key>`
 
 **Advantages:**
+
 - Most secure (leverages KeePassXC's strong encryption)
 - Syncs across devices (if KeePassXC database is synced)
 - No plaintext storage
 
 **Requirements:**
+
 - KeePassXC 2.6.0+ installed and running
 - Browser integration enabled in KeePassXC settings
 - Database must be unlocked for association
 
 **Known Issues (Being Fixed):**
+
 - Association fails if database is locked
 - No user prompt to unlock database before association attempt
 - See "Current Bugs" section below
@@ -162,21 +169,25 @@ Platform-specific directory resolution using `net.harawata:appdirs`:
 **Library:** `com.github.javakeyring:java-keyring:1.0.4`
 
 **Platform Implementations:**
+
 - **Linux:** D-Bus Secret Service API (GNOME Keyring, KWallet)
 - **macOS:** Keychain Services via JNA/jkeychain
 - **Windows:** Credential Manager via Wincred API
 
 **Storage:**
+
 - Service: `SieveEditor`
 - Account: `master-encryption-key`
 - Password: `<256-bit random master key>`
 
 **Advantages:**
+
 - Native OS integration
 - No extra software required
 - Platform-standard security
 
 **Limitations:**
+
 - Security varies by OS and app packaging
 - No automatic cross-device sync
 - Linux: Requires session unlock (no additional security when logged in)
@@ -186,23 +197,27 @@ Platform-specific directory resolution using `net.harawata:appdirs`:
 **Implementation:** Pure Java (Swing JPasswordField)
 
 **How It Works:**
+
 1. Shows password dialog on startup
 2. Hashes password with SHA-256 to create consistent-length master key
 3. Stores in memory only for session duration
 4. Cleared on application exit
 
 **Advantages:**
+
 - Always available (ultimate fallback)
 - No dependencies
 - User controls security (strong password = strong encryption)
 
 **Limitations:**
+
 - User must remember password (unrecoverable if forgotten)
 - Prompted every startup
 
 ### Master Key Generation
 
 On first run (when no master key exists):
+
 ```java
 SecureRandom random = new SecureRandom();
 byte[] keyBytes = new byte[32]; // 256 bits
@@ -217,17 +232,20 @@ This cryptographically random key is then stored via the selected backend.
 PropertiesSieve tries algorithms in order of strength:
 
 **Tier 1 - AES (Strongest):**
+
 - `PBEWITHHMACSHA512ANDAES_256`
 - `PBEWITHHMACSHA256ANDAES_256`
 - Requires `RandomIvGenerator`
 - 10,000 key obtention iterations
 
 **Tier 2 - TripleDES (Strong, Compatible):**
+
 - `PBEWithSHA1AndDESede`
 - `PBEWithMD5AndTripleDES`
 - No IV generator needed
 
 **Tier 3 - DES (Weak, Last Resort):**
+
 - `PBEWithMD5AndDES`
 - Logs warning if used
 
@@ -264,7 +282,7 @@ finish-args:
 
 ### First Run
 
-```
+```text
 1. Application starts
 2. Detects no backend preference saved
 3. Shows backend selection dialog
@@ -287,7 +305,7 @@ finish-args:
 
 ### Subsequent Runs
 
-```
+```text
 1. Application starts
 2. Loads saved preference: "KeePassXC"
 3. Creates KeePassXCMasterKeyProvider
@@ -298,7 +316,7 @@ finish-args:
 
 ### Fallback Chain
 
-```
+```text
 KeePassXC unavailable
   ↓
 User clicks "Use Fallback"
@@ -313,11 +331,13 @@ Offers: OS Keychain, Manual Password Entry
 ### Threat Model
 
 **Protected Against:**
+
 - Unauthorized file access (600/700 permissions)
 - Weak/predictable encryption keys (256-bit random)
 - Hardcoded passwords (never done)
 
 **Not Protected Against:**
+
 - Memory dumps while application running
 - Root/Administrator access
 - Keyloggers (for User Prompt backend)
@@ -325,7 +345,7 @@ Offers: OS Keychain, Manual Password Entry
 
 ### Password Storage Flow
 
-```
+```text
 User Password (plaintext)
     ↓
 Jasypt PBE Encryption (AES-256, 10k iterations, Random IV)
@@ -336,6 +356,7 @@ Stored in <profile>.properties file
 ```
 
 Example encrypted password in file:
+
 ```properties
 sieve.password=ENC(sYXp9BxGqN7... base64 data ...)
 ```
@@ -353,7 +374,8 @@ sieve.password=ENC(sYXp9BxGqN7... base64 data ...)
 **Status:** ✅ **FIXED**
 
 **Symptoms:**
-```
+
+```text
 de.febrildur.sieveeditor.system.credentials.CredentialException:
   Failed to associate with KeePassXC. Please allow the association
   request in KeePassXC.
@@ -372,6 +394,7 @@ if (kpa.isDatabaseLocked()) {  // ✗ Never reached
 ```
 
 **Expected Behavior:**
+
 ```java
 // Correct flow
 kpa.connect();
@@ -383,6 +406,7 @@ kpa.associate();  // Now succeeds
 ```
 
 **Fix Applied:**
+
 1. ✅ Added test documenting expected behavior
 2. ✅ Refactored `ensureConnected()` to check lock status BEFORE association
 3. ✅ Added user message: "Please unlock your KeePassXC database"
@@ -390,6 +414,7 @@ kpa.associate();  // Now succeeds
 5. ✅ Tests pass
 
 **Files Modified:**
+
 - `KeePassXCMasterKeyProvider.java:127-173` (ensureConnected method)
 
 **Commit:** `8651080` fix(credentials): check database lock status before KeePassXC association
@@ -399,7 +424,8 @@ kpa.associate();  // Now succeeds
 **Status:** ✅ **FIXED**
 
 **Symptoms:**
-```
+
+```text
 [AWT-EventQueue-0] INFO org.purejava.KeepassProxyAccess -
 org.purejava.KeepassProxyAccessException: Delaying association dialog
 response lookup due to https://github.com/keepassxreboot/keepassxc/issues/7099
@@ -415,6 +441,7 @@ to handle this by delaying response lookup, but `associate()` may still
 return `false` before the user's "Allow" click is processed.
 
 **Original Flow (Broken):**
+
 ```java
 boolean associated = kpa.associate();  // Shows dialog
 // User clicks "Allow" in KeePassXC
@@ -426,6 +453,7 @@ if (!associated) {  // Checks immediately - returns false
 
 **Fix Applied:**
 Added `associateWithRetry()` method that:
+
 1. Calls `associate()` to trigger dialog
 2. If returns `false`, calls `exportConnection()` anyway (credentials might be available despite false return)
 3. If no credentials, waits 2 seconds and retries
@@ -433,6 +461,7 @@ Added `associateWithRetry()` method that:
 5. Provides helpful error message if all attempts fail
 
 **New Flow (Fixed):**
+
 ```java
 for (attempt = 1; attempt <= 3; attempt++) {
     boolean associated = kpa.associate();
@@ -452,12 +481,14 @@ for (attempt = 1; attempt <= 3; attempt++) {
 ```
 
 **Files Modified:**
+
 - `KeePassXCMasterKeyProvider.java:185-240` (associateWithRetry method)
 
 **Commit:** `5325a01` fix(credentials): add retry logic for KeePassXC association delays
 
 **Related:**
-- https://github.com/keepassxreboot/keepassxc/issues/7099
+
+- <https://github.com/keepassxreboot/keepassxc/issues/7099>
 - keepassxc-proxy-access library workaround for Java/Qt threading issue
 
 ### Issue #3: SLF4J Binding Missing
@@ -465,17 +496,20 @@ for (attempt = 1; attempt <= 3; attempt++) {
 **Status:** ✅ **FIXED**
 
 **Symptoms:**
-```
+
+```text
 SLF4J(W): No SLF4J providers were found.
 SLF4J(W): Defaulting to no-operation (NOP) logger implementation
 ```
 
 **Root Cause:**
+
 - `keepassxc-proxy-access` uses SLF4J for logging
 - No SLF4J implementation provided in dependencies
 
 **Fix Applied:**
 Added SLF4J simple binding to `pom.xml`:
+
 ```xml
 <dependency>
     <groupId>org.slf4j</groupId>
@@ -485,6 +519,7 @@ Added SLF4J simple binding to `pom.xml`:
 ```
 
 **Files Modified:**
+
 - `pom.xml:150-155`
 
 **Commit:** `fc3b037` fix(deps): add SLF4J simple binding to resolve logging warnings
@@ -493,7 +528,7 @@ Added SLF4J simple binding to `pom.xml`:
 
 ### Unit Tests (Planned)
 
-```
+```text
 KeePassXCMasterKeyProviderTest:
   ✓ testIsAvailable_KeePassXCRunning()
   ✓ testIsAvailable_KeePassXCNotRunning()
@@ -518,7 +553,7 @@ AppDirectoryServiceTest:
 
 ### Integration Tests
 
-```
+```text
 End-to-End Scenarios:
   ✓ Fresh install → Select KeePassXC → Store credentials → Restart → Retrieve
   ✓ Fresh install → Select OS Keychain → Store credentials → Restart → Retrieve
@@ -558,7 +593,7 @@ End-to-End Scenarios:
 
 ## Files Created
 
-```
+```text
 src/main/java/de/febrildur/sieveeditor/system/
 ├── AppDirectoryService.java                    [NEW]
 └── credentials/
@@ -572,7 +607,7 @@ src/main/java/de/febrildur/sieveeditor/system/
 
 ## Files Modified
 
-```
+```text
 src/main/java/de/febrildur/sieveeditor/system/
 └── PropertiesSieve.java                        [MODIFIED]
     - Removed: getMachineSpecificEncryptionKey()
@@ -593,11 +628,13 @@ pom.xml                                         [MODIFIED]
 ## Performance Impact
 
 **Minimal:**
+
 - Backend selection: Once on first run
 - Master key retrieval: Once on startup (~50-200ms depending on backend)
 - File I/O: Negligible (small .properties files)
 
 **Memory:**
+
 - Master key: 44 bytes (Base64-encoded 256-bit key)
 - Backend provider: ~1-5 KB depending on implementation
 

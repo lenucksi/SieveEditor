@@ -34,6 +34,7 @@ public static SSLSocketFactory getInsecureSSLFactory() {
 ```
 
 **Impact:**
+
 - Man-in-the-middle (MITM) attacks are trivial to execute
 - Attackers can intercept all communications including:
   - Username and password during authentication
@@ -45,6 +46,7 @@ public static SSLSocketFactory getInsecureSSLFactory() {
 **Risk Level:** CRITICAL - This is the most serious vulnerability in the codebase
 
 **Remediation:**
+
 1. Remove the custom TrustManager entirely
 2. Use the system's default SSL/TLS certificate validation
 3. If self-signed certificates are required:
@@ -64,6 +66,7 @@ encryptor.setPassword("KNQ4VnqF24WLe4HZJ9fB9Sth");
 ```
 
 **Impact:**
+
 - Anyone with access to the source code (public on GitHub) can decrypt all stored passwords
 - Decompiling the JAR file exposes the key
 - All installations use the same encryption key
@@ -75,22 +78,26 @@ encryptor.setPassword("KNQ4VnqF24WLe4HZJ9fB9Sth");
 **Remediation Options:**
 
 **Option 1: Use OS-level credential storage (RECOMMENDED)**
+
 - Windows: Use DPAPI (Data Protection API)
 - macOS: Use Keychain
 - Linux: Use Secret Service API (libsecret)
 - Library: Use `java-keyring` or similar
 
 **Option 2: Derive key from user password**
+
 - Prompt user for master password on first run
 - Use PBKDF2 to derive encryption key
 - Store hash to verify password on subsequent runs
 
 **Option 3: Use Java KeyStore**
+
 - Generate random key, store in password-protected KeyStore
 - KeyStore password from user or system property
 - More secure than hardcoded key
 
 **Option 4: Don't store passwords**
+
 - Prompt for password on each connection
 - Offer "remember this session" option only
 - Most secure but less convenient
@@ -108,11 +115,13 @@ JTextField tfPassword = new JTextField(parentFrame.getProp().getPassword(), 15);
 ```
 
 **Impact:**
+
 - Password visible to anyone looking at the screen (shoulder surfing)
 - Password visible in screenshots
 - Password may be logged or captured by screen recording software
 
 **Remediation:**
+
 ```java
 JPasswordField tfPassword = new JPasswordField(parentFrame.getProp().getPassword(), 15);
 tfPassword.setEchoChar('*');
@@ -129,11 +138,13 @@ SSLContext sc = SSLContext.getInstance("SSL");
 ```
 
 **Impact:**
+
 - May negotiate weak or deprecated SSL/TLS versions (SSLv3, TLS 1.0, TLS 1.1)
 - These versions have known vulnerabilities (POODLE, BEAST, etc.)
 - May use weak cipher suites
 
 **Remediation:**
+
 ```java
 SSLContext sc = SSLContext.getInstance("TLSv1.3"); // Or "TLSv1.2" minimum
 ```
@@ -150,12 +161,14 @@ private String password;
 ```
 
 **Impact:**
+
 - Passwords remain in memory until garbage collected
 - Password may appear in heap dumps
 - Password may be swapped to disk in memory pages
 - No way to securely clear password after use
 
 **Remediation:**
+
 - Use `char[]` instead of `String` for passwords
 - Clear the array after use: `Arrays.fill(password, '\0')`
 - JPasswordField provides `getPassword()` method returning `char[]`
@@ -171,11 +184,13 @@ private final StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryp
 ```
 
 **Impact:**
+
 - MD5 is cryptographically broken (collision attacks)
 - DES has only 56-bit key length (easily brute-forced)
 - Password can be recovered even without the hardcoded key
 
 **Remediation:**
+
 ```java
 StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
 encryptor.setAlgorithm("PBEWithHmacSHA512AndAES_256");
@@ -196,11 +211,13 @@ parentFrame.save(newName); // No validation
 ```
 
 **Impact:**
+
 - Special characters could break server filesystem or protocol
 - Path traversal characters (`../`, `..\\`) could create scripts outside expected directory
 - Depends on server-side validation (defense in depth violated)
 
 **Remediation:**
+
 ```java
 // Validate script name
 if (newName == null || newName.isBlank()) {
@@ -226,10 +243,12 @@ propFile.createNewFile();
 ```
 
 **Impact:**
+
 - On multi-user systems, other users could read encrypted passwords
 - Combined with hardcoded encryption key, passwords are exposed
 
 **Remediation:**
+
 ```java
 Path propPath = Paths.get(propFileName);
 Files.createFile(propPath);
@@ -250,12 +269,14 @@ context.setRegularExpression(regexCB.isSelected());
 ```
 
 **Impact:**
+
 - Malicious regex like `(a+)+b` can cause exponential backtracking
 - Regular Expression Denial of Service (ReDoS)
 - Application freezes while processing malicious pattern
 - Low severity because requires user action and only affects local application
 
 **Remediation:**
+
 - Set timeout on regex matching
 - Validate regex complexity before execution
 - Provide clear feedback if regex takes too long
@@ -267,10 +288,12 @@ context.setRegularExpression(regexCB.isSelected());
 **Issue:** Generic exception messages expose internal details
 
 **Examples:**
+
 - [Application.java:56](../../../src/main/java/de/febrildur/sieveeditor/Application.java#L56): Shows full exception class name
 - Multiple locations show full stack traces to users
 
 **Remediation:**
+
 - Show user-friendly error messages
 - Log detailed errors to file
 - Don't expose internal implementation details
@@ -280,12 +303,14 @@ context.setRegularExpression(regexCB.isSelected());
 **Issue:** No security event logging throughout application
 
 **Impact:**
+
 - Cannot detect unauthorized access attempts
 - Cannot audit configuration changes
 - Cannot investigate security incidents
 - No forensic trail
 
 **Remediation:**
+
 - Log connection attempts (success/failure)
 - Log authentication attempts
 - Log script modifications
@@ -294,23 +319,27 @@ context.setRegularExpression(regexCB.isSelected());
 ## Recommended Prioritization
 
 ### Phase 1: Critical Security Fixes (Immediate)
+
 1. Fix SSL certificate validation (ConnectAndListScripts.java)
 2. Remove hardcoded encryption key (PropertiesSieve.java)
 3. Use JPasswordField for password input (ActionConnect.java)
 
 ### Phase 2: High Priority Security Fixes (Week 1)
-4. Upgrade to TLS 1.2+ only (ConnectAndListScripts.java)
-5. Use char[] for password storage (multiple files)
-6. Upgrade encryption algorithm (PropertiesSieve.java)
+
+1. Upgrade to TLS 1.2+ only (ConnectAndListScripts.java)
+2. Use char[] for password storage (multiple files)
+3. Upgrade encryption algorithm (PropertiesSieve.java)
 
 ### Phase 3: Medium Priority Security Fixes (Week 2)
-7. Validate script names (ActionSaveScriptAs.java)
-8. Set proper file permissions (PropertiesSieve.java)
+
+1. Validate script names (ActionSaveScriptAs.java)
+2. Set proper file permissions (PropertiesSieve.java)
 
 ### Phase 4: Security Enhancements (Week 3-4)
-9. Add security logging and auditing
-10. Implement proper error handling without information disclosure
-11. Add regex timeout protection (ActionReplace.java)
+
+1. Add security logging and auditing
+2. Implement proper error handling without information disclosure
+3. Add regex timeout protection (ActionReplace.java)
 
 ## Compliance Considerations
 
@@ -358,6 +387,6 @@ context.setRegularExpression(regexCB.isSelected());
 
 ## References
 
-- OWASP Top 10: https://owasp.org/Top10/
-- Java Cryptography Architecture: https://docs.oracle.com/en/java/javase/11/security/
-- NIST TLS Guidelines: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r2.pdf
+- OWASP Top 10: <https://owasp.org/Top10/>
+- Java Cryptography Architecture: <https://docs.oracle.com/en/java/javase/11/security/>
+- NIST TLS Guidelines: <https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r2.pdf>

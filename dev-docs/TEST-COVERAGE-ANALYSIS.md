@@ -11,6 +11,7 @@ SieveEditor currently has **zero automated tests**. This document provides a com
 ## Current State
 
 ### Test Coverage Statistics
+
 - **Unit Tests:** 0
 - **Integration Tests:** 0
 - **Test Framework:** None configured
@@ -18,6 +19,7 @@ SieveEditor currently has **zero automated tests**. This document provides a com
 - **Coverage:** 0%
 
 ### Build Configuration
+
 - Build script explicitly skips tests: `./build.sh` runs `mvn clean package -DskipTests`
 - No test dependencies in `app/pom.xml`
 - No test directories exist
@@ -29,7 +31,7 @@ SieveEditor currently has **zero automated tests**. This document provides a com
 
 **Package Structure:**
 
-```
+```text
 de.febrildur.sieveeditor/
 ├── Application.java (165 lines) - Main Swing JFrame window
 ├── actions/ (562 lines total) - UI action handlers
@@ -53,6 +55,7 @@ de.febrildur.sieveeditor/
 **SieveEditor** is a Java Swing desktop application for editing and managing Sieve email filtering scripts on ManageSieve servers.
 
 **Core Features:**
+
 - Multi-account profile management
 - ManageSieve protocol integration (connect, authenticate, STARTTLS)
 - Script CRUD operations (upload, download, activate, deactivate, rename)
@@ -61,6 +64,7 @@ de.febrildur.sieveeditor/
 - HiDPI/4K display support
 
 **Technology Stack:**
+
 - Java 21 LTS
 - Swing UI framework
 - RSyntaxTextArea 3.5.1 (syntax highlighting)
@@ -77,6 +81,7 @@ de.febrildur.sieveeditor/
 These areas contain security vulnerabilities and MUST be tested first.
 
 #### A. SSL/TLS Certificate Validation
+
 **File:** `ConnectAndListScripts.java:97-121`
 **Severity:** CRITICAL
 **Issue:** Insecure SSL factory that trusts ALL certificates
@@ -89,12 +94,14 @@ public void checkServerTrusted(X509Certificate[] certs, String authType) {
 ```
 
 **Security Impact:**
+
 - Vulnerable to Man-in-the-Middle (MITM) attacks
 - Attackers can intercept credentials and scripts
 - No certificate validation whatsoever
 
 **Recommended Tests:**
-```
+
+```text
 ✓ shouldRejectSelfSignedCertificates()
 ✓ shouldRejectExpiredCertificates()
 ✓ shouldRejectCertificatesWithWrongHostname()
@@ -104,6 +111,7 @@ public void checkServerTrusted(X509Certificate[] certs, String authType) {
 ```
 
 **Action Required:**
+
 1. Fix the SSL validation FIRST
 2. Write tests to prevent regression
 3. Consider adding certificate pinning
@@ -111,6 +119,7 @@ public void checkServerTrusted(X509Certificate[] certs, String authType) {
 ---
 
 #### B. Hardcoded Encryption Key
+
 **File:** `PropertiesSieve.java:47, 65`
 **Severity:** CRITICAL
 **Issue:** Hardcoded encryption key in source code
@@ -120,12 +129,14 @@ encryptor.setPassword("KNQ4VnqF24WLe4HZJ9fB9Sth"); // Hardcoded key!
 ```
 
 **Security Impact:**
+
 - Anyone with source code access can decrypt all stored passwords
 - Key is visible in version control history
 - No key rotation possible
 
 **Recommended Tests:**
-```
+
+```text
 ✓ shouldNotHaveHardcodedEncryptionKey()
 ✓ shouldLoadKeyFromEnvironmentVariable()
 ✓ shouldUseStrongEncryptionAlgorithm()
@@ -134,6 +145,7 @@ encryptor.setPassword("KNQ4VnqF24WLe4HZJ9fB9Sth"); // Hardcoded key!
 ```
 
 **Action Required:**
+
 1. Move key to environment variable or secure keystore
 2. Use system-specific key derivation
 3. Test encryption/decryption with configurable key
@@ -141,6 +153,7 @@ encryptor.setPassword("KNQ4VnqF24WLe4HZJ9fB9Sth"); // Hardcoded key!
 ---
 
 #### C. Password Field Security
+
 **File:** `ActionConnect.java:104`
 **Severity:** HIGH
 **Issue:** Password displayed in plain JTextField instead of JPasswordField
@@ -151,18 +164,21 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Security Impact:**
+
 - Password visible on screen (shoulder surfing risk)
 - Password stored as String in memory (not char[])
 - Password may appear in logs/screenshots
 
 **Recommended Tests:**
-```
+
+```text
 ✓ shouldUsePasswordFieldNotTextField()
 ✓ shouldNotEchoPasswordCharacters()
 ✓ shouldClearPasswordFromMemoryAfterUse()
 ```
 
 **Action Required:**
+
 1. Replace JTextField with JPasswordField
 2. Use char[] instead of String for password storage
 3. Clear password arrays after use
@@ -176,6 +192,7 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 **Lines:** 184 | **Target Coverage:** 80%+
 
 **Critical Functionality:**
+
 - Multi-profile storage in `~/.sieveprofiles/`
 - Profile creation, listing, switching
 - Last-used profile tracking
@@ -185,7 +202,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 **Recommended Tests:**
 
 **Basic Operations:**
-```
+
+```text
 ✓ shouldSaveAndLoadProperties()
 ✓ shouldGetServer()
 ✓ shouldSetServer()
@@ -198,7 +216,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Profile Management:**
-```
+
+```text
 ✓ shouldHandleMultipleProfiles()
 ✓ shouldGetAvailableProfiles()
 ✓ shouldReturnDefaultProfileWhenNoneExist()
@@ -210,7 +229,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Encryption:**
-```
+
+```text
 ✓ shouldEncryptPasswordCorrectly()
 ✓ shouldDecryptPasswordCorrectly()
 ✓ shouldHandleEmptyPassword()
@@ -219,14 +239,16 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Migration:**
-```
+
+```text
 ✓ shouldMigrateOldPropertiesFile()
 ✓ shouldNotOverwriteExistingDefaultProfile()
 ✓ shouldSkipMigrationWhenOldFileNotExists()
 ```
 
 **Validation:**
-```
+
+```text
 ✓ shouldValidatePortRange() - Reject < 1 or > 65535
 ✓ shouldHandleInvalidPortString()
 ✓ shouldHandleNullValues()
@@ -234,7 +256,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Error Handling:**
-```
+
+```text
 ✓ shouldHandleIOExceptionDuringLoad()
 ✓ shouldHandleIOExceptionDuringWrite()
 ✓ shouldCreateNewFileIfNotExists()
@@ -247,6 +270,7 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 **Lines:** 143 | **Target Coverage:** 80%+
 
 **Critical Functionality:**
+
 - Server connection with STARTTLS
 - Authentication (username/password)
 - Script upload/download
@@ -258,7 +282,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 **Recommended Tests:**
 
 **Connection:**
-```
+
+```text
 ✓ shouldConnectToServer()
 ✓ shouldConnectWithPropertiesObject()
 ✓ shouldThrowExceptionOnConnectionFailure()
@@ -267,14 +292,16 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Authentication:**
-```
+
+```text
 ✓ shouldAuthenticateSuccessfully()
 ✓ shouldThrowExceptionOnAuthenticationFailure()
 ✓ shouldSetClientToNullOnAuthFailure()
 ```
 
 **Script Operations:**
-```
+
+```text
 ✓ shouldUploadScript()
 ✓ shouldActivateScriptAfterUpload()
 ✓ shouldThrowExceptionOnUploadFailure()
@@ -287,7 +314,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Script Management:**
-```
+
+```text
 ✓ shouldActivateScript()
 ✓ shouldDeactivateScript()
 ✓ shouldRenameScript()
@@ -297,7 +325,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Validation:**
-```
+
+```text
 ✓ shouldCheckScriptSyntax()
 ✓ shouldReturnValidationMessage()
 ✓ shouldValidateServerParameter()
@@ -307,7 +336,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **State Management:**
-```
+
+```text
 ✓ shouldReturnTrueWhenLoggedIn()
 ✓ shouldReturnFalseWhenNotLoggedIn()
 ✓ shouldLogout()
@@ -323,6 +353,7 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 **Lines:** 181 | **Target Coverage:** 70%+
 
 **Complex Functionality:**
+
 - Profile selector dropdown
 - New profile creation (+button)
 - Profile switching with auto-save
@@ -333,7 +364,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 **Recommended Tests:**
 
 **Profile Management:**
-```
+
+```text
 ✓ shouldLoadLastUsedProfile()
 ✓ shouldPopulateProfileDropdown()
 ✓ shouldCreateNewProfile()
@@ -343,7 +375,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Profile Switching:**
-```
+
+```text
 ✓ shouldSaveCurrentProfileDataOnSwitch()
 ✓ shouldLoadNewProfileDataOnSwitch()
 ✓ shouldUpdateFormFieldsOnSwitch()
@@ -351,7 +384,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Connection:**
-```
+
+```text
 ✓ shouldConnectWithValidCredentials()
 ✓ shouldSaveProfileAfterSuccessfulConnection()
 ✓ shouldUpdateLastUsedProfile()
@@ -360,7 +394,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Validation:**
-```
+
+```text
 ✓ shouldHandleInvalidPort()
 ✓ shouldHandleEmptyServer()
 ✓ shouldHandleConnectionFailure()
@@ -368,7 +403,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Migration:**
-```
+
+```text
 ✓ shouldTriggerMigrationOnFirstOpen()
 ```
 
@@ -382,7 +418,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 **Recommended Tests:**
 
 **Save Operations:**
-```
+
+```text
 ✓ shouldSaveScript()
 ✓ shouldShowSuccessMessageOnSave()
 ✓ shouldNotShowSuccessWhenSaveFails()
@@ -391,7 +428,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Save As:**
-```
+
+```text
 ✓ shouldPromptForScriptName()
 ✓ shouldHandleNullInput()
 ✓ shouldHandleEmptyInput()
@@ -399,7 +437,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Load Operations:**
-```
+
+```text
 ✓ shouldLoadScriptFromServer()
 ✓ shouldPopulateScriptList()
 ✓ shouldHandleNoScripts()
@@ -416,7 +455,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 **Recommended Tests:**
 
 **Activate/Deactivate:**
-```
+
+```text
 ✓ shouldActivateScript()
 ✓ shouldDeactivateScript()
 ✓ shouldRenameScript()
@@ -426,7 +466,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Check Script:**
-```
+
+```text
 ✓ shouldValidateScript()
 ✓ shouldShowValidationResult()
 ✓ shouldHandleNullServer()
@@ -434,7 +475,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Find/Replace:**
-```
+
+```text
 ✓ shouldFindText()
 ✓ shouldFindWithRegex()
 ✓ shouldFindCaseSensitive()
@@ -454,17 +496,20 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 **Lines:** 233 | **Target Coverage:** 60%+
 
 **Functionality:**
+
 - Custom RSyntaxTextArea tokenizer
 - Sieve language syntax support
 - Keyword, string, comment, number tokenization
 
 **Known Issues:**
+
 - Line 174: `i--` to backtrack after number tokenization (potential bug)
 
 **Recommended Tests:**
 
 **Basic Tokenization:**
-```
+
+```text
 ✓ shouldTokenizeKeywords() - "if", "require", etc.
 ✓ shouldTokenizeStrings() - Double-quoted strings
 ✓ shouldTokenizeComments() - # to end of line
@@ -474,7 +519,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Edge Cases:**
-```
+
+```text
 ✓ shouldHandleNumbersFollowedByLetters() - "100K"
 ✓ shouldHandleUnclosedStrings() - Multiline strings
 ✓ shouldHandleEmptyInput()
@@ -483,7 +529,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Sieve-Specific:**
-```
+
+```text
 ✓ shouldHighlightSieveKeywords()
 ✓ shouldRecognizeCommandNames()
 ✓ shouldRecognizeTestNames()
@@ -501,7 +548,8 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 **Recommended Tests:**
 
 **Initialization:**
-```
+
+```text
 ✓ shouldInitializeUI()
 ✓ shouldSetupMenus()
 ✓ shouldSetupKeyboardShortcuts()
@@ -509,14 +557,16 @@ JTextField tfPassword = new JTextField(properties.getPassword(), 15);
 ```
 
 **Error Handling:**
-```
+
+```text
 ✓ shouldHandleNullServer()
 ✓ shouldHandleNullScript()
 ✓ shouldShowErrorMessages()
 ```
 
 **Status Updates:**
-```
+
+```text
 ✓ shouldUpdateStatusBar()
 ✓ shouldShowConnectionStatus()
 ```
@@ -601,7 +651,7 @@ Add to `app/pom.xml`:
 
 ### Step 2: Create Test Directory Structure
 
-```
+```text
 app/src/test/java/de/febrildur/sieveeditor/
 ├── system/
 │   ├── PropertiesSieveTest.java
@@ -626,6 +676,7 @@ app/src/test/java/de/febrildur/sieveeditor/
 ### Step 3: Update Build Configuration
 
 Modify `build.sh`:
+
 ```bash
 #!/bin/bash
 # Remove -DskipTests to run tests
@@ -633,6 +684,7 @@ mvn clean test package
 ```
 
 Or keep separate scripts:
+
 ```bash
 # build.sh - quick build without tests
 mvn clean package -DskipTests
@@ -646,6 +698,7 @@ mvn clean test jacoco:report
 ## Phased Implementation Plan
 
 ### Phase 1: Test Infrastructure Setup (Week 1)
+
 **Goal:** Enable testing capability
 
 - [ ] Add test dependencies to `app/pom.xml`
@@ -660,14 +713,17 @@ mvn clean test jacoco:report
 ---
 
 ### Phase 2: Security Tests (Week 2)
+
 **Goal:** Cover critical security vulnerabilities - TARGET: 40% coverage
 
 Before writing tests, fix security issues:
+
 - [ ] Fix SSL validation (remove insecure trust manager)
 - [ ] Remove hardcoded encryption key (use environment variable)
 - [ ] Replace JTextField with JPasswordField for passwords
 
 Then write tests:
+
 - [ ] `SSLValidationTest.java` - Certificate validation tests
 - [ ] `EncryptionTest.java` - Encryption/decryption tests
 - [ ] `PasswordFieldTest.java` - UI security tests
@@ -677,6 +733,7 @@ Then write tests:
 ---
 
 ### Phase 3: Core Business Logic - Part 1 (Week 3)
+
 **Goal:** Test profile management - TARGET: 50% coverage
 
 - [ ] `PropertiesSieveTest.java` - Complete test suite
@@ -691,6 +748,7 @@ Then write tests:
 ---
 
 ### Phase 4: Core Business Logic - Part 2 (Week 4)
+
 **Goal:** Test ManageSieve protocol - TARGET: 60% coverage
 
 - [ ] `ConnectAndListScriptsTest.java` - Complete test suite
@@ -704,6 +762,7 @@ Then write tests:
 ---
 
 ### Phase 5: UI Actions (Week 5)
+
 **Goal:** Test action handlers - TARGET: 65% coverage
 
 - [ ] `ActionConnectTest.java` - Profile dialog tests
@@ -718,6 +777,7 @@ Then write tests:
 ---
 
 ### Phase 6: Tokenizer & Polish (Week 6)
+
 **Goal:** Complete coverage - TARGET: 70%+ coverage
 
 - [ ] `SieveTokenMakerTest.java` - Syntax highlighting tests
@@ -746,7 +806,9 @@ Then write tests:
 ## Testing Best Practices
 
 ### 1. Test Naming Convention
+
 Use descriptive names that explain intent:
+
 ```java
 // Good
 @Test
@@ -758,6 +820,7 @@ void test1() { }
 ```
 
 ### 2. AAA Pattern (Arrange-Act-Assert)
+
 ```java
 @Test
 void shouldEncryptPassword() {
@@ -773,7 +836,9 @@ void shouldEncryptPassword() {
 ```
 
 ### 3. Test Independence
+
 Each test must be independent:
+
 ```java
 // Good - each test creates its own instance
 @Test
@@ -787,7 +852,9 @@ static PropertiesSieve config;
 ```
 
 ### 4. One Concept Per Test
+
 Focus on single behavior:
+
 ```java
 // Good - separate tests
 @Test
@@ -806,6 +873,7 @@ void shouldSetServerAndPort() { /* ... */ }
 ## Success Metrics
 
 ### Quantitative Goals
+
 - ✓ 70%+ overall code coverage
 - ✓ 80%+ coverage for critical components
 - ✓ All security vulnerabilities have tests
@@ -814,6 +882,7 @@ void shouldSetServerAndPort() { /* ... */ }
 - ✓ All tests run in < 2 minutes
 
 ### Qualitative Goals
+
 - ✓ Tests are maintainable and readable
 - ✓ Tests document expected behavior
 - ✓ Tests catch regressions early
@@ -838,18 +907,21 @@ These bugs should have regression tests:
 ## Maintenance Strategy
 
 ### For New Features
+
 1. Write test first (TDD)
 2. Implement feature
 3. Ensure test passes
 4. Check coverage increased
 
 ### For Bug Fixes
+
 1. Write failing test that reproduces bug
 2. Fix the bug
 3. Ensure test passes
 4. Add to regression test suite
 
 ### For Refactoring
+
 1. Ensure all tests pass before refactoring
 2. Refactor code
 3. Ensure all tests still pass
@@ -866,6 +938,7 @@ This analysis identifies SieveEditor's current 0% test coverage and provides a c
 3. **UI and polish third** (actions, tokenizer)
 
 By following this plan, the project will gain:
+
 - Protection against security vulnerabilities
 - Prevention of regression bugs
 - Confidence in refactoring

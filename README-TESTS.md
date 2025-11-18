@@ -35,7 +35,7 @@ mvn clean package -DskipTests
 
 ## Test Structure
 
-```
+```text
 app/src/test/java/de/febrildur/sieveeditor/
 ├── SmokeTest.java                 # Infrastructure verification
 ├── system/                         # Core business logic tests
@@ -58,6 +58,7 @@ app/src/test/java/de/febrildur/sieveeditor/
 ## Current Status
 
 ### Completed
+
 - ✅ Test dependencies added to pom.xml
 - ✅ Test directory structure created
 - ✅ Smoke test created
@@ -65,10 +66,12 @@ app/src/test/java/de/febrildur/sieveeditor/
 - ✅ Maven Surefire plugin configured
 
 ### In Progress
+
 - ⏳ JaCoCo plugin (temporarily disabled due to network issues)
 - ⏳ Writing actual test implementations
 
 ### Pending
+
 - ⏳ Security tests
 - ⏳ Core business logic tests
 - ⏳ UI action tests
@@ -153,6 +156,7 @@ mvn test
 ### Tests Won't Run
 
 Check that:
+
 1. You're in the `app/` directory
 2. Java 21 is installed: `java -version`
 3. Maven dependencies are downloaded: `mvn dependency:resolve`
@@ -160,6 +164,7 @@ Check that:
 ### JaCoCo Issues
 
 JaCoCo is temporarily disabled. To re-enable:
+
 1. Uncomment the JaCoCo plugin in `pom.xml`
 2. Run `mvn clean test`
 

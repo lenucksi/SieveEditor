@@ -53,6 +53,7 @@ mvn clean install
 **Problem:** Pattern `line.startsWith("{")` was too broad and redacted legitimate protocol data.
 
 **Solution:** Use precise regex pattern that matches only SASL authentication literals:
+
 - Pattern: `^\\{\\d+\\+?\\}(\\r?\\n.*)?`
 - Matches: `{16}\r\nauth-data` or `{8+}\r\ncontinued`
 

@@ -6,6 +6,7 @@
 > "Aktuell wird unter Linux leider die UI auf einem 4K Monitor winzig gerendert, das war vorher nicht der Fall, da skalierte es normal mit 4k. Das ist vermutlich ein Bug in entweder einer aktualisierten Version von Gnome mit der Java nicht zurecht kommt, oder in der App, oder in Java."
 
 **Symptoms:**
+
 - UI renders extremely small on 4K (3840×2160) displays
 - Previously worked correctly with automatic scaling
 - Occurred after GNOME or Java update
@@ -25,12 +26,14 @@ Java 9+ includes HiDPI support that attempts to detect display scaling from the 
 ### What Changed Recently
 
 **GNOME 40+ (2021) and Later:**
+
 - Changed how fractional scaling is reported
 - Wayland became default in many distributions
 - Different DPI reporting mechanism than X11
 - Java's detection may not work correctly
 
 **Java 11 (LTS):**
+
 - HiDPI support exists but requires explicit enabling
 - Detection logic may not handle new GNOME versions
 - Requires `-Dsun.java2d.uiScale.enabled=true` on some systems
@@ -42,6 +45,7 @@ Java 9+ includes HiDPI support that attempts to detect display scaling from the 
 **Theory:** Java's HiDPI support isn't enabled by default and requires explicit JVM flag.
 
 **Test:**
+
 ```bash
 # Current behavior (tiny UI)
 java -jar SieveEditor-jar-with-dependencies.jar
@@ -50,11 +54,13 @@ java -jar SieveEditor-jar-with-dependencies.jar
 java -Dsun.java2d.uiScale.enabled=true \
      -jar SieveEditor-jar-with-dependencies.jar
 ```
+
 -> Did not have an effect.
 
 **Expected Result:** If this hypothesis is correct, the second command will render UI at proper size.
 
 **How to Verify:**
+
 - UI text should be readable
 - Buttons should be normally sized
 - Compare window size to other applications
@@ -66,6 +72,7 @@ java -Dsun.java2d.uiScale.enabled=true \
 **Theory:** Java can't read GNOME's scale factor from environment.
 
 **Test:**
+
 ```bash
 # Check what GNOME is using
 gsettings get org.gnome.desktop.interface scaling-factor
@@ -73,14 +80,14 @@ echo "GDK_SCALE: $GDK_SCALE"
 echo "GDK_DPI_SCALE: $GDK_DPI_SCALE"
 xrdb -query | grep Xft.dpi
 
--> 
+->
  gsettings get org.gnome.desktop.interface scaling-factor
 echo "GDK_SCALE: $GDK_SCALE"
 echo "GDK_DPI_SCALE: $GDK_DPI_SCALE"
 xrdb -query | grep Xft.dpi
 uint32 0
-GDK_SCALE: 
-GDK_DPI_SCALE: 
+GDK_SCALE:
+GDK_DPI_SCALE:
 Xft.dpi:	192
 
 
@@ -98,11 +105,13 @@ for scale in 1.25 1.5 1.75 2.0 2.5; do
          -jar SieveEditor-jar-with-dependencies.jar
 done
 ```
+
 -> Alles unter 2.0 ist zu klein. 2.5 sieht wie 2.0 aus.
 
 **Expected Result:** One of these scale factors should render properly.
 
 **How to Verify:**
+
 - 1.0 = No scaling (tiny on 4K)
 - 2.0 = 200% scaling (typical for 4K)
 - 1.5 = 150% scaling (some prefer this)
@@ -115,6 +124,7 @@ done
 **Theory:** Java behaves differently on Wayland vs X11.
 
 **Test:**
+
 ```bash
 # Check current session type
 echo "Session type: $XDG_SESSION_TYPE"
@@ -135,14 +145,13 @@ GDK_SCALE=2 \
 java -Dsun.java2d.uiScale.enabled=true \
      -jar SieveEditor-jar-with-dependencies.jar
 ```
+
 -> letztes: funktioniert wie mit der 2.0 scaling von voher.
-
-
-
 
 **Expected Result:** May work better on one backend vs the other.
 
 **How to Verify:**
+
 - Compare UI rendering on both backends
 - Check if scale detection works on X11 but not Wayland
 - Note which backend gives better results
@@ -154,6 +163,7 @@ java -Dsun.java2d.uiScale.enabled=true \
 **Theory:** Java reads font DPI settings that aren't set correctly.
 
 **Test:**
+
 ```bash
 # Check current DPI settings
 xdpyinfo | grep resolution
@@ -175,6 +185,7 @@ java -jar SieveEditor-jar-with-dependencies.jar
 **Expected Result:** Correct DPI setting may fix rendering.
 
 **How to Verify:**
+
 - Font size should be appropriate
 - UI elements should scale proportionally
 - Compare to other Java applications
@@ -186,6 +197,7 @@ java -jar SieveEditor-jar-with-dependencies.jar
 **Theory:** Java can't query GNOME settings for scaling factor.
 
 **Test:**
+
 ```bash
 # Check GNOME scaling settings
 gsettings get org.gnome.desktop.interface scaling-factor -> uint32 0
@@ -204,6 +216,7 @@ java -Dsun.java2d.uiScale.enabled=true \
 **Expected Result:** Using GNOME's scale factor should work.
 
 **How to Verify:**
+
 - If GNOME says 2, Java should use 2
 - UI should match GNOME applications
 - Check if scale changes when GNOME setting changes
@@ -215,6 +228,7 @@ java -Dsun.java2d.uiScale.enabled=true \
 **Theory:** The text editor component (RSyntaxTextArea) doesn't scale properly.
 
 **Test:**
+
 ```bash
 # Run with various scaling and check if text area is the problem
 java -Dsun.java2d.uiScale=2.0 \
@@ -232,6 +246,7 @@ java -Dsun.java2d.uiScale=2.0 \
 **Expected Result:** If true, only text editor will be tiny while UI is correct.
 
 **How to Verify:**
+
 - Compare menu bar size to text editor size
 - Check if problem is component-specific
 - May need to set font size explicitly in code
@@ -319,6 +334,7 @@ echo "Testing complete!"
 ### Step 3: Document Results
 
 For each test, record:
+
 - ✅ UI properly sized
 - ❌ Still too small
 - ⚠️ Partially working (specify what)
@@ -373,18 +389,21 @@ exec java $JAVA_OPTS -jar "$JARFILE" "$@"
 ```
 
 **Usage:**
+
 ```bash
 chmod +x sieveeditor.sh
 ./sieveeditor.sh
 ```
 
 **Pros:**
+
 - No code changes needed
 - Users can customize
 - Easy to test different settings
 - Can be distributed with release
 
 **Cons:**
+
 - Users must use launcher instead of direct jar
 - Requires bash
 
@@ -444,11 +463,13 @@ public Application() throws IOException, ParseException, BadLocationException {
 ```
 
 **Pros:**
+
 - Works automatically
 - No launcher script needed
 - Users don't need to do anything
 
 **Cons:**
+
 - Requires code changes
 - Harder to customize per-user
 - May not work on all systems
@@ -473,17 +494,20 @@ Categories=Development;Java;
 ```
 
 Install:
+
 ```bash
 sudo cp sieveeditor.desktop /usr/share/applications/
 sudo update-desktop-database
 ```
 
 **Pros:**
+
 - Appears in application menu
 - Standard Linux integration
 - Easy to customize per-system
 
 **Cons:**
+
 - Requires installation
 - Hard-coded paths
 - Less flexible than launcher script
@@ -566,11 +590,13 @@ exec java \
 ```
 
 **Pros:**
+
 - Works on GNOME, KDE, XFCE, etc.
 - Auto-detects scaling
 - Fallback to resolution-based detection
 
 **Cons:**
+
 - More complex
 - May not work on all DEs
 
@@ -585,6 +611,7 @@ exec java \
 ### Implementation Steps
 
 1. **Create launcher script** (10 minutes)
+
    ```bash
    cd /path/to/SieveEditor
    # Create sieveeditor.sh as shown in Solution 1
@@ -592,12 +619,14 @@ exec java \
    ```
 
 2. **Test on user's 4K system** (5 minutes)
+
    ```bash
    ./sieveeditor.sh
    # Verify UI is properly sized
    ```
 
 3. **Add to repository** (5 minutes)
+
    ```bash
    git add sieveeditor.sh
    git commit -m "Add HiDPI launcher script for 4K displays"
@@ -605,6 +634,7 @@ exec java \
 
 4. **Update README** (10 minutes)
    Add section:
+
    ```markdown
    ## Running on 4K/HiDPI Displays
 
@@ -614,11 +644,14 @@ exec java \
    ```
 
    Or run manually with:
+
    ```bash
    java -Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2.0 \
         -jar SieveEditor-jar-with-dependencies.jar
    ```
-   ```
+
+
+   ```text
 
 5. **Plan code integration** (for next release)
    Add to backlog: Integrate Solution 2 into Application.java
@@ -656,13 +689,15 @@ Use this to document findings:
 - Problem: [describe root cause]
 - Solution: [which solution worked]
 - Recommendation: [what to implement]
-```
+   ```
 
 ---
 
 ## Additional Resources
 
 ### Useful Commands for Debugging
+
+```
 
 ```bash
 # Check all Java properties related to scaling

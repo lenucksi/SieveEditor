@@ -24,12 +24,14 @@ prevButton.addActionListener(this); // Same problem
 The actual search logic is attached to the searchField (lines 51-74), not the buttons. When users click the buttons, it triggers ActionReplace.actionPerformed() which creates a new dialog instead of searching.
 
 **Impact:**
+
 - Find/Replace feature is completely broken
 - Clicking "Find Next" or "Find Previous" opens a new dialog
 - Only way to search is to press Enter in the search field
 - Major usability bug
 
 **Fix Required:**
+
 ```java
 // Remove: nextButton.addActionListener(this);
 // Add the search logic to button listeners instead of searchField
@@ -62,11 +64,13 @@ JOptionPane.showMessageDialog(parentFrame, "deactivate all scripts"); // Should 
 ```
 
 **Impact:**
+
 - User sees "deactivate all scripts" after renaming a script
 - Completely misleading feedback
 - Users will think the wrong operation was performed
 
 **Fix Required:**
+
 ```java
 JOptionPane.showMessageDialog(parentFrame, "Script renamed to: " + newname);
 ```
@@ -87,10 +91,12 @@ public void setScript(SieveScript script) throws IOException, ParseException {
 ```
 
 **Impact:**
+
 - Crashes when loading script before connecting to server
 - NullPointerException shown to user
 
 **Fix Required:**
+
 ```java
 public void setScript(SieveScript script) throws IOException, ParseException {
     if (server == null) {
@@ -118,10 +124,12 @@ public void save(String name) {
 ```
 
 **Impact:**
+
 - Crashes when saving before connecting or loading a script
 - Crashes when name parameter is null
 
 **Fix Required:**
+
 ```java
 public void save() {
     if (script == null) {
@@ -156,6 +164,7 @@ public void actionPerformed(ActionEvent e) {
 ```
 
 In Application.java:129-131, the save() method catches exceptions and prints them but doesn't rethrow:
+
 ```java
 } catch (IOException e1) {
     e1.printStackTrace(); // Only prints, doesn't notify caller
@@ -163,11 +172,13 @@ In Application.java:129-131, the save() method catches exceptions and prints the
 ```
 
 **Impact:**
+
 - User thinks save succeeded when it actually failed
 - Data loss if user closes application expecting save worked
 - Major reliability issue
 
 **Fix Required:**
+
 ```java
 // In Application.java, change save() to throw exception or return boolean
 public boolean save(String name) {
@@ -204,10 +215,12 @@ try {
 ```
 
 **Impact:**
+
 - NullPointerException when user cancels dialog
 - Application crashes
 
 **Fix Required:**
+
 ```java
 String newName = JOptionPane.showInputDialog("Rename to:", parentFrame.getScriptName());
 if (newName == null || newName.isBlank()) {
@@ -231,10 +244,12 @@ activate.addActionListener((event) -> {
 Same issue in rename handler (line 83).
 
 **Impact:**
+
 - Crashes when user clicks activate/rename without selecting a row
 - ArrayIndexOutOfBoundsException
 
 **Fix Required:**
+
 ```java
 activate.addActionListener((event) -> {
     int selectedRow = table.getSelectedRow();
@@ -262,6 +277,7 @@ IntStream.range(offset, end).forEach(i -> {
 ```
 
 **Impact:**
+
 - Incorrect syntax highlighting
 - Characters get skipped or processed incorrectly
 - Parser state becomes inconsistent
@@ -269,6 +285,7 @@ IntStream.range(offset, end).forEach(i -> {
 
 **Fix Required:**
 Replace forEach with traditional for-loop:
+
 ```java
 for (int i = offset; i < end; i++) {
     char c = array[i];
@@ -291,10 +308,12 @@ scriptInfo = parentFrame.getServer().checkScript(parentFrame.getScriptText());
 ```
 
 **Impact:**
+
 - NullPointerException if server connection lost
 - Application crashes
 
 **Fix Required:**
+
 ```java
 ConnectAndListScripts server = parentFrame.getServer();
 if (server == null || !server.isLoggedIn()) {
@@ -319,11 +338,13 @@ frame.setVisible(false); // Should use frame.dispose()
 ```
 
 **Impact:**
+
 - Memory leak with multiple connection attempts
 - Dialog resources not released
 - Accumulates over time
 
 **Fix Required:**
+
 ```java
 frame.dispose();
 ```
@@ -344,10 +365,12 @@ try {
 ```
 
 **Impact:**
+
 - Resource leak if getListScripts() throws exception
 - Dialog window exists but never shown or disposed
 
 **Fix Required:**
+
 ```java
 try {
     // Get scripts first, before creating UI
@@ -370,10 +393,12 @@ JComboBox<SieveScript> tfScript = new JComboBox<SieveScript>(liste);
 ```
 
 **Impact:**
+
 - Confusing UX - empty dialog with no explanation
 - User doesn't know if it's an error or there are no scripts
 
 **Fix Required:**
+
 ```java
 SieveScript[] liste = parentFrame.getServer().getListScripts().toArray(new SieveScript[0]);
 if (liste.length == 0) {
@@ -395,10 +420,12 @@ parentFrame.setScript((SieveScript) tfScript.getSelectedItem()); // Could be nul
 ```
 
 **Impact:**
+
 - If list is somehow empty, getSelectedItem() returns null
 - NullPointerException in setScript()
 
 **Fix Required:**
+
 ```java
 SieveScript selected = (SieveScript) tfScript.getSelectedItem();
 if (selected != null) {
@@ -419,11 +446,13 @@ JOptionPane.showMessageDialog(parentFrame, "activate " + script);
 ```
 
 **Impact:**
+
 - User sees outdated information
 - Must close and reopen dialog to see changes
 - Confusing UX
 
 **Fix Required:**
+
 ```java
 // After each operation, reload the table data
 try {
@@ -451,11 +480,13 @@ try {
 ```
 
 **Impact:**
+
 - User thinks settings saved when they actually failed
 - Lost configuration changes
 - No feedback about disk full, permission errors, etc.
 
 **Fix Required:**
+
 ```java
 } catch (IOException io) {
     io.printStackTrace();
@@ -476,11 +507,13 @@ propFile.createNewFile(); // Can fail if file exists
 ```
 
 **Impact:**
+
 - Return value ignored
 - Might not create file if already exists
 - No error handling for failure cases
 
 **Fix Required:**
+
 ```java
 if (!propFile.exists()) {
     if (!propFile.createNewFile()) {
@@ -500,10 +533,12 @@ port = Integer.valueOf(prop.getProperty("sieve.port", "4190"));
 ```
 
 **Impact:**
+
 - Application won't start if properties file corrupted
 - No recovery mechanism
 
 **Fix Required:**
+
 ```java
 try {
     port = Integer.valueOf(prop.getProperty("sieve.port", "4190"));
@@ -524,10 +559,12 @@ final JDialog frame = new JDialog(parentFrame, "Connection", true); // Should be
 ```
 
 **Impact:**
+
 - Confusing UI - shows "Connection" title on Find dialog
 - Poor user experience
 
 **Fix Required:**
+
 ```java
 final JDialog frame = new JDialog(parentFrame, "Find and Replace", true);
 ```
@@ -545,10 +582,12 @@ if (text.length() == 0) {
 ```
 
 **Impact:**
+
 - Button appears non-functional
 - No indication why nothing happened
 
 **Fix Required:**
+
 ```java
 if (text.length() == 0) {
     JOptionPane.showMessageDialog(frame,
@@ -572,6 +611,7 @@ JOptionPane.showMessageDialog(parentFrame, e1.getMessage()); // Line 29
 ```
 
 **Impact:**
+
 - Inconsistent error reporting style
 - Minor usability issue
 
@@ -591,10 +631,12 @@ table.addMouseListener(new MouseAdapter() {
 ```
 
 **Impact:**
+
 - Popup might not work on all platforms
 - Windows/Mac/Linux have different popup trigger behavior
 
 **Fix Required:**
+
 ```java
 table.addMouseListener(new MouseAdapter() {
     private void maybeShowPopup(MouseEvent e) {
@@ -632,11 +674,13 @@ table.addMouseListener(new MouseAdapter() {
 ```
 
 **Impact:**
+
 - Application window might be partially created
 - Could cause NullPointerExceptions in callbacks
 
 **Fix Required:**
 Don't return in constructor; throw exception instead:
+
 ```java
 } catch (IOException e) {
     JOptionPane.showMessageDialog(null,
@@ -659,10 +703,12 @@ public void connect(String server, int port, String username, String password) {
 ```
 
 **Impact:**
+
 - Cryptic errors from underlying library
 - Poor error messages for users
 
 **Fix Required:**
+
 ```java
 public void connect(String server, int port, String username, String password) {
     if (server == null || server.isBlank()) {
@@ -690,10 +736,12 @@ public boolean isLoggedIn() {
 ```
 
 **Impact:**
+
 - Could return true even if not authenticated
 - Misleading method name
 
 **Fix Required:**
+
 ```java
 public boolean isConnected() { // Rename method
     return client != null;
@@ -712,10 +760,12 @@ return originalRenderer.getListCellRendererComponent(list, toString.toString(val
 ```
 
 **Impact:**
+
 - NPE if value is null and toString doesn't handle it
 - UI rendering fails
 
 **Fix Required:**
+
 ```java
 String displayText = (value == null) ? "" : toString.toString(value);
 return originalRenderer.getListCellRendererComponent(list, displayText, index, isSelected, cellHasFocus);
@@ -734,6 +784,7 @@ return originalRenderer.getListCellRendererComponent(list, displayText, index, i
 ## Recommended Fix Order
 
 ### Phase 1: Critical and High Bugs (Week 1)
+
 1. Fix Find/Replace buttons (ActionReplace.java:48-49, 77)
 2. Fix wrong error message (ActionActivateDeactivateScript.java:91)
 3. Add null checks throughout Application.java
@@ -744,14 +795,17 @@ return originalRenderer.getListCellRendererComponent(list, displayText, index, i
 8. Add null check in ActionCheckScript.java
 
 ### Phase 2: Medium Bugs (Week 2)
+
 9-19. Address all resource leaks, dialog handling, and validation issues
 
 ### Phase 3: Low Bugs (Week 3)
+
 20-25. Polish UI behavior and error messages
 
 ## Testing Strategy
 
 Each bug fix should include:
+
 1. Unit test demonstrating the bug
 2. Unit test verifying the fix
 3. Manual testing of the affected feature

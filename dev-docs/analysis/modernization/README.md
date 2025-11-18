@@ -11,12 +11,14 @@ See [../../FIXES-APPLIED.md](../../FIXES-APPLIED.md) for all completed fixes and
 After reviewing user feedback, we have **TWO** approaches documented:
 
 ### 🎯 Pragmatic Approach (RECOMMENDED)
+
 - **Timeline:** 5 days
 - **Philosophy:** "Das ist eine Mini-App. Don't overdo patterns."
 - **Focus:** Fix real user problems, keep it simple
 - **Start here:** [05-real-world-issues.md](05-real-world-issues.md)
 
 ### 🏢 Enterprise Approach (Reference)
+
 - **Timeline:** 12 weeks
 - **Philosophy:** Full modernization with enterprise patterns
 - **Focus:** 80% test coverage, complete refactoring
@@ -37,9 +39,11 @@ The SieveEditor is a Java 11 Swing desktop application for editing Sieve mail fi
 ### 🎯 PRAGMATIC APPROACH (Start Here!)
 
 #### [05-real-world-issues.md](05-real-world-issues.md) ⭐ **START HERE**
+
 Practical 5-day plan based on actual user feedback.
 
 **Contents:**
+
 - Real user problems with context
 - 4K display scaling investigation
 - Find/Replace fix (actually broken!)
@@ -53,9 +57,11 @@ Practical 5-day plan based on actual user feedback.
 ---
 
 #### [06-4k-scaling-investigation.md](06-4k-scaling-investigation.md)
+
 Detailed investigation of HiDPI/4K display scaling issue.
 
 **Contents:**
+
 - 6 hypotheses with test procedures
 - Step-by-step testing scripts
 - 4 solution options (launcher script recommended)
@@ -67,9 +73,11 @@ Detailed investigation of HiDPI/4K display scaling issue.
 ---
 
 #### [00-executive-summary-revised.md](00-executive-summary-revised.md)
+
 Comparison of pragmatic vs enterprise approaches.
 
 **Contents:**
+
 - What changed after user feedback
 - Why 5 days instead of 12 weeks
 - Both approaches explained
@@ -82,9 +90,11 @@ Comparison of pragmatic vs enterprise approaches.
 ### 🏢 ENTERPRISE APPROACH (Reference)
 
 #### [00-executive-summary.md](00-executive-summary.md)
+
 High-level overview of comprehensive 12-week modernization.
 
 **Contents:**
+
 - All security vulnerabilities
 - All bugs cataloged
 - ROI analysis for enterprise approach
@@ -95,9 +105,11 @@ High-level overview of comprehensive 12-week modernization.
 ---
 
 ### [01-security-vulnerabilities.md](01-security-vulnerabilities.md)
+
 Detailed analysis of all security issues.
 
 **Contents:**
+
 - 2 CRITICAL vulnerabilities (SSL validation, hardcoded encryption key)
 - 4 HIGH vulnerabilities (password display, weak SSL, credential storage)
 - 3 MEDIUM vulnerabilities (injection risks, file permissions)
@@ -110,9 +122,11 @@ Detailed analysis of all security issues.
 ---
 
 ### [02-bugs-and-errors.md](02-bugs-and-errors.md)
+
 Complete catalog of all bugs and error handling issues.
 
 **Contents:**
+
 - 2 CRITICAL bugs (Find/Replace broken, misleading save message)
 - 9 HIGH bugs (NullPointerExceptions, array bounds, tokenization)
 - 10 MEDIUM bugs (resource leaks, validation issues)
@@ -125,9 +139,11 @@ Complete catalog of all bugs and error handling issues.
 ---
 
 ### [03-test-strategy.md](03-test-strategy.md)
+
 Comprehensive testing strategy and implementation guide.
 
 **Contents:**
+
 - Test framework selection (JUnit 5, Mockito, AssertJ)
 - Test structure and organization
 - Refactoring for testability
@@ -142,9 +158,11 @@ Comprehensive testing strategy and implementation guide.
 ---
 
 ### [04-implementation-roadmap.md](04-implementation-roadmap.md)
+
 Week-by-week implementation plan for 12-week modernization.
 
 **Contents:**
+
 - 9 phases of work
 - Detailed tasks for each week
 - Code examples for major changes
@@ -162,6 +180,7 @@ Week-by-week implementation plan for 12-week modernization.
 ### For Everyone: Which Approach Should You Use?
 
 **Use Pragmatic (5 days) if:**
+
 - ✅ You want to fix real user problems quickly
 - ✅ This is a small utility app for you/your team
 - ✅ You value simplicity over perfection
@@ -169,6 +188,7 @@ Week-by-week implementation plan for 12-week modernization.
 - ✅ **User said:** "Don't overdo patterns, decoupling und was weiß der geier"
 
 **Use Enterprise (12 weeks) if:**
+
 - ⚠️ This becomes mission-critical infrastructure
 - ⚠️ You have regulatory compliance requirements
 - ⚠️ You need extensive test coverage for audits
@@ -201,12 +221,14 @@ Week-by-week implementation plan for 12-week modernization.
 ### For Project Managers
 
 **Pragmatic Decision:**
+
 - Read [05-real-world-issues.md](05-real-world-issues.md)
 - Timeline: 5 days
 - Cost: ~40 hours
 - Outcome: Fixed app, happy users
 
 **Enterprise Decision:**
+
 - Read [00-executive-summary.md](00-executive-summary.md)
 - Timeline: 12 weeks
 - Cost: ~480 hours
@@ -264,7 +286,7 @@ Week-by-week implementation plan for 12-week modernization.
 
 ## Timeline Overview
 
-```
+```text
 Week 1:   Setup & Infrastructure
 Week 2:   CRITICAL Security Fixes
 Week 3:   HIGH Security Fixes
@@ -289,26 +311,31 @@ Week 12:  Final Testing & Documentation (80% coverage)
 These items **must** be completed for the project to be considered successful:
 
 ### Week 2 (CRITICAL)
+
 - [ ] Fix SSL certificate validation
 - [ ] Remove hardcoded encryption key
 - [ ] Implement OS credential storage
 
 ### Week 3 (HIGH)
+
 - [ ] Use JPasswordField for passwords
 - [ ] Fix all NullPointerExceptions
 - [ ] Fix Find/Replace functionality
 
 ### Week 4 (HIGH)
+
 - [ ] Fix save success message
 - [ ] Fix array index bounds
 - [ ] Fix tokenization loop
 
 ### Week 6 (Testing)
+
 - [ ] Achieve 40% test coverage
 - [ ] All security tests passing
 - [ ] All bug regression tests passing
 
 ### Week 12 (Completion)
+
 - [ ] Achieve 80% test coverage
 - [ ] 0 CRITICAL/HIGH issues remaining
 - [ ] Complete documentation
@@ -319,12 +346,14 @@ These items **must** be completed for the project to be considered successful:
 ## Success Criteria
 
 ### Minimum Success (After Week 4)
+
 - ✅ All CRITICAL security issues fixed
 - ✅ All CRITICAL bugs fixed
 - ✅ Application safe for production use
 - ✅ Basic test coverage (20%+)
 
 ### Full Success (After Week 12)
+
 - ✅ All security issues fixed
 - ✅ All bugs fixed (except agreed-upon LOW priority)
 - ✅ 80%+ test coverage
@@ -338,24 +367,28 @@ These items **must** be completed for the project to be considered successful:
 ## How to Use This Analysis
 
 ### For Planning
+
 1. Use timeline in roadmap for sprint planning
 2. Assign tasks from each phase to sprints
 3. Track progress with success metrics
 4. Adjust timeline based on team capacity
 
 ### For Development
+
 1. Create branches for each phase
 2. Follow tasks in roadmap order
 3. Write tests before fixing bugs (TDD)
 4. Code review all security fixes
 
 ### For Testing
+
 1. Use bug catalog as test case source
 2. Implement test strategy incrementally
 3. Track coverage with JaCoCo
 4. Automate all tests in CI/CD
 
 ### For Documentation
+
 1. Update docs as changes are made
 2. Document all security fixes
 3. Create changelogs for each phase
@@ -366,11 +399,13 @@ These items **must** be completed for the project to be considered successful:
 ## Related Resources
 
 ### Internal Documentation
+
 - [../../README.md](../../README.md) - Project README
 - [../../../src/main/java/](../../../src/main/java/) - Source code
 - [../../../pom.xml](../../../pom.xml) - Maven configuration
 
 ### External Resources
+
 - [OWASP Top 10](https://owasp.org/Top10/) - Security best practices
 - [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/) - Testing framework
 - [Mockito Documentation](https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html) - Mocking framework
@@ -381,16 +416,19 @@ These items **must** be completed for the project to be considered successful:
 ## Getting Help
 
 ### Questions About Analysis
+
 - Review the specific document in detail
 - Check code references (file:line format)
 - Look at code examples in documents
 
 ### Questions About Implementation
+
 - Consult the roadmap for detailed steps
 - Review test strategy for testing approach
 - Check security document for remediation strategies
 
 ### Questions About Priority
+
 - CRITICAL = Must fix immediately (security risk or data loss)
 - HIGH = Must fix before release (crashes or security)
 - MEDIUM = Should fix soon (poor UX or minor bugs)
@@ -403,6 +441,7 @@ These items **must** be completed for the project to be considered successful:
 This analysis was created on 2025-11-03 based on the current state of the codebase.
 
 As implementation proceeds:
+
 - Update completion status in roadmap
 - Document any deviations from plan
 - Track actual vs. estimated time

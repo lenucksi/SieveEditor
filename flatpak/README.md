@@ -27,12 +27,14 @@ This directory contains files required for Flatpak packaging.
 The PNG icon needs to be generated from the SVG source:
 
 ### Option 1: ImageMagick
+
 ```bash
 convert -background none -density 300 de.febrildur.sieveeditor.svg \
   -resize 256x256 de.febrildur.sieveeditor.png
 ```
 
 ### Option 2: Inkscape
+
 ```bash
 inkscape de.febrildur.sieveeditor.svg \
   --export-type=png \
@@ -41,13 +43,15 @@ inkscape de.febrildur.sieveeditor.svg \
 ```
 
 ### Option 3: rsvg-convert
+
 ```bash
 rsvg-convert -w 256 -h 256 de.febrildur.sieveeditor.svg \
   -o de.febrildur.sieveeditor.png
 ```
 
 ### Option 4: Online Converter
-- Upload SVG to https://cloudconvert.com/svg-to-png
+
+- Upload SVG to <https://cloudconvert.com/svg-to-png>
 - Set output to 256x256
 - Download and save as `de.febrildur.sieveeditor.png`
 
@@ -68,6 +72,7 @@ identify de.febrildur.sieveeditor.png
 See `../de.febrildur.sieveeditor.yml` for the Flatpak manifest.
 
 Build locally:
+
 ```bash
 # From project root
 flatpak-builder --force-clean build-dir de.febrildur.sieveeditor.yml
@@ -75,6 +80,7 @@ flatpak build-bundle build-dir SieveEditor.flatpak de.febrildur.sieveeditor
 ```
 
 Install:
+
 ```bash
 flatpak install --user SieveEditor.flatpak
 flatpak run de.febrildur.sieveeditor
@@ -85,8 +91,9 @@ flatpak run de.febrildur.sieveeditor
 See `../FLATPAK-PACKAGING-REPORT.md` for complete submission instructions.
 
 Prerequisites:
+
 - [x] Icon converted to PNG
 - [ ] Screenshot created and committed
 - [ ] Flatpak tested locally
 
-Then submit PR to https://github.com/flathub/flathub
+Then submit PR to <https://github.com/flathub/flathub>

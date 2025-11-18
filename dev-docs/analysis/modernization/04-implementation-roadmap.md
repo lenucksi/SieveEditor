@@ -11,6 +11,7 @@
 ### What Was Completed
 
 #### Phase 0: Build System (Partial)
+
 - ✅ Maven updated to current version
 - ✅ Build works (`mvn clean package`)
 - ✅ UTF-8 encoding configured in pom.xml
@@ -18,23 +19,27 @@
 - ❌ JaCoCo coverage NOT added (deferred)
 
 #### Phase 1: Security Fixes
+
 - ❌ SSL certificate validation NOT fixed (deferred - documented but not implemented)
 - ❌ Hardcoded encryption key NOT fixed (deferred - documented but not implemented)
 
 **Note:** Security issues are documented in analysis but were NOT addressed in the pragmatic approach per user's decision.
 
 #### Phase 2: Bug Fixes
+
 - ✅ Find/Replace completely fixed (ActionReplace.java rewritten with correct event handlers)
 - ✅ Tokenizer bug fixed (SieveTokenMaker.java converted from forEach to for-loop)
 - ❌ Password field security NOT fixed (still uses JTextField, not JPasswordField)
 
 #### Phase 3: Java Modernization
+
 - ✅ Updated to Java 21 LTS (from Java 11)
 - ✅ Updated maven-compiler-plugin to 3.13.0
 - ✅ Updated RSyntaxTextArea to 3.5.1
 - ✅ Platform encoding fixed in pom.xml
 
 #### Additional Improvements (not in original roadmap)
+
 - ✅ 4K HiDPI scaling fixed (new sieveeditor.sh launcher script)
 - ✅ Ctrl+F keyboard shortcut added
 - ✅ Enter key search in Find dialog
@@ -45,6 +50,7 @@
 This roadmap below represents the **original 12-week enterprise plan**. It is kept as a reference for potential future work. Most items remain unimplemented as the pragmatic approach focused only on critical user-facing bugs.
 
 For future modernization efforts, this roadmap provides a comprehensive plan for:
+
 - Security fixes (Phase 1-2)
 - Testing infrastructure (Phase 4-6)
 - Code quality improvements (Phase 5-9)
@@ -60,15 +66,17 @@ The approach balances immediate security fixes with sustainable refactoring and 
 ## Project Goals
 
 ### Primary Goals
+
 1. **Security:** Fix all CRITICAL and HIGH severity security vulnerabilities
 2. **Reliability:** Fix all CRITICAL and HIGH severity bugs
 3. **Quality:** Achieve 80%+ test coverage
 4. **Maintainability:** Refactor for better separation of concerns and testability
 
 ### Secondary Goals
-5. **Modernization:** Adopt Java 11+ features and best practices
-6. **UX:** Improve error messages and user feedback
-7. **Documentation:** Create comprehensive developer documentation
+
+1. **Modernization:** Adopt Java 11+ features and best practices
+2. **UX:** Improve error messages and user feedback
+3. **Documentation:** Create comprehensive developer documentation
 
 ## Implementation Phases
 
@@ -81,12 +89,14 @@ The approach balances immediate security fixes with sustainable refactoring and 
 #### Tasks
 
 **0.1 Development Environment Setup**
+
 - [ ] Set up IDE (Eclipse/IntelliJ) with code formatter
 - [ ] Configure Checkstyle for code quality
 - [ ] Set up SpotBugs for static analysis
 - [ ] Configure OWASP Dependency Check
 
 **0.2 Version Control**
+
 - [ ] Create feature branches:
   - `feature/security-fixes`
   - `feature/bug-fixes`
@@ -96,6 +106,7 @@ The approach balances immediate security fixes with sustainable refactoring and 
 - [ ] Require code reviews for merges
 
 **0.3 Build System**
+
 - [x] Update Maven to latest version (✅ DONE - see FIXES-APPLIED.md)
 - [ ] Add test dependencies (JUnit 5, Mockito, AssertJ) (⚠️ DEFERRED - pragmatic approach)
 - [ ] Configure Surefire and Failsafe plugins (⚠️ DEFERRED - pragmatic approach)
@@ -103,6 +114,7 @@ The approach balances immediate security fixes with sustainable refactoring and 
 - [x] Configure assembly plugin for releases (✅ DONE - build produces JAR with dependencies)
 
 **0.4 CI/CD Pipeline**
+
 - [ ] Create GitHub Actions workflow for:
   - Unit tests on every push
   - Integration tests on PR
@@ -111,12 +123,14 @@ The approach balances immediate security fixes with sustainable refactoring and 
   - Release builds on tags
 
 **0.5 Documentation**
+
 - [ ] Create CONTRIBUTING.md
 - [ ] Create ARCHITECTURE.md
 - [ ] Create SECURITY.md (vulnerability reporting)
 - [ ] Update README.md with build instructions
 
 **Deliverables:**
+
 - Working CI/CD pipeline
 - Development environment guide
 - All tooling configured
@@ -136,6 +150,7 @@ The approach balances immediate security fixes with sustainable refactoring and 
 **Status:** ⚠️ DEFERRED - Security issues documented but NOT addressed in pragmatic approach per user's decision
 
 **Tasks:**
+
 - [ ] Remove `getInsecureSSLFactory()` method entirely
 - [ ] Use default `SSLSocketFactory.getDefault()`
 - [ ] Add proper exception handling for certificate validation errors
@@ -146,6 +161,7 @@ The approach balances immediate security fixes with sustainable refactoring and 
 - [ ] Document how users can add custom CA certificates if needed
 
 **Code Changes:**
+
 ```java
 // REMOVE this entire method
 public static SSLSocketFactory getInsecureSSLFactory() { ... }
@@ -178,6 +194,7 @@ public void connect(String server, int port, String username, String password)
 ```
 
 **Tests:**
+
 - [ ] SSLValidationTest.shouldRejectSelfSignedCertificates()
 - [ ] SSLValidationTest.shouldRejectExpiredCertificates()
 - [ ] SSLValidationTest.shouldAcceptValidCertificates()
@@ -189,6 +206,7 @@ public void connect(String server, int port, String username, String password)
 **Status:** ⚠️ DEFERRED - Security issues documented but NOT addressed in pragmatic approach per user's decision
 
 **Tasks:**
+
 - [ ] Remove hardcoded encryption key
 - [ ] Implement OS-specific credential storage:
   - Windows: Use `Advapi32` (DPAPI) via JNA
@@ -201,6 +219,7 @@ public void connect(String server, int port, String username, String password)
 - [ ] Update encryption algorithm to PBEWithHmacSHA512AndAES_256
 
 **Code Changes:**
+
 ```java
 // NEW: CredentialStore.java
 public interface CredentialStore {
@@ -267,6 +286,7 @@ public class PropertiesSieve implements SieveConfiguration {
 ```
 
 **Dependencies to Add:**
+
 ```xml
 <!-- For Windows DPAPI -->
 <dependency>
@@ -277,12 +297,14 @@ public class PropertiesSieve implements SieveConfiguration {
 ```
 
 **Tests:**
+
 - [ ] EncryptionTest.shouldStorePasswordSecurely()
 - [ ] EncryptionTest.shouldRetrievePasswordCorrectly()
 - [ ] EncryptionTest.shouldNotHaveHardcodedKey()
 - [ ] CredentialStoreTest for each platform
 
 **Deliverables:**
+
 - SSL certificate validation enabled
 - No hardcoded encryption keys
 - Platform-specific credential storage
@@ -303,12 +325,14 @@ public class PropertiesSieve implements SieveConfiguration {
 **Status:** ⚠️ DEFERRED - Security issues documented but NOT addressed in pragmatic approach per user's decision
 
 **Tasks:**
+
 - [ ] Replace `JTextField` with `JPasswordField`
 - [ ] Use `getPassword()` method (returns `char[]`)
 - [ ] Clear char[] after use
 - [ ] Test password not visible on screen
 
 **Code Changes:**
+
 ```java
 // BEFORE
 JTextField tfPassword = new JTextField(parentFrame.getProp().getPassword(), 15);
@@ -333,6 +357,7 @@ try {
 ```
 
 **Tests:**
+
 - [ ] ActionConnectTest.shouldUsePasswordField()
 - [ ] ActionConnectTest.shouldClearPasswordAfterUse()
 
@@ -343,11 +368,13 @@ try {
 **Status:** ⚠️ DEFERRED - Security issues documented but NOT addressed in pragmatic approach per user's decision
 
 **Tasks:**
+
 - [ ] Change from generic "SSL" to "TLSv1.3" or "TLSv1.2"
 - [ ] Configure cipher suites (disallow weak ciphers)
 - [ ] Test TLS version negotiation
 
 **Code Changes:**
+
 ```java
 // BEFORE
 SSLContext sc = SSLContext.getInstance("SSL");
@@ -364,6 +391,7 @@ SSLContext sc = SSLContext.getInstance("TLSv1.3");
 **Status:** ⚠️ DEFERRED - Security issues documented but NOT addressed in pragmatic approach per user's decision
 
 **Tasks:**
+
 - [ ] Change `String password` to `char[] password` in:
   - ConnectAndListScripts.connect()
   - PropertiesSieve getter/setter
@@ -372,6 +400,7 @@ SSLContext sc = SSLContext.getInstance("TLSv1.3");
 - [ ] Update all call sites
 
 **Code Changes:**
+
 ```java
 // PropertiesSieve.java
 public char[] getPassword() throws IOException {
@@ -406,11 +435,13 @@ public void connect(String server, int port, String username, char[] password)
 **Status:** ⚠️ DEFERRED - Security issues documented but NOT addressed in pragmatic approach per user's decision
 
 **Tasks:**
+
 - [ ] Note: This is now handled by OS credential store
 - [ ] If fallback encryption needed, use strong algorithm
 - [ ] Document algorithm choice
 
 **Deliverables:**
+
 - All HIGH security vulnerabilities fixed
 - Security tests passing
 - Updated documentation
@@ -430,6 +461,7 @@ public void connect(String server, int port, String username, char[] password)
 **Status:** ✅ DONE - See FIXES-APPLIED.md
 
 **Tasks:**
+
 - [x] Attach event handlers to correct buttons (✅ DONE)
 - [x] Remove searchField listener (✅ DONE)
 - [x] Add "Find Next" button handler (✅ DONE)
@@ -438,6 +470,7 @@ public void connect(String server, int port, String username, char[] password)
 - [x] Test find functionality works (✅ DONE - confirmed by user)
 
 **Code Changes:**
+
 ```java
 // Remove searchField listener
 // searchField.addActionListener(...); // DELETE THIS
@@ -476,6 +509,7 @@ private void performSearch(boolean forward) {
 ```
 
 **Tests:**
+
 - [ ] ActionReplaceTest.shouldFindNextWhenButtonClicked()
 - [ ] ActionReplaceTest.shouldFindPreviousWhenButtonClicked()
 - [ ] ActionReplaceTest.shouldShowErrorForEmptySearch()
@@ -485,6 +519,7 @@ private void performSearch(boolean forward) {
 **File:** [ActionActivateDeactivateScript.java:91](../../../src/main/java/de/febrildur/sieveeditor/actions/ActionActivateDeactivateScript.java#L91)
 
 **Code Changes:**
+
 ```java
 // BEFORE
 JOptionPane.showMessageDialog(parentFrame, "deactivate all scripts");
@@ -498,12 +533,14 @@ JOptionPane.showMessageDialog(parentFrame, "Script renamed to: " + newname);
 **Files:** Application.java, ActionSaveScriptAs.java, ActionCheckScript.java, ActionLoadScript.java
 
 **Tasks:**
+
 - [ ] Add null checks before all server operations
 - [ ] Add null checks before all script operations
 - [ ] Validate method parameters
 - [ ] Show user-friendly error messages
 
 **Code Changes:**
+
 ```java
 // Application.java
 public void setScript(SieveScript script) throws IOException, ParseException {
@@ -558,11 +595,13 @@ public boolean save(String name) {
 **File:** [ActionSaveScript.java:21-23](../../../src/main/java/de/febrildur/sieveeditor/actions/ActionSaveScript.java#L21-L23)
 
 **Tasks:**
+
 - [ ] Change Application.save() to return boolean
 - [ ] Only show success message if save actually succeeded
 - [ ] Show error message if save failed
 
 **Code Changes:**
+
 ```java
 // ActionSaveScript.java
 public void actionPerformed(ActionEvent e) {
@@ -579,6 +618,7 @@ public void actionPerformed(ActionEvent e) {
 **File:** [ActionActivateDeactivateScript.java:57, 83](../../../src/main/java/de/febrildur/sieveeditor/actions/ActionActivateDeactivateScript.java#L57)
 
 **Code Changes:**
+
 ```java
 activate.addActionListener((event) -> {
     int selectedRow = table.getSelectedRow();
@@ -600,11 +640,13 @@ activate.addActionListener((event) -> {
 **Status:** ✅ DONE - See FIXES-APPLIED.md
 
 **Tasks:**
+
 - [x] Replace IntStream.forEach with traditional for-loop (✅ DONE)
 - [x] Remove AtomicInteger wrappers (✅ DONE)
 - [x] Test tokenization works correctly (✅ DONE - fixed last character unreachable issue)
 
 **Code Changes:**
+
 ```java
 // BEFORE
 IntStream.range(offset, end).forEach(i -> {
@@ -638,10 +680,12 @@ for (int i = offset; i < end; i++) {
 ```
 
 **Tests:**
+
 - [ ] SieveTokenMakerTest.shouldCorrectlyTokenizeNumbers()
 - [ ] SieveTokenMakerTest.shouldHandleNumbersFollowedByLetters()
 
 **Deliverables:**
+
 - All CRITICAL bugs fixed
 - All HIGH bugs fixed
 - Bug regression tests passing
@@ -656,6 +700,7 @@ for (int i = offset; i < end; i++) {
 #### 4.1 Refactor for Testability
 
 **Tasks:**
+
 - [ ] Create interfaces: SieveServerConnection, SieveConfiguration, DialogFactory
 - [ ] Implement dependency injection in Application class
 - [ ] Extract business logic from UI classes
@@ -664,6 +709,7 @@ for (int i = offset; i < end; i++) {
 #### 4.2 Write Unit Tests
 
 **Priority 1: Security & Bug Fixes**
+
 - [ ] ConnectAndListScriptsTest (80% coverage target)
   - Connection validation
   - SSL/TLS handling
@@ -682,6 +728,7 @@ for (int i = offset; i < end; i++) {
   - ActionActivateDeactivateScriptTest
 
 **Priority 2: Core Logic**
+
 - [ ] ApplicationTest (60% coverage target)
   - Save/load operations
   - Script management
@@ -693,6 +740,7 @@ for (int i = offset; i < end; i++) {
 **Test Count Target:** 80+ unit tests
 
 **Deliverables:**
+
 - 40%+ code coverage
 - All critical paths tested
 - CI/CD running tests automatically
@@ -706,6 +754,7 @@ for (int i = offset; i < end; i++) {
 #### 5.1 Fix Resource Leaks
 
 **Tasks:**
+
 - [ ] Fix dialog not disposed (ActionConnect.java:73)
 - [ ] Fix dialog created before operations (ActionLoadScript.java:47)
 - [ ] Implement try-with-resources where applicable
@@ -714,6 +763,7 @@ for (int i = offset; i < end; i++) {
 #### 5.2 Improve Input Validation
 
 **Tasks:**
+
 - [ ] Validate script names (ActionSaveScriptAs.java)
 - [ ] Validate empty script list (ActionLoadScript.java)
 - [ ] Validate port numbers (PropertiesSieve.java)
@@ -722,6 +772,7 @@ for (int i = offset; i < end; i++) {
 #### 5.3 Improve User Feedback
 
 **Tasks:**
+
 - [ ] Consistent error messages
 - [ ] Show operation progress
 - [ ] Refresh data after operations
@@ -730,12 +781,14 @@ for (int i = offset; i < end; i++) {
 #### 5.4 Code Quality Improvements
 
 **Tasks:**
+
 - [ ] Fix inconsistent exception handling
 - [ ] Fix popup menu platform compatibility
 - [ ] Fix wrong dialog titles
 - [ ] Remove hardcoded strings (i18n preparation)
 
 **Deliverables:**
+
 - All MEDIUM bugs fixed
 - Improved error handling
 - Better user experience
@@ -749,6 +802,7 @@ for (int i = offset; i < end; i++) {
 #### 6.1 Integration Tests
 
 **Tasks:**
+
 - [ ] Set up TestContainers for Cyrus IMAP server
 - [ ] Create MockSieveServer for controlled testing
 - [ ] Test full connection workflow
@@ -757,6 +811,7 @@ for (int i = offset; i < end; i++) {
 - [ ] Test error recovery
 
 **Tests:**
+
 - [ ] ServerConnectionIT
 - [ ] ScriptManagementIT
 - [ ] ErrorHandlingIT
@@ -764,6 +819,7 @@ for (int i = offset; i < end; i++) {
 #### 6.2 GUI Tests
 
 **Tasks:**
+
 - [ ] Set up AssertJ-Swing
 - [ ] Test main window initialization
 - [ ] Test menu interactions
@@ -771,6 +827,7 @@ for (int i = offset; i < end; i++) {
 - [ ] Test keyboard shortcuts
 
 **Tests:**
+
 - [ ] ApplicationGUITest
 - [ ] ConnectDialogTest
 - [ ] LoadScriptDialogTest
@@ -779,6 +836,7 @@ for (int i = offset; i < end; i++) {
 #### 6.3 End-to-End Tests
 
 **Tasks:**
+
 - [ ] Test complete user workflows:
   - Connect → Load → Edit → Save
   - Connect → Load → Check → Fix → Save
@@ -786,9 +844,11 @@ for (int i = offset; i < end; i++) {
   - Connect → Rename Script
 
 **Tests:**
+
 - [ ] EndToEndIT
 
 **Deliverables:**
+
 - 60%+ code coverage
 - Integration tests passing
 - GUI tests passing
@@ -804,6 +864,7 @@ for (int i = offset; i < end; i++) {
 #### 7.1 Java 11+ Features
 
 **Tasks:**
+
 - [ ] Replace anonymous inner classes with lambdas
 - [ ] Use var for local variables
 - [ ] Use String.isBlank() instead of isEmpty()
@@ -813,6 +874,7 @@ for (int i = offset; i < end; i++) {
 - [ ] Use Stream API where appropriate (not in loops!)
 
 **Examples:**
+
 ```java
 // Lambda
 SwingUtilities.invokeLater(() -> new Application().setVisible(true));
@@ -833,6 +895,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 #### 7.2 Design Patterns
 
 **Tasks:**
+
 - [ ] Implement Factory pattern for dialog creation
 - [ ] Implement Strategy pattern for credential storage
 - [ ] Implement Observer pattern for connection status
@@ -841,6 +904,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 #### 7.3 Dependency Updates
 
 **Tasks:**
+
 - [x] Update RSyntaxTextArea to latest version (✅ DONE - updated to 3.5.1, see FIXES-APPLIED.md)
 - [ ] Update ManageSieveJ (check for updates)
 - [ ] Update Jasypt (or remove if using OS credential store)
@@ -849,6 +913,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 - [ ] Fix any vulnerable dependencies
 
 **Deliverables:**
+
 - Modern Java code
 - Updated dependencies
 - No known vulnerabilities in dependencies
@@ -864,6 +929,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 **File:** [SieveTokenMaker.java](../../../src/main/java/de/febrildur/sieveeditor/system/SieveTokenMaker.java)
 
 **Tasks:**
+
 - [ ] Add all Sieve keywords (not just "if")
 - [ ] Add Sieve extensions (fileinto, vacation, etc.)
 - [ ] Support multi-line strings
@@ -872,6 +938,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 - [ ] Add code folding regions
 
 **Keywords to Add:**
+
 - Control: if, elsif, else, require, stop
 - Tests: address, allof, anyof, exists, header, not, size, true, false
 - Actions: fileinto, redirect, keep, discard, reject
@@ -880,6 +947,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 #### 8.2 Enhanced Error Messages
 
 **Tasks:**
+
 - [ ] User-friendly error messages (not exception class names)
 - [ ] Suggest solutions for common errors
 - [ ] Link to help documentation
@@ -888,6 +956,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 #### 8.3 Missing Functionality
 
 **Tasks:**
+
 - [ ] Add "Replace" functionality to Find/Replace dialog
 - [ ] Add "Replace All" functionality
 - [x] Add wrap-around search option (✅ DONE - see FIXES-APPLIED.md)
@@ -898,6 +967,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 #### 8.4 Logging
 
 **Tasks:**
+
 - [ ] Add SLF4J + Logback
 - [ ] Log all connections
 - [ ] Log all authentications (success/failure)
@@ -906,6 +976,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 - [ ] Configurable log level
 
 **Deliverables:**
+
 - Complete Sieve syntax support
 - Better error messages
 - Logging framework
@@ -920,6 +991,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 #### 9.1 Final Testing Push
 
 **Tasks:**
+
 - [ ] Write tests for all remaining uncovered code
 - [ ] Achieve 80%+ code coverage
 - [ ] Fix any failing tests
@@ -928,6 +1000,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 - [ ] Memory leak testing
 
 **Coverage Targets:**
+
 - ConnectAndListScripts: 90%
 - PropertiesSieve: 90%
 - Application: 80%
@@ -938,6 +1011,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 #### 9.2 Security Audit
 
 **Tasks:**
+
 - [ ] Run OWASP Dependency Check
 - [ ] Run SpotBugs security analysis
 - [ ] Manual security review
@@ -947,6 +1021,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 #### 9.3 Documentation
 
 **Tasks:**
+
 - [ ] Update README.md with:
   - Build instructions
   - Usage guide
@@ -961,6 +1036,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 #### 9.4 Release Preparation
 
 **Tasks:**
+
 - [ ] Update version to 1.0.0
 - [ ] Create CHANGELOG.md
 - [ ] Create release notes
@@ -970,6 +1046,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 - [ ] Update GitHub releases
 
 **Deliverables:**
+
 - 80%+ test coverage
 - Complete documentation
 - Release candidate
@@ -979,6 +1056,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 ## Success Metrics
 
 ### Security Metrics
+
 - [ ] 0 CRITICAL vulnerabilities (down from 2)
 - [ ] 0 HIGH vulnerabilities (down from 4)
 - [ ] SSL certificate validation enabled
@@ -986,6 +1064,7 @@ var keywords = List.of("if", "elsif", "else", "require");
 - [ ] OWASP Dependency Check clean
 
 ### Quality Metrics
+
 - [ ] 0 CRITICAL bugs (down from 2)
 - [ ] 0 HIGH bugs (down from 9)
 - [ ] 80%+ code coverage (up from 0%)
@@ -993,12 +1072,14 @@ var keywords = List.of("if", "elsif", "else", "require");
 - [ ] 0 Checkstyle violations (with reasonable rules)
 
 ### Process Metrics
+
 - [ ] All tests pass in CI/CD
 - [ ] Code review required for all changes
 - [ ] Automated security scanning
 - [ ] Automated dependency updates (Dependabot)
 
 ### Documentation Metrics
+
 - [ ] README.md complete
 - [ ] ARCHITECTURE.md complete
 - [ ] CONTRIBUTING.md complete
@@ -1013,21 +1094,25 @@ var keywords = List.of("if", "elsif", "else", "require");
 ### High Risks
 
 **Risk 1: Breaking Existing Functionality**
+
 - **Mitigation:** Write tests before refactoring
 - **Mitigation:** Maintain backward compatibility
 - **Mitigation:** Incremental changes with testing
 
 **Risk 2: OS-Specific Credential Storage Issues**
+
 - **Mitigation:** Test on all target platforms
 - **Mitigation:** Provide fallback master password option
 - **Mitigation:** Clear documentation for users
 
 **Risk 3: ManageSieveJ Library Limitations**
+
 - **Mitigation:** Research library capabilities early
 - **Mitigation:** Consider contributing patches
 - **Mitigation:** Consider forking if necessary
 
 **Risk 4: Time Overruns**
+
 - **Mitigation:** Prioritize security and critical bugs
 - **Mitigation:** Move nice-to-have features to Phase 10
 - **Mitigation:** Regular progress reviews
@@ -1035,11 +1120,13 @@ var keywords = List.of("if", "elsif", "else", "require");
 ### Medium Risks
 
 **Risk 5: Test Complexity with Swing**
+
 - **Mitigation:** Use AssertJ-Swing
 - **Mitigation:** Focus on unit tests over GUI tests
 - **Mitigation:** Separate business logic from UI
 
 **Risk 6: Incomplete Test Coverage**
+
 - **Mitigation:** Set incremental goals (40%, 60%, 80%)
 - **Mitigation:** Focus on critical paths first
 - **Mitigation:** Use JaCoCo to track progress
@@ -1049,17 +1136,20 @@ var keywords = List.of("if", "elsif", "else", "require");
 ## Dependencies & Prerequisites
 
 ### Tools Required
+
 - Java 11+ JDK
 - Maven 3.6+
 - Git
 - IDE (Eclipse/IntelliJ)
 
 ### Platform-Specific
+
 - **Windows:** Windows 10+ for DPAPI
 - **macOS:** macOS 10.14+ for Keychain
 - **Linux:** libsecret-1-dev for credential storage
 
 ### Team Skills
+
 - Java development
 - Swing/AWT GUI programming
 - Unit testing (JUnit, Mockito)
@@ -1073,16 +1163,19 @@ var keywords = List.of("if", "elsif", "else", "require");
 ### Post-Release (Ongoing)
 
 **Monthly:**
+
 - [ ] Run OWASP Dependency Check
 - [ ] Update dependencies
 - [ ] Review security advisories
 
 **Quarterly:**
+
 - [ ] Review and update documentation
 - [ ] Evaluate new Java features
 - [ ] Performance profiling
 
 **Yearly:**
+
 - [ ] Security audit
 - [ ] Dependency major version updates
 - [ ] Code quality review

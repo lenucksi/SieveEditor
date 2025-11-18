@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Conventional Commits enforcement via git commit-msg hook
 - Claude Code development harness with slash commands and skills
 - Comprehensive developer documentation (CLAUDE.md)
@@ -16,12 +17,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SLSA Level 3 provenance attestations for all artifacts
 
 ### Changed
+
 - Updated CONTRIBUTING.md with git hooks setup instructions
 - Enhanced commit message validation and enforcement
 
 ## [0.0.1] - Initial Development
 
 ### Added
+
 - Initial project structure
 - ManageSieve client integration (ManageSieveJ 0.3.3)
 - Swing-based GUI with RSyntaxTextArea for Sieve script editing

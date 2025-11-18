@@ -9,7 +9,8 @@ This report addresses the Flatpak packaging implementation for SieveEditor and t
 ## Issue 1: macOS DMG Version Restriction
 
 ### Problem
-```
+
+```text
 Error: Bundler Mac DMG Package skipped because of a configuration problem:
 The first number in an app-version cannot be zero or negative.
 ```
@@ -19,6 +20,7 @@ The first number in an app-version cannot be zero or negative.
 ### Solution Implemented
 
 **Version transformation for macOS only:**
+
 - `0.x.y` → `1.0.x` (for macOS)
 - `0.x` → `1.0.x` (for macOS)
 - `1.x.y` → `1.x.y` (unchanged)
@@ -37,12 +39,14 @@ fi
 ```
 
 **Why This Works:**
+
 - Linux/Windows packages accept `0.x.y` versions (no restriction)
 - macOS gets compatible version automatically
 - Maintains semantic meaning: `0.0.1` → `1.0.0`, `0.1.5` → `1.0.1`
 - Transparent to users (version shown in release notes is original)
 
 **Alternative Approaches Considered:**
+
 1. ❌ Start versioning at `1.0.0` - Breaks semantic versioning for pre-release software
 2. ❌ Skip macOS builds for 0.x versions - Reduces platform support
 3. ✅ **Transform version for macOS only** - Best of both worlds
@@ -54,6 +58,7 @@ fi
 ### Current Status: ✅ IMPLEMENTED
 
 ### What is Flatpak?
+
 - **Universal Linux packaging format**
 - Works across all distros (Ubuntu, Fedora, Arch, etc.)
 - Sandboxed execution
@@ -64,6 +69,7 @@ fi
 #### 1. Flatpak Manifest (`de.febrildur.sieveeditor.yml`)
 
 **Key Configuration:**
+
 ```yaml
 app-id: de.febrildur.sieveeditor
 runtime: org.freedesktop.Platform
@@ -73,6 +79,7 @@ sdk-extensions:
 ```
 
 **Permissions:**
+
 ```yaml
 finish-args:
   - --socket=x11           # GUI support (Swing)
@@ -82,6 +89,7 @@ finish-args:
 ```
 
 **Build Process:**
+
 1. Install OpenJDK 21 extension
 2. Copy JAR to `/app/sieveeditor/`
 3. Create launcher script with JVM options
@@ -90,6 +98,7 @@ finish-args:
 #### 2. Desktop Integration (`flatpak/de.febrildur.sieveeditor.desktop`)
 
 **FreeDesktop standard desktop entry:**
+
 - Application name and description
 - Icon and executable
 - Categories: Network, Email
@@ -98,6 +107,7 @@ finish-args:
 #### 3. AppStream Metadata (`flatpak/de.febrildur.sieveeditor.metainfo.xml`)
 
 **Required for Flathub submission:**
+
 - Application description
 - Feature list
 - Screenshots (placeholder)
@@ -108,6 +118,7 @@ finish-args:
 #### 4. GitHub Actions Integration
 
 **New job in `.github/workflows/package.yml`:**
+
 ```yaml
 package-flatpak:
   name: Package Flatpak (Linux Universal)
@@ -120,6 +131,7 @@ package-flatpak:
 ```
 
 **Features:**
+
 - Uses official `flatpak-github-actions@v6`
 - Automatic caching with `cache-key`
 - SLSA Level 3 attestations
@@ -130,23 +142,30 @@ package-flatpak:
 ## Java + Flatpak: Challenges Addressed
 
 ### Challenge 1: Java Runtime
+
 **Solution:** Use `org.freedesktop.Sdk.Extension.openjdk21`
+
 - Bundles Java 21 LTS with the app
 - No dependency on system Java version
 - Consistent across all Linux distros
 
 ### Challenge 2: Read-Only `/app` Directory
+
 **Issue:** Flatpak apps run in sandbox with read-only `/app`
 **Solution:**
+
 - JAR is in `/app/sieveeditor/` (read-only, fine for JARs)
 - Profiles in `~/.sieveprofiles` (user writable)
 - No self-updating (not needed, Flatpak handles updates)
 
 ### Challenge 3: Network Access
+
 **Solution:** `--share=network` permission allows ManageSieve connections
 
 ### Challenge 4: File System Access
+
 **Solution:** `--filesystem=~/.sieveprofiles:create` allows profile storage
+
 - Limited to specific directory (security)
 - Won't conflict with system files
 
@@ -155,11 +174,13 @@ package-flatpak:
 ## Distribution Channels
 
 ### 1. GitHub Releases (Implemented)
-```
+
+```text
 SieveEditor-0.0.1.flatpak  # Single file download
 ```
 
 **Installation:**
+
 ```bash
 flatpak install SieveEditor-0.0.1.flatpak
 flatpak run de.febrildur.sieveeditor
@@ -168,17 +189,20 @@ flatpak run de.febrildur.sieveeditor
 ### 2. Flathub (Future)
 
 **Benefits:**
+
 - Automatic updates via Flatpak
 - Discovery in GNOME Software / KDE Discover
 - Better reach (millions of users)
 
 **Requirements:**
-- Submit to https://github.com/flathub/flathub
+
+- Submit to <https://github.com/flathub/flathub>
 - Icon requirement: 256x256 PNG (currently placeholder)
 - Screenshot requirement (currently placeholder)
 - Review process (typically 1-2 weeks)
 
 **Submission Process:**
+
 1. Create icon and screenshot
 2. Fork flathub/flathub
 3. Submit manifest via PR
@@ -199,11 +223,13 @@ flatpak run de.febrildur.sieveeditor
 | **Flatpak** | ~100-120 MB | ✅ (bundles Java 21 + dependencies) |
 
 **Why Flatpak is larger:**
+
 - Includes entire OpenJDK 21 runtime
 - Includes FreeDesktop Platform base
 - Self-contained (no system dependencies)
 
 **Trade-offs:**
+
 - ✅ Works on ALL Linux distros
 - ✅ No dependency conflicts
 - ✅ Sandboxed (security)
@@ -216,12 +242,14 @@ flatpak run de.febrildur.sieveeditor
 ### Local Flatpak Build
 
 **Prerequisites:**
+
 ```bash
 sudo apt-get install flatpak flatpak-builder
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 ```
 
 **Build:**
+
 ```bash
 # Install SDK
 flatpak install flathub org.freedesktop.Platform//23.08
@@ -248,10 +276,12 @@ flatpak run de.febrildur.sieveeditor
 ### CI/CD Testing
 
 **Automatic builds on:**
+
 - Manual dispatch (`workflow_dispatch`)
 - GitHub Releases (`release` event)
 
 **Artifacts uploaded:**
+
 - `SieveEditor-{version}.flatpak`
 - Attestation (SLSA Level 3 provenance)
 - SHA256 checksum
@@ -263,6 +293,7 @@ flatpak run de.febrildur.sieveeditor
 ### Updated Assets
 
 **Before:**
+
 - ✅ JAR (Universal)
 - ✅ DEB (Debian/Ubuntu)
 - ✅ RPM (Fedora/RHEL)
@@ -271,6 +302,7 @@ flatpak run de.febrildur.sieveeditor
 - ✅ checksums.txt
 
 **After:**
+
 - ✅ JAR (Universal)
 - ✅ DEB (Debian/Ubuntu)
 - ✅ RPM (Fedora/RHEL)
@@ -282,6 +314,7 @@ flatpak run de.febrildur.sieveeditor
 ### Updated Installation Instructions
 
 **Linux (Universal - Flatpak):**
+
 ```bash
 # Download from GitHub Releases
 wget https://github.com/lenucksi/SieveEditor/releases/download/v0.0.1/SieveEditor-0.0.1.flatpak
@@ -294,6 +327,7 @@ flatpak run de.febrildur.sieveeditor
 ```
 
 **Or from Flathub (when submitted):**
+
 ```bash
 flatpak install flathub de.febrildur.sieveeditor
 ```
@@ -303,6 +337,7 @@ flatpak install flathub de.febrildur.sieveeditor
 ## Recommendations
 
 ### Immediate (Before Next Release)
+
 1. ✅ **Create proper icon** (256x256 PNG)
    - Replace `flatpak/de.febrildur.sieveeditor.png` placeholder
    - Design suggestion: Envelope with filter/funnel icon
@@ -318,9 +353,10 @@ flatpak install flathub de.febrildur.sieveeditor
    - Verify profile storage works
 
 ### Short-Term (First Month)
+
 1. ⏳ **Submit to Flathub**
-   - Follow submission guide: https://docs.flathub.org/docs/for-app-authors/submission/
-   - Fork https://github.com/flathub/flathub
+   - Follow submission guide: <https://docs.flathub.org/docs/for-app-authors/submission/>
+   - Fork <https://github.com/flathub/flathub>
    - Create PR with manifest
 
 2. ⏳ **Add Flatpak verification to CI**
@@ -328,6 +364,7 @@ flatpak install flathub de.febrildur.sieveeditor
    - Basic smoke test (launch app)
 
 ### Long-Term (Ongoing)
+
 1. ⏳ **Monitor Flatpak updates**
    - Watch for Platform/SDK updates
    - Update runtime-version when needed
@@ -341,23 +378,28 @@ flatpak install flathub de.febrildur.sieveeditor
 ## Security Considerations
 
 ### Flatpak Sandbox
+
 **Permissions granted:**
+
 - `--socket=x11` - GUI (required for Swing)
 - `--share=network` - ManageSieve protocol (required)
 - `--filesystem=~/.sieveprofiles:create` - Profile storage (required)
 
 **Permissions NOT granted:**
+
 - No access to entire home directory
 - No access to system files
 - No device access
 - No DBus access (unless needed later)
 
 **Principle of Least Privilege:**
+
 - Only grants minimum required permissions
 - User data isolated in `~/.sieveprofiles`
 - Cannot modify system configuration
 
 ### SLSA Level 3 Attestations
+
 - Flatpak bundle has cryptographic provenance
 - Verifiable build origin
 - Tamper detection
@@ -380,6 +422,7 @@ flatpak install flathub de.febrildur.sieveeditor
 ## Action Items Checklist
 
 ### Completed ✅
+
 - [x] Fix macOS DMG version issue
 - [x] Implement Flatpak manifest
 - [x] Create desktop entry file
@@ -392,11 +435,13 @@ flatpak install flathub de.febrildur.sieveeditor
 ### Immediate (Before Next Release)
 
 #### 1. Convert Icon to PNG ⏳
+
 **Status:** SVG created, needs PNG conversion
 
 **SVG Source:** `flatpak/de.febrildur.sieveeditor.svg`
 
 **Convert to PNG:**
+
 ```bash
 # Option 1: Using ImageMagick (if available)
 cd flatpak
@@ -418,21 +463,25 @@ rsvg-convert -w 256 -h 256 de.febrildur.sieveeditor.svg \
 ```
 
 **Verification:**
+
 ```bash
 file flatpak/de.febrildur.sieveeditor.png
 # Should show: PNG image data, 256 x 256
 ```
 
 #### 2. Create Screenshot 📸
+
 **Status:** TODO (requires running application)
 
 **Requirements:**
+
 - Show main window with syntax highlighting
 - Professional appearance (example Sieve script loaded)
 - Recommended size: 1280x720 or higher
 - Save to: `screenshots/main-window.png`
 
 **Steps:**
+
 ```bash
 # 1. Build and run application
 cd app && mvn package
@@ -455,9 +504,11 @@ mkdir -p ../screenshots
 ```
 
 #### 3. Test Local Flatpak Build (Optional) 🧪
+
 **Status:** TODO
 
 **Prerequisites:**
+
 ```bash
 # Install Flatpak build tools
 sudo apt-get install flatpak flatpak-builder
@@ -473,6 +524,7 @@ flatpak install flathub org.freedesktop.Sdk.Extension.openjdk21//23.08
 ```
 
 **Build and Test:**
+
 ```bash
 # 1. Build JAR first
 cd app && mvn clean package
@@ -500,6 +552,7 @@ flatpak run de.febrildur.sieveeditor
 ```
 
 **Uninstall after testing:**
+
 ```bash
 flatpak uninstall de.febrildur.sieveeditor
 ```
@@ -507,9 +560,11 @@ flatpak uninstall de.febrildur.sieveeditor
 ### Short-Term (First Month)
 
 #### 4. Submit to Flathub 🚀
+
 **Status:** TODO (after icon and screenshot are ready)
 
 **Prerequisites:**
+
 - [ ] Icon converted to 256x256 PNG
 - [ ] Screenshot created and committed
 - [ ] Local Flatpak build tested successfully
@@ -517,12 +572,14 @@ flatpak uninstall de.febrildur.sieveeditor
 **Submission Steps:**
 
 1. **Fork Flathub repository:**
+
    ```bash
    # Go to https://github.com/flathub/flathub
    # Click "Fork"
    ```
 
 2. **Create application repository:**
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/flathub.git
    cd flathub
@@ -531,6 +588,7 @@ flatpak uninstall de.febrildur.sieveeditor
    ```
 
 3. **Copy files:**
+
    ```bash
    # Copy manifest and supporting files
    cp /path/to/SieveEditor/de.febrildur.sieveeditor.yml .
@@ -540,6 +598,7 @@ flatpak uninstall de.febrildur.sieveeditor
    ```
 
 4. **Create flathub.json:**
+
    ```json
    {
      "only-arches": ["x86_64", "aarch64"]
@@ -547,6 +606,7 @@ flatpak uninstall de.febrildur.sieveeditor
    ```
 
 5. **Commit and push:**
+
    ```bash
    git add .
    git commit -m "Add de.febrildur.sieveeditor"
@@ -554,7 +614,7 @@ flatpak uninstall de.febrildur.sieveeditor
    ```
 
 6. **Create Pull Request:**
-   - Go to https://github.com/flathub/flathub
+   - Go to <https://github.com/flathub/flathub>
    - Click "New Pull Request"
    - Select your fork
    - Fill in PR template
@@ -566,20 +626,23 @@ flatpak uninstall de.febrildur.sieveeditor
    - Typical review time: 1-2 weeks
 
 **Flathub Benefits:**
+
 - ✅ Appears in GNOME Software / KDE Discover
 - ✅ Automatic updates for users
 - ✅ Wider distribution (millions of users)
 - ✅ Official Flathub badge for README
 
 **Resources:**
-- Submission guide: https://docs.flathub.org/docs/for-app-authors/submission/
-- Quality guidelines: https://docs.flathub.org/docs/for-app-authors/requirements/
+
+- Submission guide: <https://docs.flathub.org/docs/for-app-authors/submission/>
+- Quality guidelines: <https://docs.flathub.org/docs/for-app-authors/requirements/>
 
 ---
 
 ## Next Steps Summary
 
 **To complete Flatpak packaging:**
+
 1. ✅ ~~Create SVG icon~~ (Done)
 2. ⏳ Convert SVG to 256x256 PNG (needs tool)
 3. 📸 Create application screenshot (needs running app)
@@ -599,6 +662,7 @@ flatpak uninstall de.febrildur.sieveeditor
 ✅ **Documentation:** Complete with testing instructions
 
 **Total platforms now supported:** 6
+
 1. Linux DEB (Debian/Ubuntu)
 2. Linux RPM (Fedora/RHEL)
 3. **Linux Flatpak (Universal)** ← NEW

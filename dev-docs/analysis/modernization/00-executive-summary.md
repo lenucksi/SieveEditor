@@ -27,9 +27,11 @@
 ### 🔴 CRITICAL Security Issues (Must Fix Immediately)
 
 #### 1. Disabled SSL Certificate Validation
+
 **Location:** [ConnectAndListScripts.java:97-121](../../../src/main/java/de/febrildur/sieveeditor/system/ConnectAndListScripts.java#L97-L121)
 
 The application completely disables SSL/TLS certificate validation, accepting **all certificates without verification**. This makes man-in-the-middle attacks trivial and exposes:
+
 - User credentials during authentication
 - All mail filter scripts
 - Script content during upload/download
@@ -38,9 +40,11 @@ The application completely disables SSL/TLS certificate validation, accepting **
 **Priority:** CRITICAL - Fix Week 2
 
 #### 2. Hardcoded Encryption Key
+
 **Location:** [PropertiesSieve.java:29](../../../src/main/java/de/febrildur/sieveeditor/system/PropertiesSieve.java#L29)
 
 The encryption password `"KNQ4VnqF24WLe4HZJ9fB9Sth"` is hardcoded in the source code (public on GitHub). This means:
+
 - Anyone can decrypt stored passwords from `~/.sieveproperties`
 - Decompiling the JAR exposes the key
 - All installations use the same key
@@ -52,6 +56,7 @@ The encryption password `"KNQ4VnqF24WLe4HZJ9fB9Sth"` is hardcoded in the source 
 ### 🔴 CRITICAL Bugs (Application Crashes/Data Loss)
 
 #### 1. Find/Replace Completely Broken
+
 **Location:** [ActionReplace.java:48-49, 77](../../../src/main/java/de/febrildur/sieveeditor/actions/ActionReplace.java#L48-L49)
 
 Event handlers connected to wrong actions. Clicking "Find Next" or "Find Previous" opens a new dialog instead of searching. The find/replace feature is **completely non-functional**.
@@ -59,6 +64,7 @@ Event handlers connected to wrong actions. Clicking "Find Next" or "Find Previou
 **Priority:** CRITICAL - Fix Week 4
 
 #### 2. Wrong Success Message Misleads Users
+
 **Location:** [ActionSaveScript.java:21-23](../../../src/main/java/de/febrildur/sieveeditor/actions/ActionSaveScript.java#L21-L23)
 
 Always shows "Script saved" even when save failed, potentially causing **data loss** when users think their changes are saved but they're not.
@@ -127,6 +133,7 @@ Always shows "Script saved" even when save failed, potentially causing **data lo
 ### Testability Score: 2/10 ❌
 
 The codebase is currently **almost impossible to test** without:
+
 - Full Swing environment
 - Real ManageSieve server
 - Actual file system access
@@ -137,6 +144,7 @@ The codebase is currently **almost impossible to test** without:
 ### Three-Phase Approach
 
 #### 🔴 Phase 1: Security & Critical Bugs (Weeks 1-4)
+
 **Goal:** Make application safe and reliable
 
 - Fix 2 CRITICAL security vulnerabilities
@@ -148,6 +156,7 @@ The codebase is currently **almost impossible to test** without:
 **Outcome:** Safe, reliable application with CI/CD
 
 #### 🟡 Phase 2: Testing & Refactoring (Weeks 5-8)
+
 **Goal:** Achieve 60% test coverage and improve maintainability
 
 - Refactor for testability (interfaces, DI)
@@ -159,6 +168,7 @@ The codebase is currently **almost impossible to test** without:
 **Outcome:** Testable, maintainable codebase
 
 #### 🟢 Phase 3: Modernization & Polish (Weeks 9-12)
+
 **Goal:** Modern Java 11+ codebase with 80% coverage
 
 - Adopt Java 11+ features (lambdas, Optional, var, etc.)
@@ -193,6 +203,7 @@ The codebase is currently **almost impossible to test** without:
 ### Tools & Dependencies
 
 **New Dependencies:**
+
 - JUnit 5 (testing)
 - Mockito (mocking)
 - AssertJ (assertions)
@@ -202,6 +213,7 @@ The codebase is currently **almost impossible to test** without:
 - JNA Platform (Windows DPAPI for credential storage)
 
 **Development Tools:**
+
 - SpotBugs (static analysis)
 - Checkstyle (code quality)
 - OWASP Dependency Check (security)
@@ -229,6 +241,7 @@ The codebase is currently **almost impossible to test** without:
 ## Success Criteria
 
 ### Must Have (Phase 1)
+
 - ✅ 0 CRITICAL security vulnerabilities (down from 2)
 - ✅ 0 CRITICAL bugs (down from 2)
 - ✅ SSL certificate validation enabled
@@ -237,6 +250,7 @@ The codebase is currently **almost impossible to test** without:
 - ✅ CI/CD pipeline operational
 
 ### Should Have (Phase 2)
+
 - ✅ 60%+ test coverage (up from 0%)
 - ✅ 80+ unit tests written
 - ✅ Code refactored for testability
@@ -244,6 +258,7 @@ The codebase is currently **almost impossible to test** without:
 - ✅ Integration tests passing
 
 ### Nice to Have (Phase 3)
+
 - ✅ 80%+ test coverage
 - ✅ Modern Java 11+ features adopted
 - ✅ Complete documentation

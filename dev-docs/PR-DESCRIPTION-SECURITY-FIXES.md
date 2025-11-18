@@ -7,6 +7,7 @@ This PR implements comprehensive security fixes addressing **5 vulnerabilities**
 ## ✨ What's New
 
 ### 1. Interactive Certificate Trust Dialog
+
 **New in this PR:** Users can now accept self-signed certificates through an intuitive dialog, similar to web browsers.
 
 - 🖼️ Shows complete certificate details (subject, issuer, validity)
@@ -22,7 +23,9 @@ This PR implements comprehensive security fixes addressing **5 vulnerabilities**
 ### CRITICAL Severity
 
 #### 1. Improper Certificate Validation (CWE-295)
+
 **Before:** Accepted ALL certificates (MITM vulnerable)
+
 ```java
 // Old: Trust everything - INSECURE!
 TrustManager[] trustAllCerts = new TrustManager[] {
@@ -33,6 +36,7 @@ TrustManager[] trustAllCerts = new TrustManager[] {
 ```
 
 **After:** Proper validation with interactive user approval
+
 - ✅ System CA validation first
 - ✅ User trust store second
 - ✅ Interactive dialog for unknown certificates
@@ -43,13 +47,16 @@ TrustManager[] trustAllCerts = new TrustManager[] {
 ---
 
 #### 2. Hardcoded Encryption Key (CWE-798)
+
 **Before:** Key exposed in source code
+
 ```java
 // Old: Hardcoded key visible to anyone
 encryptor.setPassword("KNQ4VnqF24WLe4HZJ9fB9Sth");
 ```
 
 **After:** Machine-specific key derivation
+
 ```java
 // New: Derived from username + hostname + MAC address
 String key = SHA256(username + hostname + macAddress)
@@ -62,9 +69,11 @@ String key = SHA256(username + hostname + macAddress)
 ### HIGH Severity
 
 #### 3. Weak Encryption Algorithm (CWE-327)
+
 **Before:** `PBEWithMD5AndDES` (broken, deprecated)
 
 **After:** `PBEWithHmacSHA512AndAES_256`
+
 - ✅ AES-256 encryption
 - ✅ HMAC-SHA512 authentication
 - ✅ 10,000 PBKDF2 iterations
@@ -73,9 +82,11 @@ String key = SHA256(username + hostname + macAddress)
 ---
 
 #### 4. Password Displayed in Plain Text (CWE-522)
+
 **Before:** `JTextField` showed typed characters
 
 **After:** `JPasswordField` with bullet masking
+
 - ✅ Passwords shown as "••••••••"
 - ✅ Protected from shoulder surfing
 - ✅ Safe in screenshots/screen shares
@@ -85,9 +96,11 @@ String key = SHA256(username + hostname + macAddress)
 ### MEDIUM Severity
 
 #### 5. Insecure File Permissions (CWE-732)
+
 **Before:** Default permissions (readable by all users)
 
 **After:** Restrictive permissions
+
 - ✅ Files: 600 (owner read/write only)
 - ✅ Directories: 700 (owner access only)
 - ✅ Works on POSIX systems (Linux, macOS)
@@ -98,9 +111,11 @@ String key = SHA256(username + hostname + macAddress)
 ## ⚠️ Breaking Changes
 
 ### 1. Passwords Must Be Re-entered
+
 **Reason:** Encryption key changed from hardcoded to machine-specific.
 
 **What Users Need to Do:**
+
 1. Note all server passwords before upgrading
 2. After upgrade, re-enter passwords in connection dialog
 3. Passwords will be re-encrypted with secure key
@@ -110,14 +125,17 @@ String key = SHA256(username + hostname + macAddress)
 ---
 
 ### 2. Self-Signed Certificates Prompt for Approval
+
 **Reason:** Certificate validation now properly enforced.
 
 **What Users Will See:**
+
 - Dialog showing certificate details and fingerprint
 - Three choices: Trust & Connect, Reject, or Cancel
 - Decision stored for future connections
 
 **Verifying Certificates:**
+
 ```bash
 # Get server's certificate fingerprint
 openssl s_client -connect your-server:4190 -starttls imap < /dev/null 2>/dev/null | \
@@ -131,6 +149,7 @@ openssl s_client -connect your-server:4190 -starttls imap < /dev/null 2>/dev/nul
 ## 📊 Changes Summary
 
 ### Code Changes
+
 - **Files Created:** 5 new files (971 lines)
   - `CertificateStore.java` - Trust decision storage
   - `CertificateDialog.java` - Certificate approval UI
@@ -145,7 +164,8 @@ openssl s_client -connect your-server:4190 -starttls imap < /dev/null 2>/dev/nul
   - `README.md` - Security notice
 
 ### Commits
-```
+
+```text
 9298336 docs: update security docs with certificate trust dialog feature
 850e257 feat(security): add interactive certificate trust dialog
 49b361f docs: add security documentation and migration guide
@@ -161,6 +181,7 @@ ba3d15e security!: replace hardcoded encryption key (BREAKING)
 ### Manual Testing Required
 
 **Test 1: Password Encryption**
+
 ```bash
 # Fresh install
 rm -rf ~/.sieveprofiles
@@ -175,6 +196,7 @@ cat ~/.sieveprofiles/default.properties
 ```
 
 **Test 2: File Permissions (Linux/macOS)**
+
 ```bash
 ls -la ~/.sieveprofiles
 # Directory: drwx------  (700)
@@ -184,6 +206,7 @@ ls -la ~/.sieveprofiles/*.properties
 ```
 
 **Test 3: Certificate Trust Dialog**
+
 ```bash
 # Connect to server with self-signed cert
 # Dialog should appear with certificate details
@@ -195,6 +218,7 @@ cat ~/.sieveprofiles/certificates.properties
 ```
 
 **Test 4: CA-Signed Certificates**
+
 ```bash
 # Connect to server with valid CA cert (e.g., Let's Encrypt)
 # Should connect without dialog
@@ -206,11 +230,13 @@ cat ~/.sieveprofiles/certificates.properties
 ## 📚 Documentation
 
 ### New Documentation
+
 - ✅ **SECURITY.md** - Vulnerability details, reporting process, best practices
 - ✅ **MIGRATION-GUIDE-v1.0.md** - Step-by-step upgrade instructions
 - ✅ **README.md** - Security notice for upgrading users
 
 ### Documentation Includes
+
 - Certificate trust dialog workflow
 - Fingerprint verification instructions
 - Migration scenarios and timelines
@@ -224,6 +250,7 @@ cat ~/.sieveprofiles/certificates.properties
 **Suggested Version:** `1.0.0` (First secure release)
 
 **Reasoning:**
+
 - Major breaking change (encryption key)
 - Complete security overhaul
 - New major feature (certificate trust)
@@ -236,12 +263,14 @@ cat ~/.sieveprofiles/certificates.properties
 If critical issues discovered:
 
 **Option 1: Hotfix**
+
 ```bash
 git revert <commit-hash>
 # Release 1.0.1
 ```
 
 **Option 2: Full Rollback**
+
 ```bash
 git reset --hard v0.9.2.6
 # Mark v1.0.0 as retracted
@@ -268,10 +297,12 @@ git reset --hard v0.9.2.6
 ## 🙏 Credits
 
 Security vulnerabilities identified by:
+
 - GitHub CodeQL Advanced Security
 - Manual security code review
 
 Feature implementation:
+
 - Claude (AI Assistant)
 
 ---
@@ -318,6 +349,7 @@ This PR addresses security vulnerabilities discovered through automated scanning
 ## 💬 Questions?
 
 For questions about:
+
 - **Migration:** See `MIGRATION-GUIDE-v1.0.md`
 - **Security:** See `SECURITY.md`
 - **Usage:** See certificate trust workflow in dialog

@@ -1,4 +1,5 @@
 # SieveEditor
+
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flenucksi%2FSieveEditor.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Flenucksi%2FSieveEditor?ref=badge_shield)
 
 > **🔒 Security Notice:** Version 1.0.0 includes critical security fixes. If upgrading from v0.9.x, please read the [Migration Guide](MIGRATION-GUIDE-v1.0.md). **You will need to re-enter your passwords** after upgrading.
@@ -8,6 +9,7 @@ A Editor for Sieve Scripts on a compatible ManagedSieve-Server
 ## Building from Source
 
 ### Prerequisites
+
 - Java 21 LTS or later
 - Maven 3.6+
 - Git
@@ -60,6 +62,7 @@ mvn clean package -Dmaven.javadoc.skip=true -DskipTests
 ```
 
 The build will:
+
 1. Compile ManageSieveJ (lib/ManageSieveJ/)
 2. Compile SieveEditor (app/)
 3. Create the standalone JAR
@@ -88,10 +91,10 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 ## Documentation
 
 See [dev-docs/](dev-docs/) for detailed documentation:
+
 - [IMPLEMENTATION-STATUS.md](dev-docs/IMPLEMENTATION-STATUS.md) - Project status and history
 - [MANAGESIEVEJ-FORK-ANALYSIS.md](dev-docs/MANAGESIEVEJ-FORK-ANALYSIS.md) - Dependency analysis
 
-
-
 ## License
+
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flenucksi%2FSieveEditor.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Flenucksi%2FSieveEditor?ref=badge_large)

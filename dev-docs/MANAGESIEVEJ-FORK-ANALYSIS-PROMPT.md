@@ -12,11 +12,12 @@ SieveEditor currently uses the **abandoned** ManageSieveJ library (last update 2
 </dependency>
 ```
 
-**Original Repository:** https://github.com/ksahnine/ManageSieveJ (last commit: 2014, archived)
+**Original Repository:** <https://github.com/ksahnine/ManageSieveJ> (last commit: 2014, archived)
 
-**Potential Fork Found:** https://github.com/Zwixx/ManageSieveJ
+**Potential Fork Found:** <https://github.com/Zwixx/ManageSieveJ>
 
 The fork appears to have some updates beyond the 2014 version. We need to analyze whether:
+
 1. The fork has meaningful improvements
 2. It's worth switching to the fork
 3. We should fork it further and update it ourselves
@@ -106,11 +107,13 @@ grep -r "ManageSieveClient\|SieveScript\|ParseException" src/
 ```
 
 **Key Files Using ManageSieveJ:**
+
 1. `src/main/java/de/febrildur/sieveeditor/system/ConnectAndListScripts.java`
 2. `src/main/java/de/febrildur/sieveeditor/actions/ActionLoadScript.java`
 3. `src/main/java/de/febrildur/sieveeditor/actions/ActionSaveScript.java`
 
 **Check which methods/classes we use:**
+
 - Do we use basic or advanced features?
 - Are we using any deprecated methods?
 - Would fork API changes break our code?
@@ -133,6 +136,7 @@ ls -lh target/*.jar
 ```
 
 **If build fails:**
+
 - What's the error?
 - Is it fixable?
 - Would we need to update fork dependencies?
@@ -142,6 +146,7 @@ ls -lh target/*.jar
 **Option A: Test as Maven Dependency**
 
 Build fork and install to local Maven repo:
+
 ```bash
 cd /tmp/managesievej-fork
 mvn clean install
@@ -151,6 +156,7 @@ ls -lh ~/.m2/repository/com/fluffypeople/managesievej/
 ```
 
 Update SieveEditor pom.xml to use fork version:
+
 ```xml
 <dependency>
     <groupId>com.fluffypeople</groupId>
@@ -160,6 +166,7 @@ Update SieveEditor pom.xml to use fork version:
 ```
 
 Build and test SieveEditor:
+
 ```bash
 cd /home/jo/kit/sieve/SieveEditor
 mvn clean package
@@ -202,6 +209,7 @@ Based on analysis, evaluate:
 | **Effort to Maintain** | 0 (not maintained) | ? | ? |
 
 **Score each criterion 0-5:**
+
 - 5 = Excellent
 - 3 = Acceptable
 - 0 = Poor/Missing
@@ -215,6 +223,7 @@ Create a report: `dev-docs/MANAGESIEVEJ-FORK-ANALYSIS.md`
 **Include:**
 
 ### 1. Executive Summary
+
 - Fork vs. original: Key differences
 - Recommendation: Switch, keep current, or fork ourselves?
 - Reasoning in 2-3 sentences
@@ -222,7 +231,8 @@ Create a report: `dev-docs/MANAGESIEVEJ-FORK-ANALYSIS.md`
 ### 2. Detailed Analysis
 
 **A. Commit History Comparison**
-```
+
+```text
 Original: Last commit 2014-XX-XX
 Fork: Last commit YYYY-MM-DD
 
@@ -235,6 +245,7 @@ Total: X new commits
 ```
 
 **B. Changes Overview**
+
 - Bug fixes: [list]
 - Features: [list]
 - Security: [list]
@@ -242,7 +253,8 @@ Total: X new commits
 - Build system: [changes]
 
 **C. API Compatibility**
-```
+
+```text
 Classes SieveEditor uses:
 - ManageSieveClient: [compatible? changes?]
 - SieveScript: [compatible? changes?]
@@ -252,14 +264,16 @@ Breaking changes: [yes/no, details]
 ```
 
 **D. Build and Test Results**
-```
+
+```text
 Fork build: [success/failure]
 Test results: [pass/fail/N/A]
 SieveEditor integration: [success/failure]
 ```
 
 **E. Maintenance Status**
-```
+
+```text
 Last commit: YYYY-MM-DD
 Open issues: X
 Open PRs: Y
@@ -269,21 +283,25 @@ Activity: [active/stale/abandoned]
 ### 3. Recommendation
 
 **Option A: Keep Current Maven Version**
+
 - Reasoning: It works, no compelling changes
 - Effort: 0 hours
 - Risk: Low (no changes)
 
 **Option B: Switch to Zwixx Fork**
+
 - Reasoning: [benefits outweigh effort]
 - Effort: [X hours] to update pom.xml and test
 - Risk: [Low/Medium/High] - [reasoning]
 
 **Option C: Fork and Maintain Ourselves**
+
 - Reasoning: [we need specific updates]
 - Effort: [Y hours] for initial fork + ongoing maintenance
 - Risk: [Low/Medium/High] - [reasoning]
 
 **Option D: Replace ManageSieveJ Entirely**
+
 - Reasoning: [better alternatives exist]
 - Alternatives: [list]
 - Effort: [Z hours] for migration
@@ -292,12 +310,14 @@ Activity: [active/stale/abandoned]
 ### 4. Next Steps
 
 **If switching to fork:**
+
 1. Update pom.xml with new repository
 2. Test all ManageSieveJ functionality
 3. Update dependencies if needed
 4. Create git commit
 
 **If forking ourselves:**
+
 1. Fork to our repository
 2. Update to Java 21
 3. Fix any deprecations
@@ -305,6 +325,7 @@ Activity: [active/stale/abandoned]
 5. Publish to GitHub Packages or local Maven repo
 
 **If keeping current:**
+
 1. Document why we're staying with 0.3.1
 2. Note any known issues
 3. No changes needed
@@ -329,12 +350,14 @@ Activity: [active/stale/abandoned]
 ## Important Notes
 
 **"Das ist eine Mini-App"** - Keep this in mind:
+
 - If current version works, that's a strong argument to keep it
 - Don't over-engineer if benefits are marginal
 - Only switch if there are clear, tangible benefits
 - Don't fork ourselves unless absolutely necessary
 
 **What Would Justify Switching?**
+
 - ✅ Critical bug fixes we need
 - ✅ Security improvements (SSL/TLS)
 - ✅ Java 11+ compatibility improvements

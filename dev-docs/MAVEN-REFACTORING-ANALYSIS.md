@@ -23,7 +23,8 @@ The project previously had ManageSieveJ at `lib/ManageSieveJ/` as a git submodul
 ### 2. Current Structure Analysis
 
 **Current directory structure:**
-```
+
+```text
 SieveEditor/
 ├── pom.xml                    # Parent POM (sieveeditor-parent)
 ├── app/
@@ -37,6 +38,7 @@ SieveEditor/
 ### 3. Parent POM Analysis
 
 **Current parent pom.xml provides ONLY:**
+
 ```xml
 <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -57,6 +59,7 @@ SieveEditor/
 ```
 
 **Analysis:**
+
 - **Encoding properties**: Standard boilerplate, can be in single POM
 - **JitPack repository**: Required for ManageSieveJ dependency, can be in single POM
 - **Modules**: Only references `app` - no other modules
@@ -84,28 +87,33 @@ These outdated references cause confusion and broken build instructions.
 ## Benefits of Single-Module Refactoring
 
 ### 1. Simplicity
+
 - ✅ Single `pom.xml` at root
 - ✅ No parent/child POM confusion
 - ✅ Clearer project structure
 - ✅ Easier for new contributors to understand
 
 ### 2. Build Performance
+
 - ✅ No reactor overhead
 - ✅ Simpler dependency resolution
 - ✅ Faster IDE project import
 
 ### 3. Release Configuration Simplification
+
 - ✅ Single POM to version (not parent + child)
 - ✅ Simpler release-please configuration
 - ✅ No `extra-files` needed
 - ✅ Direct version management
 
 ### 4. Documentation Accuracy
+
 - ✅ Match reality (single application, not multi-module)
 - ✅ Simpler build instructions
 - ✅ Remove outdated submodule references
 
 ### 5. Maintenance
+
 - ✅ Fewer files to maintain
 - ✅ Less complexity
 - ✅ Standard single-module project structure
@@ -117,10 +125,12 @@ These outdated references cause confusion and broken build instructions.
 **Step 1: Create new root pom.xml**
 
 Merge content from:
+
 - Current `pom.xml` (encoding properties, JitPack repo, SCM, metadata)
 - Current `app/pom.xml` (all build configuration, dependencies)
 
 **New structure:**
+
 ```xml
 <project>
     <groupId>de.febrildur</groupId>
@@ -164,23 +174,27 @@ rm pom.xml  # Old parent POM
 **Step 4: Update final artifact name**
 
 The JAR artifact will change from:
-```
+
+```text
 app/target/SieveEditor-jar-with-dependencies.jar
 ```
 
 To:
-```
+
+```text
 target/SieveEditor-jar-with-dependencies.jar
 ```
 
 ### Phase 2: Update CI/CD Workflows
 
 **Files to update:**
+
 - `.github/workflows/ci.yml`
 - `.github/workflows/package.yml`
 - `.github/workflows/release.yml`
 
 **Changes needed:**
+
 ```yaml
 # OLD (multi-module)
 - run: cd app && mvn test
@@ -198,6 +212,7 @@ target/SieveEditor-jar-with-dependencies.jar
 ### Phase 3: Update Release-Please Configuration
 
 **Current `.github/release-please-config.json`:**
+
 ```json
 {
   "packages": {
@@ -217,6 +232,7 @@ target/SieveEditor-jar-with-dependencies.jar
 ```
 
 **New simplified configuration:**
+
 ```json
 {
   "packages": {
@@ -234,6 +250,7 @@ target/SieveEditor-jar-with-dependencies.jar
 ```
 
 **Why this is better:**
+
 - ✅ Release Please automatically updates `pom.xml` for Maven projects
 - ✅ No need to track child POMs in `extra-files`
 - ✅ Simpler configuration
@@ -270,12 +287,14 @@ target/SieveEditor-jar-with-dependencies.jar
 **File: `de.febrildur.sieveeditor.yml`**
 
 Current references:
+
 ```yaml
 - type: file
   path: app/target/SieveEditor-jar-with-dependencies.jar
 ```
 
 Update to:
+
 ```yaml
 - type: file
   path: target/SieveEditor-jar-with-dependencies.jar
@@ -285,7 +304,7 @@ Update to:
 
 ### Current (Multi-Module)
 
-```
+```text
 Push to main
     ↓
 Release Please runs
@@ -304,13 +323,14 @@ Package workflow runs
 ```
 
 **Problems:**
+
 - ❌ Extra complexity tracking child POM
 - ❌ Confusing why parent version matters
 - ❌ `cd app` in all workflows
 
 ### After Refactoring (Single-Module)
 
-```
+```text
 Push to main
     ↓
 Release Please runs
@@ -328,6 +348,7 @@ Package workflow runs
 ```
 
 **Benefits:**
+
 - ✅ Simpler version management
 - ✅ Standard Maven project structure
 - ✅ No directory navigation in workflows
@@ -346,30 +367,38 @@ Package workflow runs
 ## Migration Risks & Mitigation
 
 ### Risk 1: Breaking Existing Development Workflows
+
 **Mitigation:**
+
 - Update all documentation in same commit
 - Test locally before merge
 - Update CI/CD workflows simultaneously
 
 ### Risk 2: Artifact Path Changes
+
 **Current:** `app/target/SieveEditor-jar-with-dependencies.jar`
 **New:** `target/SieveEditor-jar-with-dependencies.jar`
 
 **Mitigation:**
+
 - Update all GitHub Actions workflows
 - Update Flatpak manifest
 - Update documentation
 - Test packaging workflow
 
 ### Risk 3: Developer Confusion
+
 **Mitigation:**
+
 - Clear commit message explaining change
 - Update CONTRIBUTING.md first
 - Add migration note to README
 - Update CLAUDE.md architecture section
 
 ### Risk 4: IDE Project Issues
+
 **Mitigation:**
+
 - Developers may need to reimport project
 - Add note to migration commit message
 - IntelliJ/Eclipse will auto-detect new structure
@@ -377,6 +406,7 @@ Package workflow runs
 ## Recommended Commit Strategy
 
 **Option A: Single Commit (Recommended)**
+
 ```bash
 refactor!: migrate from multi-module to single-module Maven structure
 
@@ -404,6 +434,7 @@ Closes #XX
 ```
 
 **Option B: Multi-Commit Series**
+
 1. Merge POMs
 2. Update workflows
 3. Update documentation
@@ -414,6 +445,7 @@ Closes #XX
 ## Post-Refactoring Verification
 
 **Checklist:**
+
 - [ ] `mvn clean compile` succeeds
 - [ ] `mvn test` succeeds
 - [ ] `mvn package` creates JAR at `target/SieveEditor-jar-with-dependencies.jar`
@@ -432,6 +464,7 @@ Closes #XX
 **Recommended Action: REFACTOR to single-module structure**
 
 This refactoring will:
+
 - ✅ Simplify project structure
 - ✅ Improve build performance
 - ✅ Simplify release configuration
@@ -448,6 +481,7 @@ This refactoring will:
 ---
 
 **Next Steps:**
+
 1. Create refactoring branch
 2. Execute Phase 1-5 changes
 3. Test thoroughly

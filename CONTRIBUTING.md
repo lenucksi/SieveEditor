@@ -57,12 +57,14 @@ git config core.hooksPath .githooks
 This activates the commit-msg hook that validates your commit messages against the Conventional Commits specification. All commits must pass validation before being accepted.
 
 **Verify hook is active:**
+
 ```bash
 git config core.hooksPath
 # Should output: .githooks
 ```
 
 **What the hook does:**
+
 - ✅ Validates commit message format
 - ✅ Ensures type is valid (`feat`, `fix`, `docs`, etc.)
 - ✅ Checks subject line length
@@ -95,6 +97,7 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 If you're using [Claude Code](https://claude.ai/code), this project includes a `.claude/` harness for enhanced development:
 
 **Slash Commands:**
+
 - `/build` - Compile the project
 - `/test` - Run tests with coverage
 - `/clean` - Clean build artifacts
@@ -103,9 +106,11 @@ If you're using [Claude Code](https://claude.ai/code), this project includes a `
 - `/verify` - Run complete verification
 
 **Skills:**
+
 - `conventional-commits` - Interactive helper to create well-formed commit messages
 
 **Session Hooks:**
+
 - Auto-verifies Java/Maven on session start
 - Configures git hooks automatically
 - Displays available commands
@@ -120,7 +125,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) for automate
 
 ### Format
 
-```
+```text
 <type>(<scope>): <subject>
 
 <body>
@@ -150,7 +155,8 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) for automate
 ### Examples
 
 **Feature:**
-```
+
+```text
 feat(profiles): add multi-profile support
 
 Allow users to manage multiple ManageSieve server profiles
@@ -160,7 +166,8 @@ Closes #42
 ```
 
 **Bug Fix:**
-```
+
+```text
 fix(actions): prevent array index out of bounds
 
 Check if row is selected before accessing table data.
@@ -169,7 +176,8 @@ Fixes #57
 ```
 
 **Breaking Change:**
-```
+
+```text
 feat!: enforce SSL certificate validation
 
 BREAKING CHANGE: Self-signed certificates are now rejected.
@@ -180,7 +188,8 @@ Closes #23
 ```
 
 **Security Fix:**
-```
+
+```text
 security: remove hardcoded encryption key
 
 Move encryption key to environment variable SIEVE_ENCRYPTION_KEY.
@@ -192,6 +201,7 @@ Fixes #24
 ### Scope (Optional)
 
 Common scopes:
+
 - `profiles` - Profile management
 - `actions` - UI action handlers
 - `tokenizer` - Syntax highlighting
@@ -212,6 +222,7 @@ All commits are validated by the git hook at `.githooks/commit-msg`. If your com
 4. See examples above for reference
 
 **Common mistakes:**
+
 - ❌ `Added new feature` → ✅ `feat: add new feature` (use imperative mood)
 - ❌ `feat:added feature` → ✅ `feat: add feature` (space after colon)
 - ❌ `feature: add something` → ✅ `feat: add something` (wrong type name)
@@ -265,17 +276,20 @@ Describe testing performed
 ### Running Tests
 
 **All tests:**
+
 ```bash
 cd app
 mvn test
 ```
 
 **Specific test class:**
+
 ```bash
 mvn test -Dtest=PropertiesSieveTest
 ```
 
 **Specific test method:**
+
 ```bash
 mvn test -Dtest=PropertiesSieveTest#shouldSaveAndLoadProperties
 ```
@@ -288,6 +302,7 @@ mvn test -Dtest=PropertiesSieveTest#shouldSaveAndLoadProperties
 - See `TEST-COVERAGE-ANALYSIS.md` for detailed guidelines
 
 **Example:**
+
 ```java
 @Test
 void shouldEncryptPasswordWhenSaving() {
@@ -320,6 +335,7 @@ void shouldEncryptPasswordWhenSaving() {
 **DO NOT** open public issues for security vulnerabilities.
 
 Instead:
+
 1. Email security issues to project maintainers (see `SECURITY.md`)
 2. Include:
    - Description of vulnerability

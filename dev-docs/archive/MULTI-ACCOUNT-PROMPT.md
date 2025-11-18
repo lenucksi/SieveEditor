@@ -8,11 +8,13 @@ SieveEditor is a Java 21 Swing desktop application for editing Sieve mail filter
 > "App speichert credentials im Home, als JSON vermutlich. Dort kann immer nur ein Account angelegt werden, daher muss ich mit Symlinks arbeiten um mehrere accounts mit dem tool editieren zu können."
 
 **Current Implementation:**
+
 - Single properties file: `~/.sieveproperties`
 - Stores: server, port, username, encrypted password
 - User must use symlinks to switch between different accounts (awkward!)
 
 **Previous Work Completed:**
+
 - ✅ Java 21 LTS
 - ✅ Find/Replace fixed
 - ✅ Tokenizer bugs fixed
@@ -28,6 +30,7 @@ Implement **simple multi-account profile support** so users can manage multiple 
 **Keep It Simple** - "Das ist eine Mini-App. Don't overdo patterns."
 
 **User Experience:**
+
 1. User opens connection dialog
 2. Sees dropdown to select profile (default, work, personal, etc.)
 3. Each profile stores separate server credentials
@@ -35,6 +38,7 @@ Implement **simple multi-account profile support** so users can manage multiple 
 5. Last-used profile is remembered
 
 **No Need For:**
+
 - ❌ Profile import/export (too complex)
 - ❌ Profile encryption beyond what exists (use existing SimpleEncrypter)
 - ❌ Profile synchronization (not needed)
@@ -50,12 +54,14 @@ Implement **simple multi-account profile support** so users can manage multiple 
 **File:** `src/main/java/de/febrildur/sieveeditor/system/PropertiesSieve.java`
 
 **Current Structure:**
-```
+
+```text
 ~/.sieveproperties (single file)
 ```
 
 **New Structure:**
-```
+
+```text
 ~/.sieveprofiles/
   ├── default.properties
   ├── work.properties
@@ -66,6 +72,7 @@ Implement **simple multi-account profile support** so users can manage multiple 
 **Changes Needed:**
 
 1. **Modify constructor** to accept profile name:
+
 ```java
 public class PropertiesSieve {
     private String profileName;
@@ -84,7 +91,8 @@ public class PropertiesSieve {
 }
 ```
 
-2. **Add profile management methods:**
+1. **Add profile management methods:**
+
 ```java
 public static List<String> getAvailableProfiles() {
     File profilesDir = new File(System.getProperty("user.home"), ".sieveprofiles");
@@ -129,7 +137,8 @@ public static boolean profileExists(String profileName) {
 }
 ```
 
-3. **Migration for existing users:**
+1. **Migration for existing users:**
+
 ```java
 public static void migrateOldProperties() {
     // Check if old ~/.sieveproperties exists
@@ -270,6 +279,7 @@ public Application() {
 After implementation, verify:
 
 ### Test 1: Migration
+
 1. Create old-style `~/.sieveproperties` with test credentials
 2. Launch application
 3. Should migrate to `~/.sieveprofiles/default.properties`
@@ -277,6 +287,7 @@ After implementation, verify:
 5. Connection should work with migrated credentials
 
 ### Test 2: Multiple Profiles
+
 1. Open connection dialog
 2. See "default" profile in dropdown
 3. Click "+" button to create "work" profile
@@ -286,6 +297,7 @@ After implementation, verify:
 7. "work" should be pre-selected (last used)
 
 ### Test 3: Profile Switching
+
 1. Create profiles: "default", "work", "personal"
 2. Store different credentials in each
 3. Switch between profiles in dropdown
@@ -293,6 +305,7 @@ After implementation, verify:
 5. Connect to each successfully
 
 ### Test 4: Profile Persistence
+
 1. Create profile, enter credentials, connect
 2. Close application
 3. Reopen application
@@ -300,6 +313,7 @@ After implementation, verify:
 5. Credentials should be loaded correctly
 
 ### Test 5: Error Handling
+
 1. Try to create profile with invalid name (special chars)
 2. Should sanitize or reject
 3. Try to create duplicate profile name
@@ -310,6 +324,7 @@ After implementation, verify:
 ## File Structure Summary
 
 **Files to Modify:**
+
 1. `src/main/java/de/febrildur/sieveeditor/system/PropertiesSieve.java` - Storage layer
 2. `src/main/java/de/febrildur/sieveeditor/actions/ActionConnect.java` - Connection UI
 3. `src/main/java/de/febrildur/sieveeditor/Application.java` - Startup logic
@@ -318,13 +333,14 @@ After implementation, verify:
 None (uses existing file structure)
 
 **New Directories:**
+
 - `~/.sieveprofiles/` - Created automatically on first run
 
 ---
 
 ## User Experience Flow
 
-```
+```text
 1. User clicks "Connect"
    ↓
 2. Dialog shows profile dropdown (default: last used or "default")
@@ -380,7 +396,7 @@ None (uses existing file structure)
 
 ## Git Commit Message
 
-```
+```text
 Add multi-account profile support
 
 Problem: Users could only store credentials for one account,

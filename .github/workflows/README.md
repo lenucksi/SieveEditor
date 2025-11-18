@@ -11,19 +11,23 @@ This directory contains CI/CD workflows for SieveEditor.
 **Purpose:** Test code on all platforms
 
 **Jobs:**
+
 - **test:** Run tests on Linux, Windows, macOS with Java 21
 - **test-summary:** Aggregate results
 
 **Matrix:**
+
 - OS: ubuntu-latest, windows-latest, macos-latest
 - Java: 21
 
 **Artifacts:**
+
 - Test reports (30 days)
 - JAR file (7 days)
 - Code coverage reports (Codecov)
 
 **Code Coverage:**
+
 - JaCoCo generates coverage reports
 - Uploaded to Codecov (requires `CODECOV_TOKEN` secret)
 - Coverage displayed in pull requests
@@ -35,10 +39,12 @@ This directory contains CI/CD workflows for SieveEditor.
 **Purpose:** Automated security vulnerability scanning
 
 **Languages Analyzed:**
+
 - **Java:** Source code security analysis
 - **Actions:** GitHub Actions workflow security analysis
 
 **Branches:**
+
 - master
 - develop
 
@@ -51,6 +57,7 @@ This directory contains CI/CD workflows for SieveEditor.
 **Purpose:** OpenSSF security health metrics
 
 **Checks:**
+
 - Dangerous GitHub Actions patterns
 - Branch protection
 - Code review requirements
@@ -68,6 +75,7 @@ This directory contains CI/CD workflows for SieveEditor.
 **Purpose:** Build native packages for all platforms and upload to GitHub Releases
 
 **Jobs:**
+
 - **build-jar:** Create uber JAR
 - **package-linux:** Build DEB and RPM
 - **package-windows:** Build MSI
@@ -77,6 +85,7 @@ This directory contains CI/CD workflows for SieveEditor.
 - **upload-to-release:** Upload all artifacts to GitHub Release
 
 **Artifacts:**
+
 - `SieveEditor.jar` (all platforms)
 - `SieveEditor.deb` (Ubuntu/Debian)
 - `SieveEditor.rpm` (Fedora/RHEL)
@@ -94,6 +103,7 @@ This directory contains CI/CD workflows for SieveEditor.
 **Purpose:** Automate version bumps, changelogs, and releases
 
 **Process:**
+
 1. **release-please** analyzes commits since last release
 2. Creates/updates Release PR with:
    - Version bump (based on conventional commits)
@@ -105,6 +115,7 @@ This directory contains CI/CD workflows for SieveEditor.
    - Package workflow builds all artifacts and uploads to release
 
 **Conventional Commits:**
+
 - `feat:` → minor version bump
 - `fix:` → patch version bump
 - `feat!:` or `fix!:` → major version bump
@@ -122,6 +133,7 @@ All build artifacts include cryptographic attestations:
 ```
 
 **Verify attestations:**
+
 ```bash
 gh attestation verify SieveEditor.jar --owner lenucksi --repo SieveEditor
 ```
@@ -168,6 +180,7 @@ Run the same tests as CI locally:
 ### CI Fails on Windows
 
 Check for:
+
 - Path separators (`/` vs `\`)
 - Line endings (CRLF vs LF)
 - Case-sensitive file names
@@ -181,6 +194,7 @@ Check for:
 ### Release Not Created
 
 Check:
+
 1. Commits follow Conventional Commits format
 2. Push to `main` branch
 3. Release PR merged (not closed)
@@ -188,6 +202,7 @@ Check:
 ### Attestations Fail
 
 Ensure workflow has:
+
 ```yaml
 permissions:
   id-token: write
@@ -197,12 +212,14 @@ permissions:
 ## Workflow Diagrams
 
 ### CI Flow
-```
+
+```text
 Push/PR → Checkout → Setup Java → Cache → Build Library → Run Tests → Upload Results
 ```
 
 ### Release Flow
-```
+
+```text
 Push to master → Release Please → Create/Update PR → Merge → Create Release → package.yml (Build + Upload)
 ```
 

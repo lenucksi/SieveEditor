@@ -11,10 +11,12 @@ All critical user-reported issues have been fixed. The application is fully func
 ## 📖 Quick Links
 
 ### For Users
+
 - **[FIXES-APPLIED.md](FIXES-APPLIED.md)** ⭐ - Complete list of all fixes with testing results
 - **[BUILD-WARNINGS.md](BUILD-WARNINGS.md)** - Maven build warnings analysis
 
 ### For Developers
+
 - **[analysis/modernization/](analysis/modernization/)** - Complete codebase analysis and modernization plans
 - **[analysis/modernization/05-real-world-issues.md](analysis/modernization/05-real-world-issues.md)** - Pragmatic 5-day fix plan (COMPLETED)
 - **[analysis/modernization/06-4k-scaling-investigation.md](analysis/modernization/06-4k-scaling-investigation.md)** - HiDPI investigation
@@ -22,15 +24,17 @@ All critical user-reported issues have been fixed. The application is fully func
 ## 🎯 What Was Fixed
 
 ### Critical Issues (All Fixed ✅)
+
 1. **4K Display Scaling** - UI was tiny on 4K displays
 2. **Find/Replace Broken** - Complete rewrite of Find dialog
 3. **Last Character Unreachable** - Tokenizer bug fixed
 
 ### Additional Improvements (All Fixed ✅)
-4. **Find Dialog Layout** - Proper component hierarchy
-5. **Enter Key Search** - Search field triggers Find Next on Enter
-6. **Java 21 Update** - Updated to current LTS
-7. **Maven Warnings** - Fixed platform encoding warnings
+
+1. **Find Dialog Layout** - Proper component hierarchy
+2. **Enter Key Search** - Search field triggers Find Next on Enter
+3. **Java 21 Update** - Updated to current LTS
+4. **Maven Warnings** - Fixed platform encoding warnings
 
 ## 📊 Fixes Summary
 
@@ -45,10 +49,12 @@ All critical user-reported issues have been fixed. The application is fully func
 ## 🔨 Build Information
 
 ### Requirements
+
 - Java 21+ (OpenJDK recommended)
 - Maven 3.9+
 
 ### Build Commands
+
 ```bash
 # Build application
 mvn clean package
@@ -61,6 +67,7 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 ```
 
 ### Output
+
 - `target/SieveEditor.jar` - Minimal JAR (requires dependencies)
 - `target/SieveEditor-jar-with-dependencies.jar` - Standalone JAR (recommended)
 
@@ -84,6 +91,7 @@ The pragmatic fixes are complete. If you want to continue improving the app, see
 - [analysis/modernization/04-implementation-roadmap.md](analysis/modernization/04-implementation-roadmap.md) - Enterprise 12-week plan (if app becomes mission-critical)
 
 ### Nice-to-Have Features (User Requested)
+
 - Local file load/save for scripts
 - Template insertion for repeating elements
 - Multi-account UI selection
@@ -92,7 +100,7 @@ The pragmatic fixes are complete. If you want to continue improving the app, see
 
 ## 📂 Directory Structure
 
-```
+```text
 dev-docs/
 ├── README.md                    # This file
 ├── FIXES-APPLIED.md            # Complete fix documentation ⭐

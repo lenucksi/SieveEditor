@@ -7,6 +7,7 @@ The SieveEditor project currently has **ZERO** tests. This document outlines a c
 ## Current State
 
 ### Test Coverage
+
 - **Unit Tests:** 0
 - **Integration Tests:** 0
 - **End-to-End Tests:** 0
@@ -304,7 +305,7 @@ public class Application extends JFrame {
 
 ## Test Structure
 
-```
+```text
 src/
 ├── main/java/de/febrildur/sieveeditor/
 │   ├── Application.java
@@ -877,6 +878,7 @@ For each bug identified in the analysis:
 ## Coverage Goals
 
 ### Phase 1 (Week 1-2): Critical Path
+
 - **Target:** 40% overall coverage
 - Focus: Security-critical code, bug fixes
 - Priority files:
@@ -885,6 +887,7 @@ For each bug identified in the analysis:
   - Application.java save/load methods: 90% coverage
 
 ### Phase 2 (Week 3-4): Core Features
+
 - **Target:** 60% overall coverage
 - Focus: All action classes, main application logic
 - Priority files:
@@ -892,6 +895,7 @@ For each bug identified in the analysis:
   - Application.java: 60% coverage
 
 ### Phase 3 (Week 5-6): Complete Coverage
+
 - **Target:** 80% overall coverage
 - Focus: Edge cases, error handling, UI interactions
 - All files: 70%+ coverage
@@ -1161,6 +1165,7 @@ void test2() {
 ## Implementation Timeline
 
 ### Week 1: Setup and Infrastructure
+
 - Add test dependencies to pom.xml
 - Create test directory structure
 - Set up JaCoCo for coverage
@@ -1168,6 +1173,7 @@ void test2() {
 - Write first 5 unit tests (smoke tests)
 
 ### Week 2: Security Tests
+
 - Write all security tests
 - Test SSL validation (after fix)
 - Test encryption (after fix)
@@ -1175,11 +1181,13 @@ void test2() {
 - **Goal:** All security vulnerabilities have tests
 
 ### Week 3: Bug Regression Tests
+
 - Write tests for all HIGH severity bugs
 - Write tests for all CRITICAL bugs
 - **Goal:** All major bugs have regression tests
 
 ### Week 4: Core Functionality Tests
+
 - Test Application.java
 - Test all action classes
 - Test ConnectAndListScripts
@@ -1187,6 +1195,7 @@ void test2() {
 - **Goal:** 40% coverage
 
 ### Week 5-6: Complete Coverage
+
 - Test SieveTokenMaker
 - Test UI components
 - Integration tests
@@ -1196,6 +1205,7 @@ void test2() {
 ## Success Metrics
 
 ### Quantitative
+
 - 80%+ code coverage
 - All CRITICAL and HIGH bugs have tests
 - All security fixes have tests
@@ -1203,6 +1213,7 @@ void test2() {
 - All tests run in < 5 minutes
 
 ### Qualitative
+
 - Tests are maintainable
 - Tests document expected behavior
 - Tests catch regressions
@@ -1212,18 +1223,21 @@ void test2() {
 ## Maintenance
 
 ### Adding New Features
+
 1. Write test first (TDD)
 2. Implement feature
 3. Ensure test passes
 4. Check coverage increased
 
 ### Fixing Bugs
+
 1. Write failing test that reproduces bug
 2. Fix the bug
 3. Ensure test passes
 4. Add to regression test suite
 
 ### Refactoring
+
 1. Ensure all tests pass before refactoring
 2. Refactor code
 3. Ensure all tests still pass

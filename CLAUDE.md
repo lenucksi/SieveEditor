@@ -7,6 +7,7 @@
 ### What is SieveEditor?
 
 SieveEditor provides a graphical interface to:
+
 - Connect to ManageSieve servers (RFC 5804)
 - Edit Sieve scripts with syntax highlighting
 - Manage multiple server profiles
@@ -37,7 +38,7 @@ System administrators and power users who manage email filtering rules on mail s
 
 ### Multi-Module Maven Project
 
-```
+```text
 SieveEditor/
 ├── pom.xml                 # Parent POM (version: 0.0.1-SNAPSHOT)
 └── app/
@@ -90,7 +91,7 @@ SieveEditor/
 - **ManageSieveJ** (`com.github.lenucksi:ManageSieveJ:managesievej-v0.3.3`)
   - Java 21 compatible ManageSieve client
   - Distributed via JitPack
-  - Source: https://github.com/lenucksi/ManageSieveJ
+  - Source: <https://github.com/lenucksi/ManageSieveJ>
 
 - **Jasypt** (`org.jasypt:jasypt:1.9.3`)
   - Password-based encryption for stored credentials
@@ -111,11 +112,13 @@ SieveEditor/
 ### 1. Environment Setup
 
 **Prerequisites:**
+
 - Java 21 LTS (Temurin, OpenJDK, or Oracle)
 - Maven 3.6+
 - Git
 
 **Clone and Build:**
+
 ```bash
 git clone https://github.com/lenucksi/SieveEditor.git
 cd SieveEditor
@@ -124,6 +127,7 @@ mvn clean install
 ```
 
 **Run Application:**
+
 ```bash
 cd app
 mvn package
@@ -135,6 +139,7 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 This project includes a `.claude/` harness for enhanced development:
 
 **Slash Commands:**
+
 - `/build` - Compile project
 - `/test` - Run tests with coverage
 - `/clean` - Remove build artifacts
@@ -143,9 +148,11 @@ This project includes a `.claude/` harness for enhanced development:
 - `/verify` - Run complete verification
 
 **Session Hooks:**
+
 - `SessionStart` - Auto-verifies environment on session start
 
 **Skills:**
+
 - `conventional-commits` - Interactive commit message builder
 
 ### 3. Conventional Commits (REQUIRED)
@@ -153,6 +160,7 @@ This project includes a `.claude/` harness for enhanced development:
 This project uses [Conventional Commits](https://www.conventionalcommits.org/) for automated changelog generation and semantic versioning via Release Please.
 
 **Setup Git Hook:**
+
 ```bash
 git config core.hooksPath .githooks
 ```
@@ -160,7 +168,8 @@ git config core.hooksPath .githooks
 The commit-msg hook will validate all commit messages.
 
 **Format:**
-```
+
+```text
 <type>(<scope>): <subject>
 
 <optional body>
@@ -169,6 +178,7 @@ The commit-msg hook will validate all commit messages.
 ```
 
 **Types:**
+
 - `feat` - New feature (minor version bump)
 - `fix` - Bug fix (patch version bump)
 - `perf` - Performance improvement (patch)
@@ -182,6 +192,7 @@ The commit-msg hook will validate all commit messages.
 - `ci` - CI/CD (no bump)
 
 **Examples:**
+
 ```bash
 feat(profiles): add multi-profile support
 fix(connection): prevent timeout on slow networks
@@ -192,6 +203,7 @@ docs: update installation instructions
 
 **Breaking Changes:**
 Use `!` after type/scope:
+
 ```bash
 feat!: enforce SSL certificate validation
 
@@ -201,6 +213,7 @@ BREAKING CHANGE: Self-signed certificates are now rejected.
 ### 4. Testing Strategy
 
 **Coverage Goals:**
+
 - Overall: 70%+
 - Critical components: 80%+
   - `PropertiesSieve` (configuration/security)
@@ -208,6 +221,7 @@ BREAKING CHANGE: Self-signed certificates are now rejected.
   - Action listeners
 
 **Running Tests:**
+
 ```bash
 cd app
 mvn test                                          # Run all tests
@@ -217,11 +231,13 @@ mvn jacoco:report                                # Generate coverage report
 ```
 
 **Coverage Report Location:**
-```
+
+```text
 target/site/jacoco/index.html
 ```
 
 **Test Naming Convention:**
+
 ```java
 @Test
 void shouldDoSomethingWhenCondition() {
@@ -230,6 +246,7 @@ void shouldDoSomethingWhenCondition() {
 ```
 
 **Example Test:**
+
 ```java
 @Test
 void shouldEncryptPasswordWhenSaving() {
@@ -275,6 +292,7 @@ See `TEST-COVERAGE-ANALYSIS.md` for detailed testing guidelines.
    - `.gitignore` excludes `.sieve` profile files
 
 **Security Testing:**
+
 ```bash
 mvn org.owasp:dependency-check-maven:check
 ```
@@ -284,6 +302,7 @@ See `SECURITY.md` for vulnerability reporting.
 ### 6. Build and Packaging
 
 **JAR (All Platforms):**
+
 ```bash
 cd app
 mvn clean package
@@ -293,6 +312,7 @@ mvn clean package
 **Platform-Specific Packages:**
 
 GitHub Actions automatically builds:
+
 - **DEB** (Debian/Ubuntu) - Uses `jpackage --type deb`
 - **RPM** (Fedora/RHEL) - Uses `jpackage --type rpm`
 - **MSI** (Windows) - Uses WiX Toolset
@@ -302,6 +322,7 @@ GitHub Actions automatically builds:
 See `.github/workflows/package.yml` for build details.
 
 **Local Packaging Example (DEB):**
+
 ```bash
 cd app
 mvn package
@@ -336,6 +357,7 @@ This project uses **Release Please** for automated releases.
 ### Version Synchronization
 
 Release Please updates:
+
 - `pom.xml` (parent version)
 - `app/pom.xml` (child inherits version)
 - `CHANGELOG.md`
@@ -344,6 +366,7 @@ Release Please updates:
 ### First Release Preparation
 
 Before the first release:
+
 1. Ensure `.release-please-manifest.json` exists with starting version
 2. Use conventional commits consistently
 3. Verify tests pass
@@ -382,7 +405,8 @@ See `CI-CD-STRATEGY-2025.md` for complete strategy.
 
 ## Important Development Practices
 
-### DO:
+### DO
+
 ✅ Use conventional commits for all changes
 ✅ Run tests before committing (`mvn test`)
 ✅ Check coverage regularly (`/coverage` or `mvn jacoco:report`)
@@ -394,7 +418,8 @@ See `CI-CD-STRATEGY-2025.md` for complete strategy.
 ✅ Use descriptive variable/method names
 ✅ Reference issues in commit footers (`Fixes #123`)
 
-### DON'T:
+### DON'T
+
 ❌ Commit without running tests
 ❌ Store plaintext passwords or secrets
 ❌ Ignore security warnings
@@ -479,6 +504,7 @@ If commit-msg hook rejects your commit:
 5. Use skill: Invoke `conventional-commits` skill in Claude Code
 
 **Bypass hook (not recommended):**
+
 ```bash
 git commit --no-verify -m "message"
 ```
@@ -487,9 +513,10 @@ git commit --no-verify -m "message"
 
 If ManageSieveJ fails to resolve:
 
-1. Check JitPack status: https://jitpack.io/#lenucksi/ManageSieveJ
+1. Check JitPack status: <https://jitpack.io/#lenucksi/ManageSieveJ>
 2. Verify version tag exists: `managesievej-v0.3.3`
 3. Clear local Maven cache:
+
    ```bash
    rm -rf ~/.m2/repository/com/github/lenucksi/ManageSieveJ
    mvn clean install
@@ -498,6 +525,7 @@ If ManageSieveJ fails to resolve:
 ## Resources
 
 ### Documentation
+
 - **Contributing Guide:** `CONTRIBUTING.md`
 - **Test Strategy:** `TEST-COVERAGE-ANALYSIS.md`
 - **CI/CD Strategy:** `CI-CD-STRATEGY-2025.md`
@@ -505,6 +533,7 @@ If ManageSieveJ fails to resolve:
 - **Claude Harness:** `.claude/README.md`
 
 ### External Resources
+
 - [Conventional Commits](https://www.conventionalcommits.org/)
 - [ManageSieve RFC 5804](https://datatracker.ietf.org/doc/html/rfc5804)
 - [Sieve RFC 5228](https://datatracker.ietf.org/doc/html/rfc5228)
@@ -512,6 +541,7 @@ If ManageSieveJ fails to resolve:
 - [Release Please](https://github.com/googleapis/release-please)
 
 ### Support
+
 - [Discussions](https://github.com/lenucksi/SieveEditor/discussions)
 - [Issues](https://github.com/lenucksi/SieveEditor/issues)
 - [Pull Requests](https://github.com/lenucksi/SieveEditor/pulls)
@@ -519,12 +549,14 @@ If ManageSieveJ fails to resolve:
 ## Project Goals
 
 ### Short Term
+
 - ✅ Establish automated release process (Release Please)
 - ⏳ Achieve 70% overall test coverage
 - ⏳ Multi-platform packaging (JAR, DEB, RPM, MSI, DMG)
 - ⏳ Security hardening (input validation, cert validation)
 
 ### Long Term
+
 - 📋 Multi-profile management UI
 - 📋 Improved syntax highlighting (context-aware)
 - 📋 Script validation before upload

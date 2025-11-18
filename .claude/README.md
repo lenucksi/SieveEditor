@@ -4,7 +4,7 @@ This directory contains Claude Code configuration for enhanced development suppo
 
 ## Directory Structure
 
-```
+```text
 .claude/
 ├── README.md              # This file
 ├── commands/              # Slash commands for common tasks
@@ -36,6 +36,7 @@ Execute these commands in Claude Code chat:
 ### Session Initialization
 
 The `SessionStart` hook automatically:
+
 - Verifies Java 21 and Maven installation
 - Checks project structure (pom.xml)
 - Displays available commands
@@ -50,6 +51,7 @@ The `SessionStart` hook automatically:
 **SieveEditor** is a Java 21 desktop application for managing ManageSieve server configurations.
 
 ### Tech Stack
+
 - **Language:** Java 21 LTS
 - **Build:** Maven 3.6+
 - **Testing:** JUnit 5 + Mockito + AssertJ
@@ -58,6 +60,7 @@ The `SessionStart` hook automatically:
 - **Packaging:** jpackage (multi-platform)
 
 ### Build Targets
+
 - JAR (cross-platform)
 - DEB (Debian/Ubuntu)
 - RPM (Fedora/RHEL)
@@ -89,7 +92,7 @@ git config core.hooksPath .githooks
 
 ### Format
 
-```
+```text
 <type>(<scope>): <subject>
 
 <optional body>

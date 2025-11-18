@@ -9,6 +9,7 @@ This PR implements a comprehensive testing infrastructure and modern CI/CD pipel
 ## 🎯 What's Included
 
 ### 1. Testing Infrastructure (80+ Tests)
+
 - ✅ **Test Framework:** JUnit 5, Mockito, AssertJ
 - ✅ **Coverage Analysis:** 70%+ target with phased implementation plan
 - ✅ **Comprehensive Tests:**
@@ -20,6 +21,7 @@ This PR implements a comprehensive testing infrastructure and modern CI/CD pipel
 ### 2. CI/CD Pipeline (4 Workflows)
 
 #### **CI Workflow** (`.github/workflows/ci.yml`)
+
 - Cross-platform testing (Linux, Windows, macOS)
 - Java 21 test matrix
 - OWASP dependency security scanning
@@ -27,6 +29,7 @@ This PR implements a comprehensive testing infrastructure and modern CI/CD pipel
 - Test report uploads
 
 #### **Package Workflow** (`.github/workflows/package.yml`)
+
 - **6 Distribution Formats:**
   - Linux: DEB, RPM, Flatpak
   - Windows: MSI
@@ -37,6 +40,7 @@ This PR implements a comprehensive testing infrastructure and modern CI/CD pipel
 - **Fixed:** macOS version validation (0.x.y → 1.0.x transformation)
 
 #### **Release Workflow** (`.github/workflows/release.yml`)
+
 - Automated releases with `release-please`
 - Conventional Commits parsing
 - CHANGELOG.md auto-generation
@@ -44,6 +48,7 @@ This PR implements a comprehensive testing infrastructure and modern CI/CD pipel
 - Installation instructions in release notes
 
 #### **Scorecard Workflow** (`.github/workflows/scorecard.yml`)
+
 - OpenSSF security health metrics
 - Weekly automated scanning
 - Results to GitHub Security tab
@@ -51,17 +56,20 @@ This PR implements a comprehensive testing infrastructure and modern CI/CD pipel
 ### 3. Security & Compliance
 
 ✅ **SLSA Level 3 Compliance**
+
 - GitHub Artifact Attestations (Dec 2024)
 - Cryptographic provenance for all builds
 - Tamper detection
 - Verification: `gh attestation verify <artifact>`
 
 ✅ **OpenSSF Scorecard Integration**
+
 - Automated security scanning
 - Branch protection verification
 - Dangerous workflow pattern detection
 
 ✅ **Modern Security (2025)**
+
 - OIDC short-lived tokens
 - Least privilege permissions
 - Dependabot automation
@@ -79,6 +87,7 @@ This PR implements a comprehensive testing infrastructure and modern CI/CD pipel
 - ✅ CI/CD integration with attestations
 
 **Benefits:**
+
 - Works on ALL Linux distros
 - No dependency conflicts
 - Sandboxed security
@@ -104,20 +113,25 @@ This PR implements a comprehensive testing infrastructure and modern CI/CD pipel
 ## 🔧 Issues Fixed
 
 ### Issue 1: macOS DMG Version Error ✅
+
 **Problem:**
-```
+
+```text
 Error: The first number in an app-version cannot be zero or negative
 ```
 
 **Solution:**
+
 - Automatic version transformation for macOS
 - `0.0.1` → `1.0.0` (macOS only)
 - Linux/Windows unaffected
 
 ### Issue 2: No Flatpak Packaging ✅
+
 **Problem:** No universal Linux package format
 
 **Solution:**
+
 - Complete Flatpak implementation
 - Official `flatpak-github-actions@v6`
 - Flathub submission-ready
@@ -153,6 +167,7 @@ Error: The first number in an app-version cannot be zero or negative
 ## 📋 Action Items (Post-Merge)
 
 ### ✅ Already Completed
+
 - [x] Fix macOS DMG version issue
 - [x] Implement Flatpak manifest
 - [x] Create desktop entry and metadata
@@ -164,9 +179,11 @@ Error: The first number in an app-version cannot be zero or negative
 ### ⏳ Remaining (Optional Enhancements)
 
 #### 1. Convert Icon to PNG
+
 **Status:** SVG created, needs PNG conversion
 
 **Quick Options:**
+
 ```bash
 # ImageMagick
 convert -background none -density 300 flatpak/de.febrildur.sieveeditor.svg \
@@ -176,12 +193,16 @@ convert -background none -density 300 flatpak/de.febrildur.sieveeditor.svg \
 ```
 
 #### 2. Create Screenshot
+
 **For AppStream metadata and README**
+
 - Run app, take screenshot of main window
 - Save to `screenshots/main-window.png`
 
 #### 3. Test Local Flatpak Build
+
 **Optional verification:**
+
 ```bash
 flatpak-builder --force-clean build-dir de.febrildur.sieveeditor.yml
 flatpak build-bundle build-dir SieveEditor.flatpak de.febrildur.sieveeditor
@@ -189,7 +210,9 @@ flatpak install --user SieveEditor.flatpak
 ```
 
 #### 4. Submit to Flathub
+
 **Recommended for wider reach**
+
 - See `FLATPAK-PACKAGING-REPORT.md` for complete guide
 - Benefits: GNOME Software/KDE Discover, automatic updates, millions of users
 
@@ -200,12 +223,15 @@ flatpak install --user SieveEditor.flatpak
 ## 🧪 Testing
 
 ### CI Testing
+
 All commits automatically tested on:
+
 - ✅ Linux (Ubuntu latest)
 - ✅ Windows (latest)
 - ✅ macOS (latest)
 
 ### Local Testing
+
 ```bash
 # Run all tests (matches CI)
 ./scripts/test-local.sh
@@ -218,7 +244,9 @@ All commits automatically tested on:
 ```
 
 ### Package Testing
+
 **Manual workflow dispatch available:**
+
 1. Go to Actions → Package
 2. Click "Run workflow"
 3. Enter version (e.g., `0.0.1`)
@@ -229,7 +257,8 @@ All commits automatically tested on:
 ## 📚 Key Files
 
 ### Workflows
-```
+
+```text
 .github/workflows/
 ├── ci.yml           # Continuous Integration
 ├── package.yml      # Cross-platform packaging
@@ -238,14 +267,16 @@ All commits automatically tested on:
 ```
 
 ### Configuration
-```
+
+```text
 .github/
 ├── dependabot.yml              # Dependency updates
 └── release-please-config.json  # Release automation
 ```
 
 ### Flatpak
-```
+
+```text
 de.febrildur.sieveeditor.yml    # Flatpak manifest
 flatpak/
 ├── de.febrildur.sieveeditor.desktop       # Desktop entry
@@ -255,7 +286,8 @@ flatpak/
 ```
 
 ### Tests
-```
+
+```text
 app/src/test/java/de/febrildur/sieveeditor/
 ├── system/
 │   ├── PropertiesSieveTest.java          (40+ tests)
@@ -271,16 +303,19 @@ app/src/test/java/de/febrildur/sieveeditor/
 ## 🚀 After Merge
 
 ### Immediate
+
 1. Workflows activate automatically
 2. Set up branch protection rules
 3. Enable required status checks
 
 ### Short-Term
+
 1. Convert icon to PNG (optional, enhances UX)
 2. Create screenshot (optional, for README)
 3. Test first release with Conventional Commits
 
 ### Long-Term
+
 1. Monitor Dependabot PRs
 2. Review OpenSSF Scorecard results
 3. Consider Flathub submission

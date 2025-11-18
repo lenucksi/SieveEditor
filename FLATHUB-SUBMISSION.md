@@ -31,6 +31,7 @@ git submodule add https://github.com/flathub/de.febrildur.sieveeditor.git
 Create new repository: `https://github.com/flathub/de.febrildur.sieveeditor`
 
 Copy these files to the new repo:
+
 - `de.febrildur.sieveeditor.yml` (manifest)
 - `flatpak/de.febrildur.sieveeditor.desktop`
 - `flatpak/de.febrildur.sieveeditor.metainfo.xml`
@@ -57,7 +58,7 @@ sha256sum target/SieveEditor-jar-with-dependencies.jar
 
 ### 5. Create GitHub Release
 
-1. Go to https://github.com/lenucksi/SieveEditor/releases
+1. Go to <https://github.com/lenucksi/SieveEditor/releases>
 2. Click "Create a new release"
 3. Tag: `v0.0.1`
 4. Upload: `target/SieveEditor-jar-with-dependencies.jar`
@@ -86,13 +87,15 @@ git push origin main
 ## Alternative: Flathub Beta
 
 For faster testing, submit to beta first:
-- https://github.com/flathub-infra/flathub-beta-stats
+
+- <https://github.com/flathub-infra/flathub-beta-stats>
 - Same process, less strict review
 - Good for getting feedback
 
 ## Post-Submission
 
 After approval:
+
 ```bash
 flatpak install flathub de.febrildur.sieveeditor
 ```

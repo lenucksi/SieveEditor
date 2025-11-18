@@ -29,7 +29,7 @@ Read and execute dev-docs/NEXT-FEATURES-PROMPT.md
 
 ### Key Files
 
-```
+```text
 src/main/java/de/febrildur/sieveeditor/
 ├── Application.java              # Main window, menu setup
 ├── actions/
@@ -46,7 +46,7 @@ src/main/java/de/febrildur/sieveeditor/
 
 ### Data Flow
 
-```
+```text
 User Action → AbstractAction → System Classes → ManageSieve Protocol
                                               ↓
                                     PropertiesSieve (profiles)
@@ -56,7 +56,7 @@ User Action → AbstractAction → System Classes → ManageSieve Protocol
 
 ### Profile System
 
-```
+```text
 ~/.sieveprofiles/
 ├── default.properties       # Migrated from old ~/.sieveproperties
 ├── work.properties          # Additional user profiles
@@ -69,15 +69,18 @@ User Action → AbstractAction → System Classes → ManageSieve Protocol
 ## Current State
 
 ### Build Status
+
 ✅ Maven build succeeds
 ✅ No compilation errors
 ✅ Runs on Java 21
 
 ### Test Coverage
+
 ⚠️ 0% automated tests (mini-app, manual testing only)
 ✅ All features manually tested
 
 ### Dependencies
+
 - rsyntaxtextarea 3.5.1 (current)
 - managesievej 0.3.1 (abandoned but works)
 - commons-codec 1.16.0 (current)
@@ -90,6 +93,7 @@ User Action → AbstractAction → System Classes → ManageSieve Protocol
 **This is a mini-app, not enterprise software.**
 
 ### DO ✅
+
 - Fix user-facing bugs
 - Add practical features
 - Keep code simple
@@ -97,6 +101,7 @@ User Action → AbstractAction → System Classes → ManageSieve Protocol
 - Direct implementation
 
 ### DON'T ❌
+
 - Over-engineer
 - Add unnecessary abstractions
 - Aim for 80% test coverage
@@ -108,7 +113,8 @@ User Action → AbstractAction → System Classes → ManageSieve Protocol
 ## Git Workflow
 
 ### Recent Commits
-```
+
+```text
 2097a4c Remove obsolete FIXES-APPLIED.md documentation file
 7cddb38 Add multi-account profile support with automatic migration
 0b72ebc Add multi-account and ManageSieveJ fork analysis prompts
@@ -116,6 +122,7 @@ User Action → AbstractAction → System Classes → ManageSieve Protocol
 ```
 
 ### Commit Style
+
 - Clear, descriptive titles
 - Detailed body with specific changes
 - Include "what" and "why"
@@ -127,16 +134,19 @@ User Action → AbstractAction → System Classes → ManageSieve Protocol
 ## Next Implementation Session
 
 ### Before You Start
+
 1. Review `dev-docs/IMPLEMENTATION-STATUS.md`
 2. Check current git status
 3. Ensure working copy is clean
 
 ### Start Prompt
-```
+
+```text
 Read and execute dev-docs/NEXT-FEATURES-PROMPT.md
 ```
 
 ### Implementation Order
+
 1. Local file load/save (1-2 hours)
 2. Template insertion (2-3 hours)
 3. Test manually (1 hour)
@@ -144,7 +154,9 @@ Read and execute dev-docs/NEXT-FEATURES-PROMPT.md
 5. Update documentation
 
 ### After Implementation
+
 Update these files:
+
 - `dev-docs/IMPLEMENTATION-STATUS.md`
 - `dev-docs/analysis/modernization/05-real-world-issues.md`
 - `README.md` (user-facing features)
@@ -154,22 +166,26 @@ Update these files:
 ## Common Tasks
 
 ### Build
+
 ```bash
 mvn clean package
 ```
 
 ### Run
+
 ```bash
 ./sieveeditor.sh
 ```
 
 ### Check Git Status
+
 ```bash
 git status
 git log --oneline -10
 ```
 
 ### Create Commit
+
 ```bash
 git add [files]
 git commit -m "Title
@@ -185,12 +201,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 ## Known Limitations
 
 ### Won't Fix (By Design)
+
 - ManageSieveJ is abandoned (but works, no alternative)
 - No automated tests (mini-app doesn't need them)
 - SSL validation disabled (user works with internal servers)
 - Hardcoded encryption key (deferred per user)
 
 ### Could Fix Later
+
 - Better error messages (partially done)
 - More sophisticated templates (basic version sufficient)
 - Syntax error highlighting (current highlighting is sufficient)
@@ -199,7 +217,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 ## Documentation Structure
 
-```
+```text
 dev-docs/
 ├── SUMMARY.md                      # This file - quick reference
 ├── IMPLEMENTATION-STATUS.md        # Detailed progress tracking
@@ -221,6 +239,7 @@ dev-docs/
 ## Success Metrics
 
 ### Completed ✅
+
 - [x] 4K displays work properly
 - [x] Find/Replace fully functional
 - [x] No more last character bug
@@ -229,6 +248,7 @@ dev-docs/
 - [x] Clean Maven build
 
 ### Remaining 📋
+
 - [ ] Local file editing
 - [ ] Template insertion
 - [ ] Better error messages
@@ -238,13 +258,16 @@ dev-docs/
 ## User Feedback Integration
 
 ### From CLAUDE-Task.md
+
 - "4K scaling now works!" ✅
 - "Find/Replace works perfectly!" ✅
 - "Can finally reach last character!" ✅
 - "Multiple accounts! No more symlinks!" ✅
 
 ### Next User Testing
+
 After implementing local file and templates:
+
 - Test file load/save workflow
 - Test template insertion
 - Gather feedback on template usefulness
@@ -254,6 +277,7 @@ After implementing local file and templates:
 ## Quick Troubleshooting
 
 ### Build Issues
+
 ```bash
 # Clean everything
 mvn clean
@@ -264,6 +288,7 @@ mvn package
 ```
 
 ### HiDPI Not Working
+
 ```bash
 # Check detection
 echo $GDK_SCALE
@@ -274,6 +299,7 @@ SIEVE_SCALE=2.0 ./sieveeditor.sh
 ```
 
 ### Profile Issues
+
 ```bash
 # Check profiles
 ls -la ~/.sieveprofiles/

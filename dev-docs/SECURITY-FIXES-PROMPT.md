@@ -5,6 +5,7 @@
 This is a Java 21 Swing desktop application for editing Sieve mail filter scripts. The codebase has **2 CRITICAL security vulnerabilities** related to SSL/TLS that need to be fixed.
 
 Previous work completed:
+
 - ✅ Java 21 LTS update
 - ✅ Find/Replace functionality fixed
 - ✅ Tokenizer bugs fixed
@@ -22,6 +23,7 @@ Fix the 2 CRITICAL SSL/TLS security vulnerabilities in the SieveEditor applicati
 **Problem:** Lines 97-121 contain `getInsecureSSLFactory()` that disables ALL SSL certificate validation using a TrustManager that accepts everything.
 
 **Current vulnerable code:**
+
 ```java
 public static SSLSocketFactory getInsecureSSLFactory() throws NoSuchAlgorithmException, KeyManagementException {
     TrustManager[] trustAllCerts = new TrustManager[] {
@@ -38,6 +40,7 @@ public static SSLSocketFactory getInsecureSSLFactory() throws NoSuchAlgorithmExc
 ```
 
 **What to do:**
+
 1. Remove the `getInsecureSSLFactory()` method entirely
 2. Update `connect()` method to use `SSLSocketFactory.getDefault()` instead
 3. Remove the insecure SSL configuration from ManageSieveClient setup
@@ -55,6 +58,7 @@ public static SSLSocketFactory getInsecureSSLFactory() throws NoSuchAlgorithmExc
 **Problem:** Lines 12-13 contain hardcoded encryption password embedded in source code.
 
 **Current vulnerable code:**
+
 ```java
 public class SimpleEncrypter {
     private static String PASSWORD = "SomeSecurePasswordHere";
@@ -64,6 +68,7 @@ public class SimpleEncrypter {
 ```
 
 **What to do:**
+
 1. Remove hardcoded `PASSWORD` constant
 2. Generate a unique encryption key per installation (on first run)
 3. Store the key securely using Java KeyStore or OS credential storage
@@ -79,6 +84,7 @@ public class SimpleEncrypter {
 ## Additional Context
 
 ### Project Philosophy
+
 - **"Das ist eine Mini-App. Don't overdo patterns."** - Keep solutions simple and practical
 - No need for enterprise patterns or over-engineering
 - Focus on fixing the security issues correctly but simply
@@ -86,12 +92,15 @@ public class SimpleEncrypter {
 ### Files to Review
 
 **Security vulnerability documentation:**
+
 - `dev-docs/analysis/modernization/01-security-vulnerabilities.md` - Complete analysis of both issues
 
 **Implementation plan:**
+
 - `dev-docs/analysis/modernization/04-implementation-roadmap.md` - See Phase 1 & 2 for detailed tasks
 
 **Related files:**
+
 - `src/main/java/de/febrildur/sieveeditor/system/ConnectAndListScripts.java` - SSL issue
 - `src/main/java/de/febrildur/sieveeditor/system/SimpleEncrypter.java` - Hardcoded key issue
 - `src/main/java/de/febrildur/sieveeditor/actions/ActionConnect.java` - Uses connection
@@ -102,6 +111,7 @@ public class SimpleEncrypter {
 **Java Version:** Java 21 LTS (already configured)
 
 **Dependencies Available:**
+
 ```xml
 <dependency>
     <groupId>com.fluffypeople</groupId>
@@ -127,12 +137,14 @@ public class SimpleEncrypter {
 After fixing, verify:
 
 **SSL Fix:**
+
 1. Connect to server with valid SSL certificate → should work
 2. Connect to server with self-signed certificate → should fail with clear error
 3. Connect to server with expired certificate → should fail with clear error
 4. Error messages should be user-friendly and suggest solutions
 
 **Encryption Key Fix:**
+
 1. First run generates new key → stores securely
 2. Subsequent runs use same key → passwords decrypt correctly
 3. Key is NOT visible in source code or config files
@@ -155,11 +167,13 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 ### User Experience Goals
 
 **For SSL errors:**
+
 - Clear error message: "SSL certificate validation failed"
 - Explain what this means (untrusted certificate)
 - Suggest solution: "Add certificate to Java truststore" with command example
 
 **For encryption:**
+
 - Transparent to user (auto-generates key on first run)
 - If key is lost, clear error: "Encryption key not found. Stored passwords cannot be recovered."
 - Option to reset and re-enter passwords
@@ -168,7 +182,7 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 
 Create separate commits for each fix:
 
-```
+```text
 Fix SSL certificate validation (CRITICAL security issue)
 
 Problem: Application disabled all SSL certificate validation, accepting
@@ -184,7 +198,7 @@ Security impact: Prevents man-in-the-middle attacks.
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-```
+```text
 Fix hardcoded encryption key (CRITICAL security issue)
 
 Problem: Encryption key was hardcoded in source code and shared

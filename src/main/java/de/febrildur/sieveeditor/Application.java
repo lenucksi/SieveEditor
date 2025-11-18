@@ -3,6 +3,9 @@ package de.febrildur.sieveeditor;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
@@ -35,6 +38,8 @@ import de.febrildur.sieveeditor.system.SieveTokenMaker;
 
 public class Application extends JFrame {
 
+	private static final Logger LOGGER = Logger.getLogger(Application.class.getName());
+
 	private ConnectAndListScripts server;
 	private PropertiesSieve prop;
 	private RSyntaxTextArea textArea;
@@ -49,13 +54,17 @@ public class Application extends JFrame {
 	private AbstractAction actionReplace = new ActionReplace(this);
 
 	public Application() {
+		this(null);
+	}
+
+	public Application(String forcedBackend) {
 
 		// Run migration once
 		PropertiesSieve.migrateOldProperties();
 
 		// Load last used profile
 		String lastProfile = PropertiesSieve.getLastUsedProfile();
-		prop = new PropertiesSieve(lastProfile);
+		prop = new PropertiesSieve(lastProfile, forcedBackend);
 
 		try {
 			prop.load();
@@ -79,7 +88,7 @@ public class Application extends JFrame {
 		menu.add(edit);
 
 		edit.add(new JMenuItem(actionReplace)).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK));
-		
+
 		setJMenuBar(menu);
 
 		JPanel cp = new JPanel(new BorderLayout());
@@ -110,11 +119,73 @@ public class Application extends JFrame {
 	}
 
 	public static void main(String[] args) {
+		// Parse command-line arguments
+		boolean verbose = false;
+		String forcedBackend = null;
+
+		for (int i = 0; i < args.length; i++) {
+			String arg = args[i];
+			if (arg.equals("-v") || arg.equals("--verbose")) {
+				verbose = true;
+			} else if (arg.equals("--backend") && i + 1 < args.length) {
+				forcedBackend = args[++i];
+			} else if (arg.equals("-h") || arg.equals("--help")) {
+				printHelp();
+				System.exit(0);
+			}
+		}
+
+		// Configure logging level
+		if (verbose) {
+			enableVerboseLogging();
+			LOGGER.log(Level.INFO, "Verbose logging enabled");
+		}
+
+		if (forcedBackend != null) {
+			LOGGER.log(Level.INFO, "Using forced backend: {0}", forcedBackend);
+		}
+
+		// Launch application
+		final String backend = forcedBackend;
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				new Application().setVisible(true);
+				new Application(backend).setVisible(true);
 			}
 		});
+	}
+
+	private static void printHelp() {
+		System.out.println("SieveEditor - ManageSieve script editor");
+		System.out.println();
+		System.out.println("Usage: java -jar SieveEditor.jar [options]");
+		System.out.println();
+		System.out.println("Options:");
+		System.out.println("  -v, --verbose           Enable verbose logging");
+		System.out.println("  --backend <type>        Force specific credential backend");
+		System.out.println("                          Types: keepassxc, keychain, prompt");
+		System.out.println("  -h, --help              Show this help message");
+		System.out.println();
+		System.out.println("Examples:");
+		System.out.println("  java -jar SieveEditor.jar -v");
+		System.out.println("  java -jar SieveEditor.jar --backend keychain");
+		System.out.println("  java -jar SieveEditor.jar -v --backend prompt");
+	}
+
+	private static void enableVerboseLogging() {
+		// Set root logger to INFO level
+		Logger rootLogger = Logger.getLogger("");
+		rootLogger.setLevel(Level.ALL);
+
+		// Configure console handler
+		for (var handler : rootLogger.getHandlers()) {
+			if (handler instanceof ConsoleHandler) {
+				handler.setLevel(Level.ALL);
+			}
+		}
+
+		// Set our package loggers to FINE level for detailed output
+		Logger.getLogger("de.febrildur.sieveeditor").setLevel(Level.FINE);
+		Logger.getLogger("de.febrildur.sieveeditor.system.credentials").setLevel(Level.FINE);
 	}
 
 	public ConnectAndListScripts getServer() {

@@ -35,6 +35,27 @@ public class MasterKeyProviderFactory {
 	 * @throws CredentialException if no provider can be created
 	 */
 	public static MasterKeyProvider create() throws CredentialException {
+		return create(null);
+	}
+
+	/**
+	 * Creates a MasterKeyProvider instance with explicit backend selection.
+	 *
+	 * @param forcedBackend backend to use (keepassxc, keychain, prompt), or null for auto-detection
+	 * @return configured MasterKeyProvider instance
+	 * @throws CredentialException if no provider can be created
+	 */
+	public static MasterKeyProvider create(String forcedBackend) throws CredentialException {
+		// If backend is explicitly specified via command-line, use it
+		if (forcedBackend != null) {
+			LOGGER.log(Level.INFO, "Using forced backend from command-line: {0}", forcedBackend);
+			MasterKeyProvider provider = createProviderByBackendArg(forcedBackend);
+			if (provider.isAvailable()) {
+				return provider;
+			} else {
+				LOGGER.log(Level.WARNING, "Forced backend {0} is not available, falling back to selection dialog", forcedBackend);
+			}
+		}
 		// Check if user has a saved preference
 		String savedBackend = loadSavedBackend();
 		if (savedBackend != null) {
@@ -156,6 +177,24 @@ public class MasterKeyProviderFactory {
 			case "Manual Password Entry" -> new UserPromptMasterKeyProvider();
 			default -> {
 				LOGGER.log(Level.WARNING, "Unknown backend name: {0}, falling back to user prompt", name);
+				yield new UserPromptMasterKeyProvider();
+			}
+		};
+	}
+
+	/**
+	 * Creates a provider instance by command-line argument.
+	 *
+	 * @param arg backend argument from command line (keepassxc, keychain, prompt)
+	 * @return provider instance
+	 */
+	private static MasterKeyProvider createProviderByBackendArg(String arg) {
+		return switch (arg.toLowerCase()) {
+			case "keepassxc", "keepass" -> new KeePassXCMasterKeyProvider();
+			case "keychain", "os", "system" -> new OSKeychainMasterKeyProvider();
+			case "prompt", "manual", "password" -> new UserPromptMasterKeyProvider();
+			default -> {
+				LOGGER.log(Level.WARNING, "Unknown backend argument: {0}, falling back to user prompt", arg);
 				yield new UserPromptMasterKeyProvider();
 			}
 		};

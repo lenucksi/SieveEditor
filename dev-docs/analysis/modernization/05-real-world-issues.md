@@ -3,6 +3,7 @@
 ## Implementation Status
 
 ### Completed (Week 1 - All Done!)
+
 - ✅ **4K Scaling Fix** - Launcher script created with HiDPI support
 - ✅ **Find/Replace Functionality** - Fixed event handlers and added keyboard shortcuts
 - ✅ **Last Character Bug** - Fixed tokenizer loop issue
@@ -14,17 +15,20 @@
   - Search wrap-around functionality added
 
 ### Deferred (Week 2 - Security)
+
 - ⚠️ **Security Fixes** - SSL certificate validation and encryption improvements deferred per user decision
   - User chose to defer these as they work with trusted internal servers
   - Detailed implementation plan available in `SECURITY-FIXES-PROMPT.md` if needed in future
 
 ### Remaining Open (Week 3-5)
+
 - ⚠️ **Multi-Account Support** - Not yet implemented
   - Detailed implementation plan available in `MULTI-ACCOUNT-PROMPT.md`
 - ⚠️ **Local File Load/Save** - Not yet implemented
 - ⚠️ **Template Insertion** - Not yet implemented
 
 ### Implementation Details
+
 See `../../FIXES-APPLIED.md` for complete details of all changes made.
 
 ---
@@ -47,20 +51,24 @@ This is a Java/Swing HiDPI scaling issue on Linux with recent GNOME versions. Th
 #### Possible Causes
 
 **Hypothesis 1: Java 11 HiDPI Support Not Enabled**
+
 - Java 9+ has HiDPI support but requires explicit flags
 - GNOME's Wayland/X11 scaling may not be detected automatically
 
 **Hypothesis 2: GNOME/Wayland Changes**
+
 - Recent GNOME versions changed how they report DPI
 - Java may not be reading the correct environment variables
 
 **Hypothesis 3: Missing GDK_SCALE Environment Variable**
+
 - Java on Linux reads `GDK_SCALE` for HiDPI
 - May not be set correctly in recent GNOME versions
 
 #### How to Test
 
 **Test 1: Check Java HiDPI Detection**
+
 ```bash
 # Run with debug output
 java -Dsun.java2d.uiScale.enabled=true \
@@ -69,6 +77,7 @@ java -Dsun.java2d.uiScale.enabled=true \
 ```
 
 **Test 2: Check Current Scaling**
+
 ```bash
 # Check what GNOME reports
 echo $GDK_SCALE
@@ -77,6 +86,7 @@ xrdb -query | grep Xft.dpi
 ```
 
 **Test 3: Force Different Scale Factors**
+
 ```bash
 # Try various scale factors
 for scale in 1.5 2.0 2.5; do
@@ -85,6 +95,7 @@ done
 ```
 
 **Test 4: Check Wayland vs X11**
+
 ```bash
 # Check if running under Wayland
 echo $XDG_SESSION_TYPE
@@ -98,6 +109,7 @@ GDK_BACKEND=x11 java -jar SieveEditor-jar-with-dependencies.jar
 **Solution 1: Create Launch Script (RECOMMENDED)**
 
 Create `sieveeditor.sh`:
+
 ```bash
 #!/bin/bash
 # SieveEditor launcher with HiDPI support
@@ -126,6 +138,7 @@ java $JAVA_OPTS -jar "$(dirname "$0")/SieveEditor-jar-with-dependencies.jar" "$@
 **Solution 2: Add to Application Code**
 
 In `Application.java` constructor, before UI setup:
+
 ```java
 // Add at line ~55, before UI initialization
 private void setupHiDPI() {
@@ -147,6 +160,7 @@ private void setupHiDPI() {
 **Solution 3: Maven Assembly Plugin Configuration**
 
 Update `pom.xml` to create launcher with correct JVM args:
+
 ```xml
 <!-- Add to pom.xml -->
 <plugin>
@@ -253,6 +267,7 @@ Replace the `IntStream.forEach` with a simple for-loop (see bug fix in section 3
 > "App speichert credentials im Home, als JSON vermutlich. Dort kann immer nur ein Account angelegt werden, daher muss ich mit Symlinks arbeiten um mehrere accounts mit dem tool editieren zu können."
 
 **Current Implementation:**
+
 - Single properties file: `~/.sieveproperties`
 - Only stores one server configuration
 
@@ -261,7 +276,8 @@ Replace the `IntStream.forEach` with a simple for-loop (see bug fix in section 3
 **Option A: Multiple Profile Support (Simple)**
 
 Create `~/.sieveprofiles/` directory with multiple files:
-```
+
+```text
 ~/.sieveprofiles/
   ├── default.properties
   ├── work.properties
@@ -326,12 +342,14 @@ panel.add(profileCombo);
 | jasypt | 1.9.3 | 1.9.3 | Slow (2014) | ⚠️ Keep or replace |
 
 **Pragmatic Approach:**
+
 - Update RSyntaxTextArea to 3.5.0 (easy, safe)
 - Keep ManageSieveJ (abandoned but works, no alternative)
 - Keep commons-codec (current)
 - Keep Jasypt for now (or remove if using OS credential storage)
 
 **Changes to pom.xml:**
+
 ```xml
 <dependency>
     <groupId>com.fifesoft</groupId>
@@ -352,6 +370,7 @@ panel.add(profileCombo);
 **Implementation:**
 
 Add menu items:
+
 - File → Open Local Script... (Ctrl+L)
 - File → Save Local Script... (Ctrl+Shift+S)
 
@@ -455,6 +474,7 @@ private AbstractAction createTemplateAction(String name, String template) {
 ## Revised Priority List (Pragmatic)
 
 ### Week 1: Critical User-Facing Issues
+
 1. [x] Fix 4K scaling (launcher script) - **1 hour** (✅ DONE - see FIXES-APPLIED.md)
 2. [x] Fix Find/Replace functionality - **2 hours** (✅ DONE - see FIXES-APPLIED.md)
 3. [x] Fix last character bug (tokenizer) - **1 hour** (✅ DONE - see FIXES-APPLIED.md)
@@ -463,27 +483,31 @@ private AbstractAction createTemplateAction(String name, String template) {
 **Planned:** ~1 day of work | **Actual:** ~1 day of work ✅
 
 ### Week 2: Security & Stability
-5. [x] Fix SSL certificate validation - **2 hours** (⚠️ DEFERRED - see SECURITY-FIXES-PROMPT.md)
-6. [x] Remove hardcoded encryption key - **4 hours** (⚠️ DEFERRED - see SECURITY-FIXES-PROMPT.md)
-7. [x] Add null checks to prevent crashes - **2 hours** (⚠️ DEFERRED - see SECURITY-FIXES-PROMPT.md)
+
+1. [x] Fix SSL certificate validation - **2 hours** (⚠️ DEFERRED - see SECURITY-FIXES-PROMPT.md)
+2. [x] Remove hardcoded encryption key - **4 hours** (⚠️ DEFERRED - see SECURITY-FIXES-PROMPT.md)
+3. [x] Add null checks to prevent crashes - **2 hours** (⚠️ DEFERRED - see SECURITY-FIXES-PROMPT.md)
 
 **Planned:** ~1 day of work | **Actual:** Not implemented (deferred per user decision)
 
 ### Week 3: Multi-Account Support
-8. [ ] Multiple profile support - **3 hours** (⚠️ TODO - prompt available in MULTI-ACCOUNT-PROMPT.md)
+
+1. [ ] Multiple profile support - **3 hours** (⚠️ TODO - prompt available in MULTI-ACCOUNT-PROMPT.md)
 
 **Planned:** Half day | **Status:** Not yet implemented
 
 ### Week 4: Nice-to-Have Features
-9. [ ] Local file load/save - **2 hours** (⚠️ TODO)
-10. [ ] Template insertion - **3 hours** (⚠️ TODO)
+
+1. [ ] Local file load/save - **2 hours** (⚠️ TODO)
+2. [ ] Template insertion - **3 hours** (⚠️ TODO)
 
 **Planned:** Half day | **Status:** Not yet implemented
 
 ### Week 5: Polish & Testing
-11. [ ] Write basic tests for fixes - **1 day** (⚠️ TODO)
-12. [ ] Manual testing on 4K display - **2 hours** (⚠️ TODO)
-13. [ ] Update documentation - **2 hours** (⚠️ TODO)
+
+1. [ ] Write basic tests for fixes - **1 day** (⚠️ TODO)
+2. [ ] Manual testing on 4K display - **2 hours** (⚠️ TODO)
+3. [ ] Update documentation - **2 hours** (⚠️ TODO)
 
 **Planned:** ~1.5 days | **Status:** Not yet implemented
 
@@ -494,6 +518,7 @@ private AbstractAction createTemplateAction(String name, String template) {
 **Original Plan:** 5 Days
 
 **Actual Implementation:**
+
 - Week 1 (Critical Fixes): ✅ ~1 day (COMPLETED)
 - Week 2 (Security): ⚠️ ~1 day (DEFERRED per user decision)
 - Week 3-5 (Enhancements): ⚠️ ~2 days (NOT YET IMPLEMENTED)
@@ -523,6 +548,7 @@ private AbstractAction createTemplateAction(String name, String template) {
 **Don't aim for 80% coverage.** This is overkill for a mini-app.
 
 **Aim for:**
+
 - ✅ Test security fixes (SSL, encryption)
 - ✅ Test critical bug fixes (NPE prevention)
 - ✅ Test Find/Replace functionality

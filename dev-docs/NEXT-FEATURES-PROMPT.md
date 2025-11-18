@@ -7,6 +7,7 @@ You are working on SieveEditor, a lightweight Java Swing application for editing
 ## Project Status
 
 ### Completed ✅
+
 - 4K HiDPI scaling fix
 - Find/Replace functionality
 - Tokenizer bug fix
@@ -18,7 +19,9 @@ You are working on SieveEditor, a lightweight Java Swing application for editing
 ## Feature 1: Local File Load/Save
 
 ### Goal
+
 Allow users to edit Sieve scripts locally without needing a server connection. This is useful for:
+
 - Developing scripts offline
 - Backing up scripts locally
 - Version control of scripts
@@ -129,6 +132,7 @@ import java.nio.file.Files;
 ```
 
 ### Testing
+
 1. Open application
 2. Press Ctrl+L → select a .sieve file → should load content
 3. Edit content
@@ -140,6 +144,7 @@ import java.nio.file.Files;
 ## Feature 2: Template Insertion
 
 ### Goal
+
 Provide quick insertion of common Sieve script patterns to speed up development.
 
 ### Requirements
@@ -281,7 +286,8 @@ mkdir -p ~/.sievetemplates
 ```
 
 Example user template `~/.sievetemplates/mailing-list.sieve`:
-```
+
+```text
 # Mailing list filter
 if header :contains "List-Id" "mylist.example.com" {
     fileinto "Lists/MyList";
@@ -290,6 +296,7 @@ if header :contains "List-Id" "mylist.example.com" {
 ```
 
 ### Testing
+
 1. Open application
 2. Click "Insert" menu → should see built-in templates
 3. Click "Spam Filter to Folder" → template inserted at cursor
@@ -345,6 +352,7 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 ```
 
 Test checklist:
+
 - [ ] Ctrl+L opens local file
 - [ ] File content loads correctly
 - [ ] Ctrl+Shift+S saves to local file
@@ -361,7 +369,8 @@ Test checklist:
 Create commits for each feature:
 
 **Commit 1: Local File Support**
-```
+
+```text
 Add local file load/save functionality
 
 Allows editing Sieve scripts offline without server connection.
@@ -380,7 +389,8 @@ Users can now:
 ```
 
 **Commit 2: Template Insertion**
-```
+
+```text
 Add template insertion for common Sieve patterns
 
 Speeds up script development with predefined templates.
@@ -443,6 +453,7 @@ Built-in templates:
 ## After Implementation
 
 Update these files:
+
 - `dev-docs/IMPLEMENTATION-STATUS.md` - Mark features as complete
 - `README.md` - Document new features
 - `dev-docs/analysis/modernization/05-real-world-issues.md` - Update completion status

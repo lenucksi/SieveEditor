@@ -62,11 +62,15 @@ public class PropertiesSieve {
 	}
 
 	public PropertiesSieve(String profileName) {
+		this(profileName, null);
+	}
+
+	public PropertiesSieve(String profileName, String forcedBackend) {
 		this.profileName = profileName;
 
 		// Initialize master key provider (may show UI dialogs for user selection/authentication)
 		try {
-			this.masterKeyProvider = MasterKeyProviderFactory.create();
+			this.masterKeyProvider = MasterKeyProviderFactory.create(forcedBackend);
 		} catch (CredentialException e) {
 			LOGGER.log(Level.SEVERE, "Failed to initialize master key provider", e);
 			throw new RuntimeException("Failed to initialize secure credential storage. " +

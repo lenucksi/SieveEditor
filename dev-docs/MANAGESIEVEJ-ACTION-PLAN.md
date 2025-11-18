@@ -1,6 +1,7 @@
 # ManageSieveJ Security Fix Action Plan
 
 ## Overview
+
 Full security fix implementation for ManageSieveJ v0.4.0 release.
 
 ## Status Summary
@@ -28,6 +29,7 @@ gh pr merge 29 --squash
 ```
 
 **What it does:**
+
 - Enables hostname verification for SSL/TLS
 - Prevents MITM with valid certs for wrong hostnames
 
@@ -51,6 +53,7 @@ gh pr close 30
 ### 3. 🔧 Fix PR #31: Log Sanitization
 
 **Current Issue:** Pattern too broad
+
 ```java
 // Current (TOO BROAD):
 if (line.startsWith("{")) {
@@ -59,6 +62,7 @@ if (line.startsWith("{")) {
 ```
 
 **Fixed Version:** Narrow pattern to match only SASL authentication
+
 ```java
 // Fixed (PRECISE):
 if (line.matches("^\\{\\d+\\+?\\}(\\r?\\n.*)?")) {
@@ -69,6 +73,7 @@ if (line.matches("^\\{\\d+\\+?\\}(\\r?\\n.*)?")) {
 ```
 
 **Pattern Explanation:**
+
 - `^` - Start of line
 - `\\{` - Literal opening brace
 - `\\d+` - One or more digits (byte count)
@@ -77,11 +82,13 @@ if (line.matches("^\\{\\d+\\+?\\}(\\r?\\n.*)?")) {
 - `(\\r?\\n.*)?` - Optional CRLF and continuation data
 
 **Files to Fix:**
-```
+
+```text
 src/main/java/com/fluffypeople/managesieve/ManageSieveClient.java
 ```
 
 **Action Steps:**
+
 ```bash
 # 1. Checkout PR branch
 git fetch origin pull/31/head:pr-31-log-sanitization
@@ -138,6 +145,7 @@ private void sendLine(String line) throws IOException {
 ```
 
 **Testing:**
+
 ```bash
 # Test with normal commands (should NOT be redacted)
 PUTSCRIPT "test" {50}
@@ -154,6 +162,7 @@ AUTHENTICATE "PLAIN" {16}
 ### 4. ❌ Reject & Rewrite PR #32: Resource Leak
 
 **Current Issue:** Doesn't actually close resources
+
 ```java
 // Current (WRONG):
 public void disconnect() throws IOException {
@@ -165,6 +174,7 @@ public void disconnect() throws IOException {
 ```
 
 **Correct Fix:**
+
 ```java
 // Correct:
 public void disconnect() throws IOException {
@@ -200,6 +210,7 @@ public void disconnect() throws IOException {
 ```
 
 **Action Steps:**
+
 ```bash
 # 1. Comment on PR #32 explaining the issue
 gh pr comment 32 --body "This PR doesn't actually fix the resource leak. Setting variables to null doesn't close the underlying resources. The disconnect() method needs to call close() on reader, writer, and socket. I'll create a new PR with the proper fix."
@@ -214,6 +225,7 @@ git checkout -b fix/resource-leak-proper
 **New PR Code:**
 
 Create file: `resource-leak-fix.patch`
+
 ```java
 // In ManageSieveClient.java
 
@@ -270,6 +282,7 @@ public void disconnect() throws IOException {
 ```
 
 **Commit & Push:**
+
 ```bash
 git add .
 git commit -m "fix(resource-leak): properly close socket and streams in disconnect
@@ -307,6 +320,7 @@ gh pr merge 33 --squash
 ```
 
 **What it does:**
+
 - Removes unnecessary boxing of primitive long
 - Code quality improvement
 
@@ -315,6 +329,7 @@ gh pr merge 33 --squash
 ## Testing Strategy
 
 ### Integration Testing
+
 ```bash
 # 1. Build ManageSieveJ with all fixes
 mvn clean install
@@ -335,6 +350,7 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 ```
 
 ### Resource Leak Testing
+
 ```bash
 # Monitor file descriptors during connect/disconnect cycles
 while true; do
@@ -346,6 +362,7 @@ done
 ```
 
 ### Log Sanitization Testing
+
 ```bash
 # Enable finest logging
 java -Djava.util.logging.config.file=logging.properties \
@@ -361,6 +378,7 @@ grep -i "password" ~/.sieve/logs/*.log
 ## Release Process
 
 ### Version Bump
+
 ```bash
 # ManageSieveJ: 0.3.3 → 0.4.0
 # Reason: Multiple bug fixes and security improvements
@@ -436,11 +454,13 @@ Includes security fixes:
 ## Timeline
 
 **Week 1:**
+
 - Day 1-2: Fix PR #31 (log sanitization)
 - Day 3-4: Rewrite PR #32 (resource leak)
 - Day 5: Testing
 
 **Week 2:**
+
 - Day 1: Merge all PRs
 - Day 2: Final testing
 - Day 3: Release v0.4.0
@@ -468,6 +488,7 @@ Includes security fixes:
 ## Rollback Plan
 
 If issues discovered:
+
 ```bash
 # Revert to v0.3.3
 git revert <commit-hash>

@@ -11,11 +11,13 @@ Multiple security vulnerabilities were identified by CodeQL and manual security 
 ## SieveEditor Repository - PRs Created
 
 ### PR #1: SSL Certificate Validation Fix (CRITICAL)
+
 **Branch:** `claude/fix-ssl-certificate-validation-01467KBdtnTXMZ7J2MQesbvU`
 **Improves:** CodeQL autofix PR #2
 **Status:** ✅ Ready to merge (after testing)
 
 **Changes:**
+
 - Removes insecure "trust all certificates" TrustManager
 - Uses `TrustManagerFactory` with system CA certificates
 - Upgrades to TLSv1.3 with TLSv1.2 fallback
@@ -28,6 +30,7 @@ Multiple security vulnerabilities were identified by CodeQL and manual security 
 **Migration Notes:** None required
 
 **Testing Required:**
+
 - [ ] Connect to ManageSieve server with valid certificate
 - [ ] Verify connection fails with self-signed certificate (expected)
 - [ ] Verify connection fails with expired certificate (expected)
@@ -37,11 +40,13 @@ Multiple security vulnerabilities were identified by CodeQL and manual security 
 ---
 
 ### PR #2: Encryption Security Fix (CRITICAL + HIGH + MEDIUM)
+
 **Branch:** `claude/fix-encryption-security-01467KBdtnTXMZ7J2MQesbvU`
 **Fixes:** Hardcoded key + Weak algorithm + File permissions
 **Status:** ⚠️ Ready to merge (BREAKING CHANGE - see migration)
 
 **Changes:**
+
 - Removes hardcoded encryption key exposed in source code
 - Derives encryption key from username + hostname + MAC address
 - Upgrades from PBEWithMD5AndDES to PBEWithHmacSHA512AndAES_256
@@ -51,11 +56,13 @@ Multiple security vulnerabilities were identified by CodeQL and manual security 
 - Adds comprehensive logging
 
 **Breaking Changes:** ⚠️ **YES**
+
 - Existing encrypted passwords cannot be decrypted with new key
 - Users must re-enter passwords after upgrade
 
 **Migration Notes:**
-```
+
+```text
 ⚠️ IMPORTANT: Users upgrading from v0.9.x will need to:
 1. Back up their ~/.sieveprofiles/*.properties files
 2. Note their server passwords (they will be lost)
@@ -64,6 +71,7 @@ Multiple security vulnerabilities were identified by CodeQL and manual security 
 ```
 
 **Testing Required:**
+
 - [ ] Fresh install - create new profile with password
 - [ ] Verify password encrypts correctly (check file contains `ENC(...)`)
 - [ ] Verify password decrypts correctly on next launch
@@ -76,10 +84,12 @@ Multiple security vulnerabilities were identified by CodeQL and manual security 
 ---
 
 ### PR #3: Password UI Masking (HIGH)
+
 **Branch:** `claude/fix-password-ui-display-01467KBdtnTXMZ7J2MQesbvU`
 **Status:** ✅ Ready to merge (after testing)
 
 **Changes:**
+
 - Replaces `JTextField` with `JPasswordField` for password input
 - Sets echo character to bullet (•) for visual masking
 - Updates code to use `getPassword()` instead of `getText()`
@@ -89,6 +99,7 @@ Multiple security vulnerabilities were identified by CodeQL and manual security 
 **Migration Notes:** None required
 
 **Testing Required:**
+
 - [ ] Open connection dialog
 - [ ] Verify password field shows bullets (•) instead of plaintext
 - [ ] Enter password and verify it's masked
@@ -100,43 +111,52 @@ Multiple security vulnerabilities were identified by CodeQL and manual security 
 ## ManageSieveJ Repository - PRs to Review/Improve
 
 ### PR #29: Hostname Verification (HIGH)
+
 **Status:** ✅ APPROVED - Ready to merge
 **Recommendation:** Merge as-is
 
 **Changes:**
+
 - Enables hostname verification for SSL/TLS connections
 - Prevents MITM attacks with valid certificates for wrong hostnames
 
 **Testing Required:**
+
 - [ ] Connect to server with correct certificate
 - [ ] Verify connection fails if certificate hostname doesn't match
 
 ---
 
 ### PR #30: TrustManager Fix (CRITICAL)
+
 **Status:** ⚠️ NEEDS REVISION (same issues as SieveEditor PR #2)
 **Recommendation:** Apply same improvements as SieveEditor fix
 
 **Issues:**
+
 - Breaking change (method signature changed)
 - Missing call site updates
 - Overly broad exception handling
 
 **Action Required:**
+
 - Apply similar fixes as done in SieveEditor PR #1
 - Or wait for SieveEditor to upgrade to fixed ManageSieveJ version
 
 ---
 
 ### PR #31: Log Sanitization (HIGH)
+
 **Status:** ⚠️ NEEDS REVISION
 **Recommendation:** Narrow pattern matching
 
 **Issues:**
+
 - Pattern `line.startsWith("{")` is too broad
 - May redact legitimate non-sensitive data
 
 **Improved Code:**
+
 ```java
 if (line.matches("^\\{\\d+\\+?\\}(\\r?\\n.*)?")) {
     log.log(Level.FINEST, "Sending line: <redacted SASL authentication data>");
@@ -146,21 +166,25 @@ if (line.matches("^\\{\\d+\\+?\\}(\\r?\\n.*)?")) {
 ```
 
 **Action Required:**
+
 - Update PR with narrower pattern
 - Audit all other logging for credential leakage
 
 ---
 
 ### PR #32: Resource Leak Fix (MEDIUM)
+
 **Status:** ❌ REJECT - Doesn't actually fix the issue
 **Recommendation:** Rewrite completely
 
 **Issues:**
+
 - Only declares variables as null
 - Doesn't add try-with-resources or finally blocks
 - Doesn't actually close resources
 
 **Correct Fix:**
+
 ```java
 public void disconnect() throws IOException {
     if (reader != null) {
@@ -170,16 +194,19 @@ public void disconnect() throws IOException {
 ```
 
 **Action Required:**
+
 - Reject current PR
 - Create new PR with proper resource management
 
 ---
 
 ### PR #33: Boxed Variable (LOW)
+
 **Status:** ✅ APPROVED - Ready to merge
 **Recommendation:** Merge as-is
 
 **Changes:**
+
 - Removes unnecessary boxing of primitive `long` type
 - Minor code quality improvement
 
@@ -188,6 +215,7 @@ public void disconnect() throws IOException {
 ## Recommended Merge Sequence
 
 ### Phase 1: Non-Breaking Fixes (Merge First)
+
 These can be merged independently in any order:
 
 1. **SieveEditor PR #3** (Password UI Masking)
@@ -205,21 +233,22 @@ These can be merged independently in any order:
    - Code quality fix
 
 ### Phase 2: Breaking Changes (Coordinate Release)
+
 These have breaking changes and should be coordinated:
 
-4. **SieveEditor PR #1** (SSL Certificate Validation)
+1. **SieveEditor PR #1** (SSL Certificate Validation)
    - Test thoroughly before merging
    - May break connections to servers with self-signed certs
    - Document workaround for custom certificates
 
-5. **SieveEditor PR #2** (Encryption Security)
+2. **SieveEditor PR #2** (Encryption Security)
    - **MUST coordinate with release notes**
    - Users need migration instructions
    - Consider adding migration tool to preserve passwords
 
 ### Phase 3: Dependency Updates (After Phase 1 & 2)
 
-6. **Upgrade SieveEditor** to use fixed ManageSieveJ version
+1. **Upgrade SieveEditor** to use fixed ManageSieveJ version
    - After ManageSieveJ PRs #29, #33 are merged and released
    - Update dependency version in pom.xml
 
@@ -230,6 +259,7 @@ These have breaking changes and should be coordinated:
 ### Pre-Merge Testing (Each PR)
 
 **SSL Certificate Validation (PR #1):**
+
 ```bash
 # Test with valid certificate
 ./test-valid-cert.sh
@@ -245,6 +275,7 @@ grep "TLSv1.3" logs/sieveeditor.log
 ```
 
 **Encryption Security (PR #2):**
+
 ```bash
 # Test fresh install
 rm -rf ~/.sieveprofiles
@@ -264,6 +295,7 @@ ls -la ~/.sieveprofiles/default.properties
 ```
 
 **Password UI Masking (PR #3):**
+
 ```bash
 ./sieveeditor.sh
 # Open connection dialog
@@ -276,6 +308,7 @@ ls -la ~/.sieveprofiles/default.properties
 ### Integration Testing (After All Merges)
 
 **Full Security Test:**
+
 ```bash
 # 1. Fresh install
 rm -rf ~/.sieveprofiles
@@ -322,10 +355,12 @@ ls -la ~/.sieveprofiles
 ### Version Numbering
 
 **SieveEditor:**
+
 - Breaking change (PR #2) → Major or Minor bump
 - Recommend: `0.0.1-SNAPSHOT` → `1.0.0` (first secure release)
 
 **ManageSieveJ:**
+
 - PR #29, #33 → Patch bump: `0.3.3` → `0.3.4`
 - PR #30 (if fixed) → Minor bump: `0.3.4` → `0.4.0`
 
@@ -401,6 +436,7 @@ Security issues identified by:
 If critical issues are discovered post-release:
 
 ### Option 1: Hotfix Release
+
 ```bash
 # Revert specific commit
 git revert <commit-hash>
@@ -411,6 +447,7 @@ git push origin main
 ```
 
 ### Option 2: Full Rollback
+
 ```bash
 # Revert to previous stable version
 git reset --hard v0.9.2.6
@@ -421,6 +458,7 @@ git push origin main --force
 ```
 
 ### Option 3: Temporary Workaround
+
 ```bash
 # Disable certificate validation temporarily
 # (NOT RECOMMENDED - only for emergency)
@@ -434,22 +472,30 @@ export SIEVEEDITOR_SKIP_CERT_VALIDATION=true
 The following issues were identified but NOT fixed in this release:
 
 ### 1. Credentials Stored as String (HIGH)
+
 **Reason:** Too invasive, marginal security benefit
+
 - Jasypt API requires String anyway
 - Would require massive refactoring
 - Password already encrypted at rest
 - **Future:** Consider for v2.0 with API redesign
 
 ### 2. CodeQL ManageSieveJ PR #32 (Resource Leak)
+
 **Reason:** Current autofix is incorrect
+
 - **Action:** Reject PR, create proper fix in next release
 
 ### 3. CodeQL ManageSieveJ PR #31 (Log Sanitization)
+
 **Reason:** Pattern too broad, needs revision
+
 - **Action:** Update PR with narrower pattern
 
 ### 4. Script Name Validation (MEDIUM)
+
 **Reason:** Server-side responsibility
+
 - **Future:** Add client-side validation for defense-in-depth
 
 ---
@@ -484,15 +530,19 @@ After all PRs are merged:
 ## Questions & Concerns
 
 ### Q: Why not use Java KeyStore for password storage?
+
 **A:** Machine-specific key provides good security without user prompts. KeyStore would require user password on each launch, reducing usability. Can be added as opt-in feature in future.
 
 ### Q: What if user changes hostname or username?
+
 **A:** Encryption key changes, passwords become undecryptable. This is a trade-off. Future enhancement: detect key mismatch and prompt for migration.
 
 ### Q: Why not use OS credential storage (Keychain, etc.)?
+
 **A:** Cross-platform compatibility. Would require platform-specific code. Good future enhancement.
 
 ### Q: What about custom certificates for self-signed servers?
+
 **A:** Planned for next release. PR #1 includes infrastructure, just needs UI.
 
 ---
@@ -500,21 +550,25 @@ After all PRs are merged:
 ## Timeline Recommendation
 
 **Week 1:**
+
 - Merge PR #3 (Password UI) - Low risk
 - Merge ManageSieveJ PR #29, #33 - Low risk
 - Release ManageSieveJ 0.3.4
 
 **Week 2:**
+
 - Thorough testing of PR #1 (SSL)
 - Thorough testing of PR #2 (Encryption)
 - Create migration documentation
 
 **Week 3:**
+
 - Merge PR #1 and #2 together
 - Update SieveEditor to ManageSieveJ 0.3.4
 - Create release candidate RC1
 
 **Week 4:**
+
 - Beta testing period
 - Fix any discovered issues
 - Release v1.0.0
@@ -538,8 +592,9 @@ Before releasing v1.0.0, verify:
 ## Contact & Support
 
 For questions about this merge plan:
-- GitHub Issues: https://github.com/lenucksi/SieveEditor/issues
-- Discussions: https://github.com/lenucksi/SieveEditor/discussions
+
+- GitHub Issues: <https://github.com/lenucksi/SieveEditor/issues>
+- Discussions: <https://github.com/lenucksi/SieveEditor/discussions>
 
 ---
 

@@ -7,12 +7,14 @@ After reviewing actual user feedback, the original analysis was **technically co
 ## What Changed
 
 **Original Approach:**
+
 - 12-week timeline
 - 80% test coverage target
 - Enterprise patterns and abstractions
 - Extensive refactoring
 
 **Revised Approach (Pragmatic):**
+
 - **5-day timeline** for critical fixes
 - 30-40% test coverage on critical paths only
 - Minimal changes, fix what's broken
@@ -51,6 +53,7 @@ After reviewing actual user feedback, the original analysis was **technically co
 ## Pragmatic 5-Day Implementation Plan
 
 ### Day 1: User-Facing Critical Issues
+
 - ✅ Create launcher script for 4K scaling
 - ✅ Fix Find/Replace functionality
 - ✅ Fix tokenizer causing last-char bug
@@ -59,6 +62,7 @@ After reviewing actual user feedback, the original analysis was **technically co
 **Outcome:** App works properly for daily use
 
 ### Day 2: Security (Can't Skip This)
+
 - ✅ Fix SSL certificate validation
 - ✅ Remove hardcoded encryption key
 - ✅ Add basic null checks to prevent crashes
@@ -66,6 +70,7 @@ After reviewing actual user feedback, the original analysis was **technically co
 **Outcome:** App is secure
 
 ### Day 3: Multi-Account Support
+
 - ✅ Implement profile system (~/.sieveprofiles/)
 - ✅ Add profile selector to connection dialog
 - ✅ Test profile switching
@@ -73,6 +78,7 @@ After reviewing actual user feedback, the original analysis was **technically co
 **Outcome:** No more symlink workarounds needed
 
 ### Day 4: Nice-to-Have Features
+
 - ✅ Local file load/save
 - ✅ Template insertion
 - ✅ Basic documentation
@@ -80,6 +86,7 @@ After reviewing actual user feedback, the original analysis was **technically co
 **Outcome:** Enhanced usability
 
 ### Day 5: Testing & Polish
+
 - ✅ Write tests for security fixes
 - ✅ Manual testing on 4K display
 - ✅ Test all fixes together
@@ -90,21 +97,25 @@ After reviewing actual user feedback, the original analysis was **technically co
 ## What's Changed in Analysis
 
 ### Issues Confirmed by User ✅
+
 - Find/Replace broken ✅
 - Multiple accounts needed ✅
 - Old dependencies ✅
 
 ### Issues Added by User 🆕
+
 - **4K display scaling** - Most annoying current issue
 - **Last character unreachable** - Editing bug
 - **Local file operations** - Useful feature
 
 ### Issues Kept from Original Analysis 🔒
+
 - SSL certificate validation disabled (CRITICAL)
 - Hardcoded encryption key (CRITICAL)
 - Multiple NullPointerExceptions (causes crashes)
 
 ### Issues Deprioritized ⬇️
+
 - Full test coverage (80% → 40%)
 - Enterprise patterns (dependency injection, etc.)
 - Extensive refactoring
@@ -126,14 +137,17 @@ After reviewing actual user feedback, the original analysis was **technically co
 ## 4K Display Scaling Investigation
 
 ### Problem
+
 UI renders tiny on 4K monitors with recent GNOME versions. Used to work, doesn't anymore.
 
 ### Likely Causes
+
 1. Java HiDPI detection not working with new GNOME
 2. Missing `GDK_SCALE` environment variable
 3. Wayland vs X11 backend differences
 
 ### Solution (Launcher Script)
+
 ```bash
 #!/bin/bash
 # Auto-detect scale and launch with correct JVM flags
@@ -149,18 +163,23 @@ See [05-real-world-issues.md](05-real-world-issues.md) for detailed testing step
 ## Nice-to-Have Features (User Requested)
 
 ### 1. Local File Load/Save
+
 Load/save scripts from disk without server connection.
+
 - File → Open Local Script... (Ctrl+L)
 - File → Save Local Script... (Ctrl+Shift+S)
 - **Effort:** 2 hours
 
 ### 2. Templating
+
 Insert common script patterns with parameters.
+
 - Built-in templates (spam filter, vacation, etc.)
 - User templates from ~/.sievetemplates/
 - **Effort:** 3 hours
 
 ### 3. Multiple Account Profiles ✅ (Planned for Day 3)
+
 Already included in 5-day plan.
 
 ## Philosophy: Keep It Simple
@@ -173,6 +192,7 @@ Already included in 5-day plan.
 ### What This Means
 
 ❌ **DON'T:**
+
 - Add dependency injection frameworks
 - Create extensive abstraction layers
 - Aim for 80% test coverage
@@ -181,6 +201,7 @@ Already included in 5-day plan.
 - Over-complicate simple fixes
 
 ✅ **DO:**
+
 - Fix what's broken
 - Add what users actually need
 - Write tests for critical security fixes
@@ -191,6 +212,7 @@ Already included in 5-day plan.
 ## Revised Success Metrics
 
 ### Must-Have (Security + Critical Bugs)
+
 - ✅ 4K display scaling works
 - ✅ Find/Replace functionality works
 - ✅ Last character reachable
@@ -199,12 +221,14 @@ Already included in 5-day plan.
 - ✅ No NullPointerException crashes
 
 ### Should-Have (Usability)
+
 - ✅ Multiple account profiles
 - ✅ Local file load/save
 - ✅ Template insertion
 - ✅ Basic tests for security fixes (30-40% coverage)
 
 ### Nice-to-Have (Polish)
+
 - Updated documentation
 - Release notes
 - User guide
@@ -225,18 +249,21 @@ Already included in 5-day plan.
 ## Why Both Approaches Are Documented
 
 **Original Analysis (01-04):**
+
 - Technically thorough and correct
 - Useful for understanding all issues
 - Reference for future if app grows
 - Shows what "proper" enterprise approach would be
 
 **Revised Analysis (05):**
+
 - Pragmatic and focused
 - Respects app's scope and purpose
 - Addresses real user pain points
 - Actionable 5-day plan
 
 **Use Case:**
+
 - **Start with 05** for implementation
 - **Reference 01-04** for detailed understanding
 - **Choose based on context** - If this becomes mission-critical enterprise software someday, the full plan is there
@@ -254,11 +281,13 @@ Already included in 5-day plan.
 ### Testing Approach (Pragmatic)
 
 **Don't:**
+
 - Write tests for everything
 - Aim for artificial coverage numbers
 - Set up complex test infrastructure
 
 **Do:**
+
 - Test security fixes (SSL validation, encryption)
 - Test crash prevention (null checks)
 - Manually test 4K scaling
@@ -270,11 +299,13 @@ Already included in 5-day plan.
 ## ROI Comparison
 
 ### Original Plan
+
 - **Investment:** 12 weeks (480 hours)
 - **Result:** Enterprise-grade codebase
 - **ROI:** Questionable for a mini-app
 
 ### Revised Plan
+
 - **Investment:** 5 days (40 hours)
 - **Result:** Fixed issues, happy users
 - **ROI:** Excellent for a mini-app
@@ -294,9 +325,11 @@ The original analysis correctly identified 50+ issues and provided a comprehensi
 ## Document Quick Reference
 
 **Start Here:**
+
 - [05-real-world-issues.md](05-real-world-issues.md) - Pragmatic 5-day plan ⭐
 
 **Reference (For Deep Dives):**
+
 - [01-security-vulnerabilities.md](01-security-vulnerabilities.md) - Security details
 - [02-bugs-and-errors.md](02-bugs-and-errors.md) - All bugs cataloged
 - [03-test-strategy.md](03-test-strategy.md) - If you need extensive tests

@@ -9,6 +9,7 @@ SieveEditor is a lightweight Java Swing application for editing Sieve mail filte
 ## Completed Work
 
 ### Phase 1: Critical Bug Fixes (Week 1) ✅
+
 **Status:** COMPLETED
 **Date:** 2025-11-03
 
@@ -39,6 +40,7 @@ SieveEditor is a lightweight Java Swing application for editing Sieve mail filte
    - Commits: 0e63f0d, f6dd894
 
 ### Phase 2: Multi-Account Support (Week 3) ✅
+
 **Status:** COMPLETED
 **Date:** 2025-11-04
 
@@ -52,11 +54,13 @@ SieveEditor is a lightweight Java Swing application for editing Sieve mail filte
    - Commit: 7cddb38
 
 **Files Modified:**
+
 - `PropertiesSieve.java` - Profile management system with static helper methods
 - `ActionConnect.java` - Profile UI in connection dialog
 - `Application.java` - Load last-used profile on startup
 
 **Features:**
+
 - Multiple independent account profiles
 - Profile dropdown with all available profiles
 - Create new profiles with alphanumeric validation
@@ -67,6 +71,7 @@ SieveEditor is a lightweight Java Swing application for editing Sieve mail filte
 ## Deferred Work
 
 ### Phase 2: Security Fixes (Week 2) ⚠️
+
 **Status:** DEFERRED per user decision
 **Reason:** User works with trusted internal servers
 
@@ -102,12 +107,14 @@ SieveEditor is a lightweight Java Swing application for editing Sieve mail filte
 ## Project Statistics
 
 ### Code Changes
+
 - **Files Modified:** 13 files
 - **Lines Added:** ~350 lines
 - **Lines Removed:** ~50 lines
 - **Commits:** 17 total (2 for multi-account feature)
 
 ### Timeline
+
 - **Week 1 (Bug Fixes):** 1 day ✅
 - **Week 2 (Security):** Deferred ⚠️
 - **Week 3 (Multi-Account):** 0.5 day ✅
@@ -118,6 +125,7 @@ SieveEditor is a lightweight Java Swing application for editing Sieve mail filte
 ## Testing Status
 
 ### Manual Testing ✅
+
 - 4K scaling tested and confirmed working
 - Find/Replace tested and confirmed working
 - Tokenizer fix tested (last character now reachable)
@@ -125,6 +133,7 @@ SieveEditor is a lightweight Java Swing application for editing Sieve mail filte
 - Profile switching saves data correctly
 
 ### Automated Testing ⚠️
+
 - **Unit Tests:** 0% coverage (none written yet)
 - **Integration Tests:** None
 - **Build:** Maven builds successfully
@@ -134,17 +143,20 @@ SieveEditor is a lightweight Java Swing application for editing Sieve mail filte
 ## Build Information
 
 ### Requirements
+
 - Java 21 LTS
 - Maven 3.6+
 
 ### Build Commands
 
 **First time setup:**
+
 ```bash
 git submodule update --init --recursive
 ```
 
 **Building (multi-module):**
+
 ```bash
 # Recommended: Use build script
 ./build.sh
@@ -154,17 +166,20 @@ mvn clean package -Dmaven.javadoc.skip=true -DskipTests
 ```
 
 The project uses a multi-module Maven build:
+
 - Parent POM (root): Coordinates the build
 - lib/ManageSieveJ: Java 11 compatible fork (submodule)
 - app/: SieveEditor application
 
 **Output JARs:**
+
 ```bash
 app/target/SieveEditor.jar                          # Minimal JAR
 app/target/SieveEditor-jar-with-dependencies.jar    # Standalone JAR
 ```
 
 ### Running
+
 ```bash
 # Recommended (with HiDPI support)
 ./sieveeditor.sh
@@ -176,6 +191,7 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 ## Dependencies
 
 ### Current Dependencies
+
 | Dependency | Version | Status | Notes |
 |------------|---------|--------|-------|
 | rsyntaxtextarea | 3.5.1 | ✅ Current | Updated from 3.3.4 |
@@ -187,7 +203,7 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 
 ## File Structure
 
-```
+```text
 SieveEditor/
 ├── src/main/java/de/febrildur/sieveeditor/
 │   ├── Application.java              # Main application window
@@ -211,7 +227,8 @@ SieveEditor/
 ## User Data
 
 ### Configuration Files
-```
+
+```text
 ~/.sieveprofiles/
 ├── default.properties      # Default profile
 ├── work.properties         # Additional profiles (if created)
@@ -220,11 +237,13 @@ SieveEditor/
 ```
 
 ### Migration
+
 Old `~/.sieveproperties` is automatically migrated to `~/.sieveprofiles/default.properties` on first run.
 
 ## Known Issues
 
 ### Current Limitations
+
 1. ~~ManageSieveJ library is abandoned (2014)~~ ✅ Fixed: Updated to Zwixx fork (Dec 2024)
 2. No automated tests - relies on manual testing
 3. SSL certificate validation disabled (deferred per user)
@@ -232,6 +251,7 @@ Old `~/.sieveproperties` is automatically migrated to `~/.sieveprofiles/default.
 5. Password field shows plaintext in connection dialog (deferred per user)
 
 ### Not Planned
+
 - Enterprise architecture patterns
 - Dependency injection framework
 - 80% test coverage
@@ -247,10 +267,12 @@ See [NEXT-FEATURES-PROMPT.md](NEXT-FEATURES-PROMPT.md) for the next implementati
 ## Documentation
 
 ### For Users
+
 - README.md - Basic usage
 - CLAUDE-Task.md - User feedback and testing notes
 
 ### For Developers
+
 - dev-docs/analysis/modernization/ - Detailed technical analysis
 - dev-docs/BUILD-WARNINGS.md - Build system notes
 - dev-docs/archive/ - Completed implementation prompts
@@ -258,6 +280,7 @@ See [NEXT-FEATURES-PROMPT.md](NEXT-FEATURES-PROMPT.md) for the next implementati
 ## Success Metrics
 
 ### Completed ✅
+
 - [x] 4K scaling works on modern Linux
 - [x] Find/Replace fully functional
 - [x] Last character bug fixed
@@ -267,6 +290,7 @@ See [NEXT-FEATURES-PROMPT.md](NEXT-FEATURES-PROMPT.md) for the next implementati
 - [x] Build clean and working
 
 ### Remaining 📋
+
 - [ ] Local file load/save
 - [ ] Template insertion
 - [ ] Better error messages

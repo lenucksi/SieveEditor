@@ -1,29 +1,23 @@
 package de.febrildur.sieveeditor.system;
 
+import de.febrildur.sieveeditor.system.credentials.CredentialException;
+import de.febrildur.sieveeditor.system.credentials.MasterKeyProvider;
+import de.febrildur.sieveeditor.system.credentials.MasterKeyProviderFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -54,6 +48,7 @@ public class PropertiesSieve {
 	private static final int KEY_OBTENTION_ITERATIONS = 10000;
 
 	private final StandardPBEStringEncryptor encryptor;
+	private final MasterKeyProvider masterKeyProvider;
 	private String server;
 	private int port;
 	private String username;
@@ -68,17 +63,31 @@ public class PropertiesSieve {
 
 	public PropertiesSieve(String profileName) {
 		this.profileName = profileName;
-		this.encryptor = createEncryptor();
-		File profilesDir = new File(System.getProperty("user.home"), ".sieveprofiles");
-		if (!profilesDir.exists()) {
-			profilesDir.mkdirs();
-			setDirectoryPermissions(profilesDir.toPath());
+
+		// Initialize master key provider (may show UI dialogs for user selection/authentication)
+		try {
+			this.masterKeyProvider = MasterKeyProviderFactory.create();
+		} catch (CredentialException e) {
+			LOGGER.log(Level.SEVERE, "Failed to initialize master key provider", e);
+			throw new RuntimeException("Failed to initialize secure credential storage. " +
+				"Please ensure you have a supported credential manager available.", e);
 		}
-		this.propFileName = new File(profilesDir, profileName + ".properties").getAbsolutePath();
+
+		this.encryptor = createEncryptor();
+
+		// Use platform-specific directory paths
+		Path profilesDir = AppDirectoryService.getProfilesDir();
+		this.propFileName = profilesDir.resolve(profileName + ".properties").toString();
+
+		// Check if we need to migrate from old location
+		if (AppDirectoryService.needsMigration()) {
+			LOGGER.log(Level.INFO, "Legacy profiles found, migration needed");
+			// Migration will be handled by Application class on startup
+		}
 	}
 
 	/**
-	 * Creates a configured encryptor with strong algorithm and machine-specific key.
+	 * Creates a configured encryptor with strong algorithm and master key from secure storage.
 	 * Tries algorithms in order of strength, falling back to more compatible options.
 	 *
 	 * Algorithm tiers:
@@ -89,7 +98,28 @@ public class PropertiesSieve {
 	 * @return configured StandardPBEStringEncryptor
 	 */
 	private StandardPBEStringEncryptor createEncryptor() {
-		String machineKey = getMachineSpecificEncryptionKey();
+		// Get master key from secure storage (KeePassXC, OS keychain, or user prompt)
+		String masterKey;
+		try {
+			masterKey = masterKeyProvider.getMasterKey();
+		} catch (CredentialException e) {
+			LOGGER.log(Level.SEVERE, "Failed to retrieve master key", e);
+			throw new RuntimeException("Failed to retrieve master encryption key. " +
+				"Cannot proceed without encryption key.", e);
+		}
+
+		// If this is first time, generate and store a random master key
+		if (masterKey == null || masterKey.isEmpty()) {
+			masterKey = generateRandomMasterKey();
+			try {
+				masterKeyProvider.setMasterKey(masterKey);
+				LOGGER.log(Level.INFO, "Generated and stored new master key");
+			} catch (CredentialException e) {
+				LOGGER.log(Level.SEVERE, "Failed to store new master key", e);
+				throw new RuntimeException("Failed to store master encryption key", e);
+			}
+		}
+
 		Exception lastException = null;
 
 		// Tier 1: Try AES algorithms (require IV generator)
@@ -99,7 +129,7 @@ public class PropertiesSieve {
 				enc.setAlgorithm(algorithm);
 				enc.setIvGenerator(new RandomIvGenerator()); // REQUIRED for AES algorithms
 				enc.setKeyObtentionIterations(KEY_OBTENTION_ITERATIONS);
-				enc.setPassword(machineKey);
+				enc.setPassword(masterKey);
 				// Test the algorithm by encrypting a test string
 				enc.encrypt("test");
 				LOGGER.log(Level.INFO, "Using AES encryption algorithm: {0}", algorithm);
@@ -118,7 +148,7 @@ public class PropertiesSieve {
 				enc.setAlgorithm(algorithm);
 				// No IV generator needed for TripleDES
 				enc.setKeyObtentionIterations(KEY_OBTENTION_ITERATIONS);
-				enc.setPassword(machineKey);
+				enc.setPassword(masterKey);
 				// Test the algorithm by encrypting a test string
 				enc.encrypt("test");
 				LOGGER.log(Level.INFO, "Using TripleDES encryption algorithm: {0}", algorithm);
@@ -137,7 +167,7 @@ public class PropertiesSieve {
 				enc.setAlgorithm(algorithm);
 				// No IV generator needed for DES
 				enc.setKeyObtentionIterations(KEY_OBTENTION_ITERATIONS);
-				enc.setPassword(machineKey);
+				enc.setPassword(masterKey);
 				// Test the algorithm by encrypting a test string
 				enc.encrypt("test");
 				LOGGER.log(Level.WARNING, "Using weak DES encryption algorithm: {0}. " +
@@ -157,117 +187,28 @@ public class PropertiesSieve {
 	}
 
 	/**
-	 * Generates a machine-specific encryption key based on username, hostname,
-	 * and hardware MAC address. This provides better security than a hardcoded key
-	 * while remaining deterministic for the same machine.
+	 * Generates a cryptographically random master key for first-time setup.
 	 *
-	 * @return Base64-encoded SHA-256 hash of machine-specific data
+	 * @return Base64-encoded random key
 	 */
-	private String getMachineSpecificEncryptionKey() {
-		try {
-			StringBuilder keyMaterial = new StringBuilder();
-
-			// Add username
-			keyMaterial.append(System.getProperty("user.name", "unknown"));
-
-			// Add hostname
-			try {
-				keyMaterial.append(InetAddress.getLocalHost().getHostName());
-			} catch (UnknownHostException e) {
-				LOGGER.log(Level.WARNING, "Could not get hostname, using fallback", e);
-				keyMaterial.append("localhost");
-			}
-
-			// Add MAC address for hardware binding
-			try {
-				InetAddress localHost = InetAddress.getLocalHost();
-				NetworkInterface network = NetworkInterface.getByInetAddress(localHost);
-
-				if (network != null) {
-					byte[] mac = network.getHardwareAddress();
-					if (mac != null) {
-						for (byte b : mac) {
-							keyMaterial.append(String.format("%02X", b));
-						}
-					}
-				} else {
-					// Fallback: iterate through network interfaces to find one with MAC
-					Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-					while (interfaces.hasMoreElements()) {
-						NetworkInterface ni = interfaces.nextElement();
-						byte[] mac = ni.getHardwareAddress();
-						if (mac != null && mac.length > 0) {
-							for (byte b : mac) {
-								keyMaterial.append(String.format("%02X", b));
-							}
-							break;
-						}
-					}
-				}
-			} catch (SocketException | UnknownHostException e) {
-				LOGGER.log(Level.WARNING, "Could not get MAC address, using fallback", e);
-				keyMaterial.append("NO-MAC-ADDRESS");
-			}
-
-			// Hash the key material to create consistent-length key
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			byte[] hash = digest.digest(keyMaterial.toString().getBytes(StandardCharsets.UTF_8));
-			return Base64.getEncoder().encodeToString(hash);
-
-		} catch (NoSuchAlgorithmException e) {
-			LOGGER.log(Level.SEVERE, "SHA-256 not available, using fallback", e);
-			// This should never happen on modern JVMs, but provide a fallback
-			return "FALLBACK-KEY-" + System.getProperty("user.name");
-		}
-	}
-
-	/**
-	 * Sets secure permissions on the profiles directory (700 - owner only).
-	 * On non-POSIX systems, this will be a no-op.
-	 *
-	 * @param dirPath path to the directory
-	 */
-	private void setDirectoryPermissions(Path dirPath) {
-		try {
-			Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwx------");
-			Files.setPosixFilePermissions(dirPath, perms);
-			LOGGER.log(Level.FINE, "Set directory permissions to 700 for: {0}", dirPath);
-		} catch (UnsupportedOperationException e) {
-			// Non-POSIX system (e.g., Windows) - permissions handled by OS
-			LOGGER.log(Level.FINE, "POSIX permissions not supported on this OS");
-		} catch (IOException e) {
-			LOGGER.log(Level.WARNING, "Failed to set directory permissions", e);
-		}
-	}
-
-	/**
-	 * Sets secure permissions on the profile file (600 - owner read/write only).
-	 * On non-POSIX systems, this will be a no-op.
-	 *
-	 * @param filePath path to the file
-	 */
-	private void setFilePermissions(Path filePath) {
-		try {
-			Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rw-------");
-			Files.setPosixFilePermissions(filePath, perms);
-			LOGGER.log(Level.FINE, "Set file permissions to 600 for: {0}", filePath);
-		} catch (UnsupportedOperationException e) {
-			// Non-POSIX system (e.g., Windows) - permissions handled by OS
-			LOGGER.log(Level.FINE, "POSIX permissions not supported on this OS");
-		} catch (IOException e) {
-			LOGGER.log(Level.WARNING, "Failed to set file permissions", e);
-		}
+	private String generateRandomMasterKey() {
+		SecureRandom random = new SecureRandom();
+		byte[] keyBytes = new byte[32]; // 256 bits
+		random.nextBytes(keyBytes);
+		String key = Base64.getEncoder().encodeToString(keyBytes);
+		LOGGER.log(Level.INFO, "Generated new random master key");
+		return key;
 	}
 
 	public void load() throws IOException {
 		File propFile = new File(propFileName);
 		if (propFile.createNewFile()) {
 			// New file created - set permissions
-			setFilePermissions(propFile.toPath());
+			AppDirectoryService.setSecureFilePermissions(propFile.toPath());
 		}
 
 		try (InputStream input = new FileInputStream(propFileName)) {
-			// Encryptor is already configured with machine-specific key in constructor
+			// Encryptor is already configured with master key from secure storage
 			Properties prop = new EncryptableProperties(encryptor);
 
 			prop.load(input);
@@ -287,7 +228,7 @@ public class PropertiesSieve {
 
 	public void write() {
 		try (OutputStream output = new FileOutputStream(propFileName)) {
-			// Encryptor is already configured with machine-specific key in constructor
+			// Encryptor is already configured with master key from secure storage
 			Properties prop = new EncryptableProperties(encryptor);
 
 			// set the properties value - handle null values
@@ -300,7 +241,7 @@ public class PropertiesSieve {
 			prop.store(output, null);
 
 			// Ensure file has secure permissions after writing
-			setFilePermissions(Paths.get(propFileName));
+			AppDirectoryService.setSecureFilePermissions(Paths.get(propFileName));
 
 		} catch (IOException io) {
 			LOGGER.log(Level.SEVERE, "Failed to write properties file: " + propFileName, io);
@@ -341,12 +282,14 @@ public class PropertiesSieve {
 
 	// Profile management methods
 	public static List<String> getAvailableProfiles() {
-		File profilesDir = new File(System.getProperty("user.home"), ".sieveprofiles");
-		if (!profilesDir.exists() || profilesDir.listFiles() == null) {
+		Path profilesDir = AppDirectoryService.getProfilesDir();
+		File profilesDirFile = profilesDir.toFile();
+
+		if (!profilesDirFile.exists() || profilesDirFile.listFiles() == null) {
 			return Arrays.asList("default");
 		}
 
-		List<String> profiles = Arrays.stream(profilesDir.listFiles())
+		List<String> profiles = Arrays.stream(profilesDirFile.listFiles())
 			.filter(f -> f.getName().endsWith(".properties"))
 			.map(f -> f.getName().replace(".properties", ""))
 			.sorted()
@@ -359,13 +302,12 @@ public class PropertiesSieve {
 	}
 
 	public static String getLastUsedProfile() {
-		File lastUsedFile = new File(System.getProperty("user.home"),
-			".sieveprofiles/.lastused");
-		if (!lastUsedFile.exists()) {
+		Path lastUsedFile = AppDirectoryService.getUserConfigDir().resolve(".lastused");
+		if (!Files.exists(lastUsedFile)) {
 			return "default";
 		}
 		try {
-			String profile = Files.readString(lastUsedFile.toPath()).trim();
+			String profile = Files.readString(lastUsedFile).trim();
 			return profile.isEmpty() ? "default" : profile;
 		} catch (IOException e) {
 			return "default";
@@ -373,41 +315,63 @@ public class PropertiesSieve {
 	}
 
 	public static void saveLastUsedProfile(String profileName) {
-		File lastUsedFile = new File(System.getProperty("user.home"),
-			".sieveprofiles/.lastused");
+		Path lastUsedFile = AppDirectoryService.getUserConfigDir().resolve(".lastused");
 		try {
-			Files.writeString(lastUsedFile.toPath(), profileName);
+			Files.writeString(lastUsedFile, profileName);
+			AppDirectoryService.setSecureFilePermissions(lastUsedFile);
 		} catch (IOException e) {
 			// Ignore - not critical
+			LOGGER.log(Level.FINE, "Failed to save last used profile", e);
 		}
 	}
 
 	public static boolean profileExists(String profileName) {
-		File profileFile = new File(System.getProperty("user.home"),
-			".sieveprofiles/" + profileName + ".properties");
-		return profileFile.exists();
+		Path profileFile = AppDirectoryService.getProfilesDir().resolve(profileName + ".properties");
+		return Files.exists(profileFile);
 	}
 
+	/**
+	 * Migrates profiles from old ~/.sieveprofiles to new platform-specific locations.
+	 */
 	public static void migrateOldProperties() {
-		// Check if old ~/.sieveproperties exists
-		File oldFile = new File(System.getProperty("user.home"), ".sieveproperties");
-		if (!oldFile.exists()) {
+		Path legacyDir = AppDirectoryService.getLegacyProfilesDir();
+		if (!Files.exists(legacyDir)) {
 			return; // Nothing to migrate
 		}
 
-		// Create new profiles directory
-		File profilesDir = new File(System.getProperty("user.home"), ".sieveprofiles");
-		profilesDir.mkdirs();
+		Path newProfilesDir = AppDirectoryService.getProfilesDir();
+		LOGGER.log(Level.INFO, "Migrating profiles from {0} to {1}",
+			new Object[]{legacyDir, newProfilesDir});
 
-		// Move old file to default.properties
-		File newFile = new File(profilesDir, "default.properties");
-		if (!newFile.exists()) {
-			try {
-				Files.copy(oldFile.toPath(), newFile.toPath());
-				System.out.println("Migrated old properties to default profile");
-			} catch (IOException e) {
-				System.err.println("Failed to migrate: " + e.getMessage());
+		try {
+			Files.list(legacyDir)
+				.filter(p -> p.toString().endsWith(".properties"))
+				.forEach(oldFile -> {
+					try {
+						Path newFile = newProfilesDir.resolve(oldFile.getFileName());
+						if (!Files.exists(newFile)) {
+							Files.copy(oldFile, newFile);
+							AppDirectoryService.setSecureFilePermissions(newFile);
+							LOGGER.log(Level.INFO, "Migrated profile: {0}", oldFile.getFileName());
+						}
+					} catch (IOException e) {
+						LOGGER.log(Level.WARNING, "Failed to migrate profile: " + oldFile, e);
+					}
+				});
+
+			// Also migrate .lastused file if it exists
+			Path oldLastUsed = legacyDir.resolve(".lastused");
+			if (Files.exists(oldLastUsed)) {
+				Path newLastUsed = AppDirectoryService.getUserConfigDir().resolve(".lastused");
+				if (!Files.exists(newLastUsed)) {
+					Files.copy(oldLastUsed, newLastUsed);
+					AppDirectoryService.setSecureFilePermissions(newLastUsed);
+				}
 			}
+
+			LOGGER.log(Level.INFO, "Migration completed successfully");
+		} catch (IOException e) {
+			LOGGER.log(Level.SEVERE, "Failed to migrate profiles", e);
 		}
 	}
 

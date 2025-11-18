@@ -165,18 +165,78 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 		}
 
 		// Step 3: Associate with KeePassXC (now that database is unlocked)
-		boolean associated = kpa.associate();
-		if (!associated) {
-			throw new CredentialException("Failed to associate with KeePassXC. " +
-				"Please allow the association request in KeePassXC when prompted.");
-		}
-
-		// Step 4: Save association credentials for future use
-		Map<String, String> connection = kpa.exportConnection();
-		this.associationId = connection.get("id");
-		this.publicKey = connection.get("key");
+		// Note: KeePassXC issue #7099 causes delayed association responses from Java apps
+		// The library handles this by delaying the response lookup, but we need to retry
+		associateWithRetry();
 
 		LOGGER.log(Level.INFO, "Successfully connected and associated with KeePassXC");
+	}
+
+	/**
+	 * Attempts to associate with KeePassXC, handling delayed responses.
+	 *
+	 * KeePassXC issue #7099: Association dialog responses are delayed when
+	 * triggered from Java applications. The keepassxc-proxy-access library
+	 * handles this by delaying the response lookup, but we need to retry
+	 * if the first attempt returns false.
+	 *
+	 * @throws CredentialException if association fails after retries
+	 */
+	private void associateWithRetry() throws CredentialException {
+		final int MAX_ATTEMPTS = 3;
+		final int DELAY_MS = 2000; // 2 seconds between attempts
+
+		for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+			LOGGER.log(Level.FINE, "Association attempt {0}/{1}", new Object[]{attempt, MAX_ATTEMPTS});
+
+			boolean associated = kpa.associate();
+
+			if (associated) {
+				// Successfully associated - save credentials
+				Map<String, String> connection = kpa.exportConnection();
+				this.associationId = connection.get("id");
+				this.publicKey = connection.get("key");
+
+				LOGGER.log(Level.INFO, "Association successful on attempt {0}", attempt);
+				return;
+			}
+
+			// Association returned false - might be due to delayed response
+			LOGGER.log(Level.FINE, "Association returned false on attempt {0}, checking for credentials", attempt);
+
+			// Try to get connection info anyway - might have succeeded despite false return
+			try {
+				Map<String, String> connection = kpa.exportConnection();
+				String id = connection.get("id");
+				String key = connection.get("key");
+
+				if (id != null && !id.isEmpty() && key != null && !key.isEmpty()) {
+					// We got credentials! Association actually succeeded
+					this.associationId = id;
+					this.publicKey = key;
+					LOGGER.log(Level.INFO, "Association succeeded (exportConnection returned credentials despite false return)");
+					return;
+				}
+			} catch (Exception e) {
+				LOGGER.log(Level.FINE, "exportConnection failed: {0}", e.getMessage());
+			}
+
+			// If not last attempt, wait before retrying
+			if (attempt < MAX_ATTEMPTS) {
+				LOGGER.log(Level.INFO, "Waiting {0}ms before retry (KeePassXC issue #7099 - delayed response)", DELAY_MS);
+				try {
+					Thread.sleep(DELAY_MS);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					throw new CredentialException("Association interrupted", e);
+				}
+			}
+		}
+
+		// All attempts failed
+		throw new CredentialException("Failed to associate with KeePassXC after " + MAX_ATTEMPTS + " attempts. " +
+			"Please ensure you click 'Allow' when KeePassXC shows the association request dialog. " +
+			"If you don't see a dialog, check if KeePassXC is running in the background.");
 	}
 
 	/**

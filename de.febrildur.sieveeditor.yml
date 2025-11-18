@@ -14,10 +14,14 @@ finish-args:
   - --share=ipc
   # Network access for ManageSieve connections
   - --share=network
-  # Allow access to home directory for profile storage
-  - --filesystem=~/.sieveprofiles:create
-  # Persist data between runs
-  - --persist=.sieveprofiles
+  # D-Bus access for Secret Service API (GNOME Keyring/KWallet for credential storage)
+  - --talk-name=org.freedesktop.secrets
+  # Allow access to XDG data directory for profile storage
+  - --filesystem=xdg-data/sieveeditor:create
+  # Allow access to XDG config directory for settings
+  - --filesystem=xdg-config/sieveeditor:create
+  # Legacy: Allow access to old profile location for migration
+  - --filesystem=~/.sieveprofiles:ro
 
 modules:
   - name: openjdk

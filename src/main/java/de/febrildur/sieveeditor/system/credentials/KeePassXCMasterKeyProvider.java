@@ -30,6 +30,7 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 	private KeepassProxyAccess kpa;
 	private String associationId;
 	private String publicKey;
+	private boolean freshlyAssociated = false; // Track if we just did a new association
 
 	@Override
 	public boolean isAvailable() {
@@ -46,25 +47,41 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 
 	@Override
 	public String getMasterKey() throws CredentialException {
+		LOGGER.log(Level.INFO, "getMasterKey() called");
 		ensureConnected();
 
-		// Try to get existing login
-		Map<String, String> idKeyMap = Map.of("id", associationId, "key", publicKey);
-		Map<String, Object> logins = kpa.getLogins(ENTRY_URL, null, true,
-			java.util.List.of(idKeyMap));
+		// If we just did a fresh association, the entry doesn't exist yet - skip getLogins
+		if (freshlyAssociated) {
+			LOGGER.log(Level.INFO, "Freshly associated - no entry exists yet, returning null");
+			return null;
+		}
 
-		if (logins != null && !logins.isEmpty()) {
-			// Extract password from first entry
-			@SuppressWarnings("unchecked")
-			var entries = (java.util.List<Map<String, Object>>) logins.get("entries");
-			if (entries != null && !entries.isEmpty()) {
-				Map<String, Object> firstEntry = entries.get(0);
-				String password = (String) firstEntry.get("password");
-				if (password != null && !password.isEmpty()) {
-					LOGGER.log(Level.INFO, "Retrieved master key from KeePassXC");
-					return password;
+		LOGGER.log(Level.INFO, "Attempting to retrieve master key from KeePassXC...");
+		try {
+			// Try to get existing login
+			Map<String, String> idKeyMap = Map.of("id", associationId, "key", publicKey);
+			Map<String, Object> logins = kpa.getLogins(ENTRY_URL, null, true,
+				java.util.List.of(idKeyMap));
+
+			LOGGER.log(Level.INFO, "getLogins() returned: " + (logins != null ? "data" : "null"));
+
+			if (logins != null && !logins.isEmpty()) {
+				// Extract password from first entry
+				@SuppressWarnings("unchecked")
+				var entries = (java.util.List<Map<String, Object>>) logins.get("entries");
+				LOGGER.log(Level.INFO, "Entries: " + (entries != null ? entries.size() + " entries" : "null"));
+				if (entries != null && !entries.isEmpty()) {
+					Map<String, Object> firstEntry = entries.get(0);
+					String password = (String) firstEntry.get("password");
+					if (password != null && !password.isEmpty()) {
+						LOGGER.log(Level.INFO, "Retrieved master key from KeePassXC");
+						return password;
+					}
 				}
 			}
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Exception while retrieving master key: " + e.getClass().getName() + ": " + e.getMessage());
+			// Entry probably doesn't exist - this is normal on first run
 		}
 
 		// Entry doesn't exist yet (first run) - return null so caller can generate and store one
@@ -74,8 +91,10 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 
 	@Override
 	public void setMasterKey(String masterKey) throws CredentialException {
+		LOGGER.log(Level.INFO, "setMasterKey() called");
 		ensureConnected();
 
+		LOGGER.log(Level.INFO, "Attempting to store master key in KeePassXC...");
 		// Create or update the entry in KeePassXC
 		boolean success = kpa.setLogin(
 			ENTRY_URL,          // url
@@ -88,9 +107,14 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 			null                // uuid (create new if null)
 		);
 
+		LOGGER.log(Level.INFO, "setLogin() returned: " + success);
+
 		if (!success) {
 			throw new CredentialException("KeePassXC rejected the request to store master key");
 		}
+
+		// Entry now exists - clear freshlyAssociated flag
+		freshlyAssociated = false;
 
 		LOGGER.log(Level.INFO, "Stored master key in KeePassXC");
 	}
@@ -202,6 +226,7 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 
 				if (valid) {
 					LOGGER.log(Level.INFO, "Existing association is valid, no re-association needed");
+					freshlyAssociated = false; // Existing association, entries may exist
 					return;
 				} else {
 					LOGGER.log(Level.WARNING, "Saved association credentials are no longer valid, will re-associate");
@@ -218,6 +243,9 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 		// The library handles this by delaying the response lookup, but we need to retry
 		associateWithRetry();
 		// The library automatically saves credentials after successful association
+
+		// Mark that we just did a fresh association - no entries exist yet
+		freshlyAssociated = true;
 
 		LOGGER.log(Level.INFO, "Successfully connected and associated with KeePassXC");
 	}

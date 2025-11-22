@@ -52,7 +52,7 @@ This document outlines the comprehensive CI/CD strategy for SieveEditor based on
 # In GitHub Actions workflow
 - uses: actions/attest-build-provenance@v2
   with:
-    subject-path: 'app/target/*.jar'
+    subject-path: 'target/*.jar'
 ```
 
 **Benefits:**
@@ -124,7 +124,7 @@ permissions:
 version: 2
 updates:
   - package-ecosystem: "maven"
-    directory: "/app"
+    directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
@@ -255,7 +255,7 @@ timeout-minutes: 20  # Fail fast on hanging tests
 
 ```bash
 jpackage \
-  --input app/target \
+  --input target \
   --main-jar SieveEditor-jar-with-dependencies.jar \
   --main-class de.febrildur.sieveeditor.Application \
   --name SieveEditor \
@@ -367,7 +367,7 @@ strategy:
 # de.febrildur.sieveeditor.yml
 app-id: de.febrildur.sieveeditor
 runtime: org.freedesktop.Platform
-runtime-version: '23.08'
+runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.openjdk21
@@ -384,7 +384,7 @@ modules:
       - install -Dm755 sieveeditor /app/bin/sieveeditor
     sources:
       - type: file
-        path: app/target/SieveEditor-jar-with-dependencies.jar
+        path: target/SieveEditor-jar-with-dependencies.jar
         dest-filename: SieveEditor.jar
 ```
 
@@ -474,11 +474,11 @@ xcrun stapler staple SieveEditor.dmg
   uses: actions/attest-build-provenance@v2
   with:
     subject-path: |
-      app/target/*.jar
-      app/target/*.deb
-      app/target/*.rpm
-      app/target/*.msi
-      app/target/*.dmg
+      target/*.jar
+      *.deb
+      *.rpm
+      *.msi
+      *.dmg
 ```
 
 **Verification:**
@@ -514,7 +514,7 @@ gh attestation verify SieveEditor.jar \
     jarsigner -keystore ${{ secrets.KEYSTORE_FILE }} \
       -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
       -keypass ${{ secrets.KEY_PASSWORD }} \
-      app/target/SieveEditor-jar-with-dependencies.jar \
+      target/SieveEditor-jar-with-dependencies.jar \
       sieveeditor
 ```
 
@@ -708,16 +708,14 @@ sha256sum SieveEditor-* > checksums.txt
 **Quick Test Run:**
 
 ```bash
-cd app
 mvn test
 ```
 
 **With Coverage Report:**
 
 ```bash
-cd app
 mvn clean test
-# View report: app/target/site/jacoco/index.html
+# View report: target/site/jacoco/index.html
 ```
 
 **Specific Test Class:**
@@ -738,7 +736,7 @@ mvn test -Dtest=PropertiesSieveTest#shouldSaveAndLoadProperties
 
 ```bash
 mvn clean package
-# Output: app/target/SieveEditor-jar-with-dependencies.jar
+# Output: target/SieveEditor-jar-with-dependencies.jar
 ```
 
 **Build Native Package (requires platform-specific tools):**
@@ -750,7 +748,7 @@ mvn clean package
 sudo apt-get install fakeroot
 
 # Build
-jpackage --input app/target \
+jpackage --input target \
   --main-jar SieveEditor-jar-with-dependencies.jar \
   --main-class de.febrildur.sieveeditor.Application \
   --name SieveEditor \
@@ -791,7 +789,7 @@ flatpak install SieveEditor.flatpak
 # Download: https://wixtoolset.org/
 
 # Build
-jpackage --input app\target `
+jpackage --input target `
   --main-jar SieveEditor-jar-with-dependencies.jar `
   --main-class de.febrildur.sieveeditor.Application `
   --name SieveEditor `
@@ -810,7 +808,7 @@ jpackage --input app\target `
 xcode-select --install
 
 # Build
-jpackage --input app/target \
+jpackage --input target \
   --main-jar SieveEditor-jar-with-dependencies.jar \
   --main-class de.febrildur.sieveeditor.Application \
   --name SieveEditor \
@@ -827,14 +825,14 @@ jpackage --input app/target \
 ```bash
 #!/bin/bash
 echo "Running tests before commit..."
-cd app && mvn test -q
+mvn test -q
 
 if [ $? -ne 0 ]; then
-    echo "❌ Tests failed. Commit aborted."
+    echo "Tests failed. Commit aborted."
     exit 1
 fi
 
-echo "✅ All tests passed."
+echo "All tests passed."
 exit 0
 ```
 
@@ -850,7 +848,7 @@ chmod +x .git/hooks/pre-commit
 
 ```bash
 mvn org.owasp:dependency-check-maven:check
-# Report: app/target/dependency-check-report.html
+# Report: target/dependency-check-report.html
 ```
 
 **Check for Outdated Dependencies:**

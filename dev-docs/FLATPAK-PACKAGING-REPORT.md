@@ -73,7 +73,7 @@ fi
 ```yaml
 app-id: de.febrildur.sieveeditor
 runtime: org.freedesktop.Platform
-runtime-version: '23.08'
+runtime-version: '24.08'
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.openjdk21  # Java 21 runtime
 ```
@@ -252,9 +252,9 @@ flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flat
 
 ```bash
 # Install SDK
-flatpak install flathub org.freedesktop.Platform//23.08
-flatpak install flathub org.freedesktop.Sdk//23.08
-flatpak install flathub org.freedesktop.Sdk.Extension.openjdk21//23.08
+flatpak install flathub org.freedesktop.Platform//24.08
+flatpak install flathub org.freedesktop.Sdk//24.08
+flatpak install flathub org.freedesktop.Sdk.Extension.openjdk21//24.08
 
 # Build JAR first
 cd app && mvn clean package
@@ -518,9 +518,9 @@ flatpak remote-add --if-not-exists flathub \
   https://flathub.org/repo/flathub.flatpakrepo
 
 # Install runtime and SDK
-flatpak install flathub org.freedesktop.Platform//23.08
-flatpak install flathub org.freedesktop.Sdk//23.08
-flatpak install flathub org.freedesktop.Sdk.Extension.openjdk21//23.08
+flatpak install flathub org.freedesktop.Platform//24.08
+flatpak install flathub org.freedesktop.Sdk//24.08
+flatpak install flathub org.freedesktop.Sdk.Extension.openjdk21//24.08
 ```
 
 **Build and Test:**

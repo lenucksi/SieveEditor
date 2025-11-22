@@ -633,25 +633,8 @@ exec java \
    ```
 
 4. **Update README** (10 minutes)
-   Add section:
-
-   ```markdown
-   ## Running on 4K/HiDPI Displays
-
-   On Linux with 4K monitors, use the launcher script:
-   ```bash
-   ./sieveeditor.sh
-   ```
-
-   Or run manually with:
-
-   ```bash
-   java -Dsun.java2d.uiScale.enabled=true -Dsun.java2d.uiScale=2.0 \
-        -jar SieveEditor-jar-with-dependencies.jar
-   ```
-
-
-   ```text
+   Add section about running on 4K/HiDPI displays with the launcher script
+   `./sieveeditor.sh` or manually with Java scaling properties.
 
 5. **Plan code integration** (for next release)
    Add to backlog: Integrate Solution 2 into Application.java
@@ -696,8 +679,6 @@ Use this to document findings:
 ## Additional Resources
 
 ### Useful Commands for Debugging
-
-```
 
 ```bash
 # Check all Java properties related to scaling

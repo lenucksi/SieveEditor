@@ -28,6 +28,64 @@ public class MasterKeyProviderFactory {
 	private static final Logger LOGGER = Logger.getLogger(MasterKeyProviderFactory.class.getName());
 	private static final String PREFERENCE_FILE = ".storage-backend";
 
+	// Global forced backend set via command-line, applies to ALL PropertiesSieve instances
+	private static String globalForcedBackend = null;
+
+	// Test mode flag - when true, uses a non-interactive provider
+	private static boolean testMode = false;
+
+	// Custom provider for test mode
+	private static MasterKeyProvider testModeProvider = null;
+
+	// Singleton cache of provider instances - ensures password caching works across PropertiesSieve instances
+	private static KeePassXCMasterKeyProvider keepassXCInstance = null;
+	private static OSKeychainMasterKeyProvider osKeychainInstance = null;
+	private static UserPromptMasterKeyProvider userPromptInstance = null;
+
+	/**
+	 * Sets the global forced backend for ALL PropertiesSieve instances.
+	 * This should be called once at application startup if a backend is specified via command-line.
+	 *
+	 * @param backend backend to use (keepassxc, keychain, prompt), or null to clear
+	 */
+	public static void setGlobalForcedBackend(String backend) {
+		globalForcedBackend = backend;
+		if (backend != null) {
+			LOGGER.log(Level.INFO, "Global forced backend set to: {0}", backend);
+		}
+	}
+
+	/**
+	 * Enables test mode with a non-interactive provider.
+	 * When test mode is enabled, no GUI dialogs will be shown.
+	 *
+	 * @param provider the provider to use in test mode (use TestMasterKeyProvider for tests)
+	 */
+	public static void setTestMode(MasterKeyProvider provider) {
+		testMode = true;
+		testModeProvider = provider;
+		LOGGER.log(Level.INFO, "Test mode enabled with provider: {0}",
+			provider != null ? provider.getName() : "null");
+	}
+
+	/**
+	 * Disables test mode, restoring normal operation.
+	 */
+	public static void clearTestMode() {
+		testMode = false;
+		testModeProvider = null;
+		LOGGER.log(Level.INFO, "Test mode disabled");
+	}
+
+	/**
+	 * Checks if test mode is enabled.
+	 *
+	 * @return true if test mode is enabled
+	 */
+	public static boolean isTestMode() {
+		return testMode;
+	}
+
 	/**
 	 * Creates a MasterKeyProvider instance based on user preference or auto-detection.
 	 *
@@ -46,14 +104,23 @@ public class MasterKeyProviderFactory {
 	 * @throws CredentialException if no provider can be created
 	 */
 	public static MasterKeyProvider create(String forcedBackend) throws CredentialException {
-		// If backend is explicitly specified via command-line, use it
-		if (forcedBackend != null) {
-			LOGGER.log(Level.INFO, "Using forced backend from command-line: {0}", forcedBackend);
-			MasterKeyProvider provider = createProviderByBackendArg(forcedBackend);
+		// In test mode, return the test provider without any GUI interaction
+		if (testMode && testModeProvider != null) {
+			LOGGER.log(Level.FINE, "Using test mode provider: {0}", testModeProvider.getName());
+			return testModeProvider;
+		}
+
+		// Check global forced backend first (set via command-line)
+		String backendToUse = (forcedBackend != null) ? forcedBackend : globalForcedBackend;
+
+		// If backend is explicitly specified, use it
+		if (backendToUse != null) {
+			LOGGER.log(Level.INFO, "Using forced backend: {0}", backendToUse);
+			MasterKeyProvider provider = createProviderByBackendArg(backendToUse);
 			if (provider.isAvailable()) {
 				return provider;
 			} else {
-				LOGGER.log(Level.WARNING, "Forced backend {0} is not available, falling back to selection dialog", forcedBackend);
+				LOGGER.log(Level.WARNING, "Forced backend {0} is not available, falling back to selection dialog", backendToUse);
 			}
 		}
 		// Check if user has a saved preference
@@ -86,20 +153,27 @@ public class MasterKeyProviderFactory {
 		List<MasterKeyProvider> availableProviders = new ArrayList<>();
 		MasterKeyProvider userPromptProvider = null;
 
-		// Try KeePassXC
-		KeePassXCMasterKeyProvider keepassProvider = new KeePassXCMasterKeyProvider();
-		if (keepassProvider.isAvailable()) {
-			availableProviders.add(keepassProvider);
+		// Try KeePassXC (use singleton instance)
+		if (keepassXCInstance == null) {
+			keepassXCInstance = new KeePassXCMasterKeyProvider();
+		}
+		if (keepassXCInstance.isAvailable()) {
+			availableProviders.add(keepassXCInstance);
 		}
 
-		// Try OS Keychain
-		OSKeychainMasterKeyProvider keychainProvider = new OSKeychainMasterKeyProvider();
-		if (keychainProvider.isAvailable()) {
-			availableProviders.add(keychainProvider);
+		// Try OS Keychain (use singleton instance)
+		if (osKeychainInstance == null) {
+			osKeychainInstance = new OSKeychainMasterKeyProvider();
+		}
+		if (osKeychainInstance.isAvailable()) {
+			availableProviders.add(osKeychainInstance);
 		}
 
-		// User Prompt is always available
-		userPromptProvider = new UserPromptMasterKeyProvider();
+		// User Prompt is always available (use singleton instance)
+		if (userPromptInstance == null) {
+			userPromptInstance = new UserPromptMasterKeyProvider();
+		}
+		userPromptProvider = userPromptInstance;
 		availableProviders.add(userPromptProvider);
 
 		// Build dialog
@@ -165,37 +239,74 @@ public class MasterKeyProviderFactory {
 
 	/**
 	 * Creates a provider instance by name.
+	 * Returns singleton instances to preserve password caching across PropertiesSieve instances.
 	 *
 	 * @param name provider name
-	 * @return provider instance
+	 * @return provider instance (singleton)
 	 */
 	private static MasterKeyProvider createProviderByName(String name) {
 		return switch (name) {
-			case "KeePassXC" -> new KeePassXCMasterKeyProvider();
-			case "Windows Credential Manager", "macOS Keychain", "Linux Secret Service", "System Keychain" ->
-				new OSKeychainMasterKeyProvider();
-			case "Manual Password Entry" -> new UserPromptMasterKeyProvider();
+			case "KeePassXC" -> {
+				if (keepassXCInstance == null) {
+					keepassXCInstance = new KeePassXCMasterKeyProvider();
+				}
+				yield keepassXCInstance;
+			}
+			case "Windows Credential Manager", "macOS Keychain", "Linux Secret Service", "System Keychain" -> {
+				if (osKeychainInstance == null) {
+					osKeychainInstance = new OSKeychainMasterKeyProvider();
+				}
+				yield osKeychainInstance;
+			}
+			case "Manual Password Entry" -> {
+				if (userPromptInstance == null) {
+					userPromptInstance = new UserPromptMasterKeyProvider();
+				}
+				yield userPromptInstance;
+			}
 			default -> {
 				LOGGER.log(Level.WARNING, "Unknown backend name: {0}, falling back to user prompt", name);
-				yield new UserPromptMasterKeyProvider();
+				if (userPromptInstance == null) {
+					userPromptInstance = new UserPromptMasterKeyProvider();
+				}
+				yield userPromptInstance;
 			}
 		};
 	}
 
 	/**
 	 * Creates a provider instance by command-line argument.
+	 * Returns singleton instances to preserve password caching across PropertiesSieve instances.
 	 *
 	 * @param arg backend argument from command line (keepassxc, keychain, prompt)
-	 * @return provider instance
+	 * @return provider instance (singleton)
 	 */
 	private static MasterKeyProvider createProviderByBackendArg(String arg) {
 		return switch (arg.toLowerCase()) {
-			case "keepassxc", "keepass" -> new KeePassXCMasterKeyProvider();
-			case "keychain", "os", "system" -> new OSKeychainMasterKeyProvider();
-			case "prompt", "manual", "password" -> new UserPromptMasterKeyProvider();
+			case "keepassxc", "keepass" -> {
+				if (keepassXCInstance == null) {
+					keepassXCInstance = new KeePassXCMasterKeyProvider();
+				}
+				yield keepassXCInstance;
+			}
+			case "keychain", "os", "system" -> {
+				if (osKeychainInstance == null) {
+					osKeychainInstance = new OSKeychainMasterKeyProvider();
+				}
+				yield osKeychainInstance;
+			}
+			case "prompt", "manual", "password" -> {
+				if (userPromptInstance == null) {
+					userPromptInstance = new UserPromptMasterKeyProvider();
+				}
+				yield userPromptInstance;
+			}
 			default -> {
 				LOGGER.log(Level.WARNING, "Unknown backend argument: {0}, falling back to user prompt", arg);
-				yield new UserPromptMasterKeyProvider();
+				if (userPromptInstance == null) {
+					userPromptInstance = new UserPromptMasterKeyProvider();
+				}
+				yield userPromptInstance;
 			}
 		};
 	}

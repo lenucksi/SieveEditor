@@ -16,6 +16,8 @@ import static org.assertj.core.api.Assertions.*;
 /**
  * Comprehensive test suite for PropertiesSieve class.
  * Tests profile management, encryption, and file I/O operations.
+ *
+ * Note: Test mode for MasterKeyProviderFactory is enabled globally via TestModeExtension.
  */
 class PropertiesSieveTest {
 

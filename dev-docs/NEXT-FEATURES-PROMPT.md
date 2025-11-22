@@ -25,7 +25,7 @@ Allow users to edit Sieve scripts locally without needing a server connection. T
 - Developing scripts offline
 - Backing up scripts locally
 - Version control of scripts
-- Testing syntax before uploading
+- Testing syntax before uploading -> this is done on the server. Are there recent , RFC compliant java libraries for that purpose that would allow local validation/syntax checking? Is there a sieve linter that could be integrated?
 
 ### Requirements
 
@@ -152,7 +152,7 @@ Provide quick insertion of common Sieve script patterns to speed up development.
 1. **Insert Template Menu**
    - Add "Insert" menu between "Edit" and "Sieve"
    - Built-in templates for common patterns
-   - Support user-defined templates from `~/.sievetemplates/`
+   - Support user-defined templates from `~/.sievetemplates/` -> This should be adapted to fit the XDG/platform specific dir integration.
 
 2. **Built-in Templates**
    - Spam Filter
@@ -160,9 +160,10 @@ Provide quick insertion of common Sieve script patterns to speed up development.
    - Fileinto Rule
    - Header Check
    - Size Check
+   - Do Web research for other common sieve patterns, also advanced ones, labeling, starring, mailing list handling, etc. and then offer them as built in yemplates
 
 3. **User Templates**
-   - Load .sieve files from `~/.sievetemplates/`
+   - Load .sieve files from `~/.sievetemplates/` -> This should be adapted to fit the XDG/platform specific dir
    - Display as menu items
    - Insert at cursor position
 
@@ -303,6 +304,8 @@ if header :contains "List-Id" "mylist.example.com" {
 4. Create `~/.sievetemplates/test.sieve` with content
 5. Restart application
 6. Click "Insert" → "User Templates" → "test" → template inserted
+
+-> This feature obviously needs to be developed TDD style red/green/refactor and have proper tests for it built.
 
 ---
 
@@ -446,6 +449,7 @@ Built-in templates:
 - Templates are just text insertion
 - User templates are just .sieve files in a directory
 - No template parameters or variables (nice-to-have for future)
+  - Research what easy, java  based ways for that would exist though and what could be achieved with which effort. write a brief report on this.
 - Focus on productivity, not over-engineering
 
 ---

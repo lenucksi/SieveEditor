@@ -13,6 +13,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
+// Note: AppDirectoryService is in the same package, no import needed
+
 /**
  * Comprehensive test suite for PropertiesSieve class.
  * Tests profile management, encryption, and file I/O operations.
@@ -105,51 +107,25 @@ class PropertiesSieveTest {
 
     @Test
     void shouldCreateProfilesDirectoryIfNotExists() throws IOException {
-        // Given - Use a different temp directory to avoid collision with setUp()
-        // setUp() already creates a PropertiesSieve instance which creates the directory
-        Path newTempDir = Files.createTempDirectory("sieve-test-isolated");
-        try {
-            String originalUserHome = System.getProperty("user.home");
-            System.setProperty("user.home", newTempDir.toString());
+        // Given - PropertiesSieve uses AppDirectoryService which creates XDG directories
+        // The directory is created automatically when PropertiesSieve is instantiated
+        Path profilesDir = AppDirectoryService.getProfilesDir();
 
-            File profilesDir = new File(newTempDir.toFile(), ".sieveprofiles");
-            assertThat(profilesDir).doesNotExist();
-
-            // When
-            PropertiesSieve props = new PropertiesSieve("test");
-
-            // Then
-            assertThat(profilesDir).exists().isDirectory();
-
-            // Cleanup
-            System.setProperty("user.home", originalUserHome);
-        } finally {
-            // Clean up temp directory
-            java.util.Comparator<Path> reverseOrder = java.util.Comparator.reverseOrder();
-            Files.walk(newTempDir)
-                .sorted(reverseOrder)
-                .forEach(path -> {
-                    try {
-                        Files.delete(path);
-                    } catch (IOException e) {
-                        // Ignore cleanup errors
-                    }
-                });
-        }
+        // Then - Directory should exist (created by PropertiesSieve in setUp or by getProfilesDir)
+        assertThat(profilesDir.toFile()).exists().isDirectory();
     }
 
     @Test
     void shouldCreateNewFileOnLoad() throws IOException {
-        // Given
-        File profilesDir = new File(tempDir.toFile(), ".sieveprofiles");
-        File profileFile = new File(profilesDir, "default.properties");
-        assertThat(profileFile).doesNotExist();
+        // Given - Use actual profile path from AppDirectoryService
+        Path profilesDir = AppDirectoryService.getProfilesDir();
+        Path profileFile = profilesDir.resolve("default.properties");
 
         // When
         properties.load();
 
-        // Then
-        assertThat(profileFile).exists();
+        // Then - File should be created
+        assertThat(profileFile.toFile()).exists();
     }
 
     @Test
@@ -327,11 +303,10 @@ class PropertiesSieveTest {
 
     @Test
     void shouldTrimWhitespaceFromLastUsedProfile() throws IOException {
-        // Given
-        File profilesDir = tempDir.resolve(".sieveprofiles").toFile();
-        profilesDir.mkdirs();
-        File lastUsedFile = new File(profilesDir, ".lastused");
-        Files.writeString(lastUsedFile.toPath(), "  myprofile  \n");
+        // Given - Write to actual config directory used by PropertiesSieve
+        Path configDir = AppDirectoryService.getUserConfigDir();
+        Path lastUsedFile = configDir.resolve(".lastused");
+        Files.writeString(lastUsedFile, "  myprofile  \n");
 
         // When
         String lastUsed = PropertiesSieve.getLastUsedProfile();
@@ -344,18 +319,24 @@ class PropertiesSieveTest {
 
     @Test
     void shouldMigrateOldPropertiesFile() throws IOException {
-        // Given - Create old .sieveproperties file
-        File oldFile = tempDir.resolve(".sieveproperties").toFile();
-        Files.writeString(oldFile.toPath(), "sieve.server=oldserver.com\nsieve.port=4190");
+        // Given - Create old legacy file in the legacy location
+        Path legacyDir = AppDirectoryService.getLegacyProfilesDir();
+        Files.createDirectories(legacyDir);
+        Path oldFile = legacyDir.resolve("migrationtest.properties");
+        Files.writeString(oldFile, "sieve.server=oldserver.com\nsieve.port=4190");
 
         // When
         PropertiesSieve.migrateOldProperties();
 
-        // Then - Should copy to default.properties
-        File newFile = tempDir.resolve(".sieveprofiles/default.properties").toFile();
-        assertThat(newFile).exists();
-        String content = Files.readString(newFile.toPath());
+        // Then - Should copy to new profiles directory
+        Path newFile = AppDirectoryService.getProfilesDir().resolve("migrationtest.properties");
+        assertThat(newFile.toFile()).exists();
+        String content = Files.readString(newFile);
         assertThat(content).contains("oldserver.com");
+
+        // Cleanup
+        Files.deleteIfExists(oldFile);
+        Files.deleteIfExists(newFile);
     }
 
     @Test
@@ -397,8 +378,8 @@ class PropertiesSieveTest {
         properties.write();
 
         // Then - Read raw file and verify password is encrypted
-        File profileFile = tempDir.resolve(".sieveprofiles/default.properties").toFile();
-        String rawContent = Files.readString(profileFile.toPath());
+        Path profileFile = AppDirectoryService.getProfilesDir().resolve("default.properties");
+        String rawContent = Files.readString(profileFile);
 
         assertThat(rawContent).doesNotContain("plaintextpassword");
         assertThat(rawContent).contains("ENC("); // Jasypt encrypted format

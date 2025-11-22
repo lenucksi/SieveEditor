@@ -38,8 +38,6 @@ public class ActionActivateDeactivateScript extends AbstractAction {
 
 			final JDialog frame = new JDialog(parentFrame, "Scripts", true);
 			frame.getContentPane().add(panel);
-			frame.setSize(300, 200);
-			frame.setLocationRelativeTo(parentFrame);
 
 			String columnNames[] = { "Name", "Aktiv" };
 			String rowData[][] = new String[liste.size()][2];
@@ -64,7 +62,7 @@ public class ActionActivateDeactivateScript extends AbstractAction {
 				JOptionPane.showMessageDialog(parentFrame, "activate " + script);
 			});
 			popmen.add(activate);
-			
+
 			JMenuItem deactivate = new JMenuItem("deactivate all");
 			deactivate.addActionListener((event) -> {
 				try {
@@ -76,13 +74,13 @@ public class ActionActivateDeactivateScript extends AbstractAction {
 				JOptionPane.showMessageDialog(parentFrame, "deactivate all scripts");
 			});
 			popmen.add(deactivate);
-			
+
 			JMenuItem rename = new JMenuItem("rename...");
 			rename.addActionListener((event) -> {
 				try {
 					String script = rowData[table.getSelectedRow()][0];
 					String newName = JOptionPane.showInputDialog("Rename to:", script);
-					
+
 					parentFrame.getServer().rename(script, newName);
 				} catch (IOException | ParseException e1) {
 					JOptionPane.showMessageDialog(parentFrame, e1.getMessage());
@@ -91,7 +89,7 @@ public class ActionActivateDeactivateScript extends AbstractAction {
 				JOptionPane.showMessageDialog(parentFrame, "deactivate all scripts");
 			});
 			popmen.add(rename);
-			
+
 			table.addMouseListener(new MouseAdapter() {
 				public void mouseReleased(MouseEvent me) {
 					if (me.isPopupTrigger())
@@ -99,6 +97,16 @@ public class ActionActivateDeactivateScript extends AbstractAction {
 				}
 			});
 
+			// Size dialog to fit contents and center on parent
+			frame.pack();
+			// Set a reasonable minimum size for the table dialog
+			if (frame.getWidth() < 350) {
+				frame.setSize(350, frame.getHeight());
+			}
+			if (frame.getHeight() < 250) {
+				frame.setSize(frame.getWidth(), 250);
+			}
+			frame.setLocationRelativeTo(parentFrame);
 			frame.setVisible(true);
 		} catch (IOException | ParseException e1) {
 			JOptionPane.showMessageDialog(parentFrame, e1.getClass().getName() + ": " + e1.getMessage());

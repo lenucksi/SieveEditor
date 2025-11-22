@@ -44,8 +44,6 @@ public class CertificateDialog extends JDialog {
 
 	private void initComponents(X509Certificate cert, String serverName) {
 		setLayout(new BorderLayout(10, 10));
-		setSize(600, 500);
-		setLocationRelativeTo(getParent());
 
 		// Header panel with warning
 		JPanel headerPanel = new JPanel(new BorderLayout(5, 5));
@@ -157,8 +155,19 @@ public class CertificateDialog extends JDialog {
 
 		add(buttonPanel, BorderLayout.SOUTH);
 
-		// Make Trust button the default
+		// Make Cancel button the default
 		getRootPane().setDefaultButton(cancelButton);
+
+		// Size dialog to fit contents and center on parent
+		pack();
+		// Set minimum size for readability
+		if (getWidth() < 550) {
+			setSize(550, getHeight());
+		}
+		if (getHeight() < 450) {
+			setSize(getWidth(), 450);
+		}
+		setLocationRelativeTo(getParent());
 	}
 
 	private void addDetailRow(JPanel panel, GridBagConstraints gbc, int row, String label, String value) {

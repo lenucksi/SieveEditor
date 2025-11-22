@@ -39,9 +39,7 @@ public class ActionLoadScript extends AbstractAction {
 			panel.setLayout(layout);
 
 			frame.getContentPane().add(panel);
-			frame.setSize(400, 120);
-			frame.setLocationRelativeTo(parentFrame);
-			
+
 			JLabel labelScript = new JLabel("Script");
 			panel.add(labelScript);
 			SieveScript[] liste = parentFrame.getServer().getListScripts().toArray(new SieveScript[0]);
@@ -55,7 +53,7 @@ public class ActionLoadScript extends AbstractAction {
 			tfScript.setRenderer(new ToStringListCellRenderer(
 					tfScript.getRenderer(), toString));
 			panel.add(tfScript);
-			
+
 			JButton buttonOK = new JButton("OK");
 			buttonOK.addActionListener((event) -> {
 				try {
@@ -67,7 +65,10 @@ public class ActionLoadScript extends AbstractAction {
 				}
 			});
 			panel.add(buttonOK);
-			
+
+			// Size dialog to fit contents and center on parent
+			frame.pack();
+			frame.setLocationRelativeTo(parentFrame);
 			frame.setVisible(true);
 		} catch (IOException | ParseException e1) {
 			JOptionPane.showMessageDialog(frame, e1.getClass().getName() + ": " + e1.getMessage());

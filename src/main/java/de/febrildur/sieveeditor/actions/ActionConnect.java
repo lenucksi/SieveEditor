@@ -45,8 +45,6 @@ public class ActionConnect extends AbstractAction {
 		panel.setLayout(layout);
 
 		frame.getContentPane().add(panel);
-		frame.setSize(350, 250);
-		frame.setLocationRelativeTo(parentFrame);
 
 		// Profile selector (NEW)
 		panel.add(new JLabel("Profile:"));
@@ -87,22 +85,22 @@ public class ActionConnect extends AbstractAction {
 
 		JLabel labelServer = new JLabel("Server");
 		panel.add(labelServer);
-		JTextField tfServer = new JTextField(properties.getServer(), 15);
+		JTextField tfServer = new JTextField(properties.getServer(), 20);
 		panel.add(tfServer);
 
 		JLabel labelPort = new JLabel("Port");
 		panel.add(labelPort);
-		JTextField tfPort = new JTextField(Integer.toString(properties.getPort()), 15);
+		JTextField tfPort = new JTextField(Integer.toString(properties.getPort()), 20);
 		panel.add(tfPort);
 
 		JLabel labelUsername = new JLabel("User");
 		panel.add(labelUsername);
-		JTextField tfUsername = new JTextField(properties.getUsername(), 15);
+		JTextField tfUsername = new JTextField(properties.getUsername(), 20);
 		panel.add(tfUsername);
 
 		JLabel labelPassword = new JLabel("Password");
 		panel.add(labelPassword);
-		JPasswordField tfPassword = new JPasswordField(properties.getPassword(), 15);
+		JPasswordField tfPassword = new JPasswordField(properties.getPassword(), 20);
 		tfPassword.setEchoChar('•');
 		panel.add(tfPassword);
 
@@ -178,7 +176,9 @@ public class ActionConnect extends AbstractAction {
 		});
 		panel.add(buttonOK);
 
-
+		// Size dialog to fit contents and center on parent
+		frame.pack();
+		frame.setLocationRelativeTo(parentFrame);
 		frame.setVisible(true);
 	}
 

@@ -29,9 +29,6 @@ public class AppDirectoryService {
 
 	private static final AppDirs APP_DIRS = AppDirsFactory.getInstance();
 
-	// Test mode: when set, all paths are redirected to this base directory
-	private static Path testBaseDir = null;
-
 	/**
 	 * Gets the user data directory for storing profiles and application data.
 	 *

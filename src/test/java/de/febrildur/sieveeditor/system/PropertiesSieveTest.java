@@ -278,7 +278,12 @@ class PropertiesSieveTest {
     }
 
     @Test
-    void shouldReturnDefaultWhenLastUsedFileDoesNotExist() {
+    void shouldReturnDefaultWhenLastUsedFileDoesNotExist() throws IOException {
+        // Given - Ensure no last used file exists (may have been created by other tests)
+        Path configDir = AppDirectoryService.getUserConfigDir();
+        Path lastUsedFile = configDir.resolve(".lastused");
+        Files.deleteIfExists(lastUsedFile);
+
         // When - No last used file exists
         String lastUsed = PropertiesSieve.getLastUsedProfile();
 

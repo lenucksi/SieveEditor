@@ -18,7 +18,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  *
  * Or register globally in junit-platform.properties or via ServiceLoader.
  */
-public class TestModeExtension implements BeforeAllCallback, ExtensionContext.Store.CloseableResource {
+public class TestModeExtension implements BeforeAllCallback, ExtensionContext.Store.CloseableResource, AutoCloseable {
 
 	private static boolean started = false;
 

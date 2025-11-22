@@ -36,23 +36,23 @@ System administrators and power users who manage email filtering rules on mail s
 
 ## Architecture
 
-### Multi-Module Maven Project
+### Single-Module Maven Project
 
 ```text
 SieveEditor/
-├── pom.xml                 # Parent POM (version: 0.0.1-SNAPSHOT)
-└── app/
-    ├── pom.xml            # Application module
-    └── src/
-        ├── main/java/de/febrildur/sieveeditor/
-        │   ├── Application.java          # Main entry point
-        │   ├── PropertiesSieve.java      # Configuration management
-        │   ├── ActionListenerNewProfile.java
-        │   ├── ActionListenerEditProfile.java
-        │   └── ...
-        └── test/java/
-            └── de/febrildur/sieveeditor/
-                └── PropertiesSieveTest.java
+├── pom.xml                 # Project POM (version: 0.0.1-SNAPSHOT)
+├── src/
+│   ├── main/java/de/febrildur/sieveeditor/
+│   │   ├── Application.java          # Main entry point
+│   │   ├── PropertiesSieve.java      # Configuration management
+│   │   ├── actions/                  # UI action handlers
+│   │   ├── system/                   # System services
+│   │   │   └── credentials/          # Credential storage backends
+│   │   └── ...
+│   └── test/java/de/febrildur/sieveeditor/
+│       └── ...                       # Test classes
+├── flatpak/                # Flatpak packaging resources
+└── .github/workflows/      # CI/CD workflows
 ```
 
 ### Key Components
@@ -129,7 +129,6 @@ mvn clean install
 **Run Application:**
 
 ```bash
-cd app
 mvn package
 java -jar target/SieveEditor-jar-with-dependencies.jar
 ```
@@ -223,7 +222,6 @@ BREAKING CHANGE: Self-signed certificates are now rejected.
 **Running Tests:**
 
 ```bash
-cd app
 mvn test                                          # Run all tests
 mvn test -Dtest=PropertiesSieveTest              # Specific test class
 mvn test -Dtest=PropertiesSieveTest#shouldEncryptPassword  # Specific test
@@ -304,7 +302,6 @@ See `SECURITY.md` for vulnerability reporting.
 **JAR (All Platforms):**
 
 ```bash
-cd app
 mvn clean package
 # Output: target/SieveEditor-jar-with-dependencies.jar
 ```
@@ -324,7 +321,6 @@ See `.github/workflows/package.yml` for build details.
 **Local Packaging Example (DEB):**
 
 ```bash
-cd app
 mvn package
 jpackage --input target \
   --main-jar SieveEditor-jar-with-dependencies.jar \
@@ -358,8 +354,7 @@ This project uses **Release Please** for automated releases.
 
 Release Please updates:
 
-- `pom.xml` (parent version)
-- `app/pom.xml` (child inherits version)
+- `pom.xml` (project version)
 - `CHANGELOG.md`
 - Git tags
 
@@ -456,7 +451,7 @@ See `CI-CD-STRATEGY-2025.md` for complete strategy.
 
 ### Updating Dependencies
 
-1. Update version in `app/pom.xml`
+1. Update version in `pom.xml`
 2. Run tests to verify compatibility
 3. Check for breaking changes in dependency changelog
 4. Commit: `deps: update library-name to X.Y.Z`

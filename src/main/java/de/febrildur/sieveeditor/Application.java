@@ -1,6 +1,7 @@
 package de.febrildur.sieveeditor;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.logging.ConsoleHandler;
@@ -16,6 +17,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.util.UIScale;
 
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -99,6 +103,12 @@ public class Application extends JFrame {
 		textArea = new RSyntaxTextArea(20, 60);
 		textArea.setSyntaxEditingStyle("text/sieve");
 		textArea.setCodeFoldingEnabled(true);
+
+		// Set a properly scaled monospace font for the editor
+		// Base size 13pt scales with FlatLaf's UIScale for HiDPI displays
+		int scaledFontSize = UIScale.scale(13);
+		textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, scaledFontSize));
+
 		RTextScrollPane sp = new RTextScrollPane(textArea);
 		cp.add(sp);
 
@@ -106,6 +116,8 @@ public class Application extends JFrame {
 		setTitle("Sieve Editor");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		pack();
+		// Set a reasonable minimum window size
+		setMinimumSize(new java.awt.Dimension(UIScale.scale(600), UIScale.scale(400)));
 		setLocationRelativeTo(null);
 		updateStatus();
 	}
@@ -119,6 +131,10 @@ public class Application extends JFrame {
 	}
 
 	public static void main(String[] args) {
+		// Initialize FlatLaf look-and-feel with automatic HiDPI scaling
+		// This must be called before creating any Swing components
+		FlatLightLaf.setup();
+
 		// Parse command-line arguments
 		boolean verbose = false;
 		String forcedBackend = null;
@@ -141,8 +157,11 @@ public class Application extends JFrame {
 			LOGGER.log(Level.INFO, "Verbose logging enabled");
 		}
 
+		// Set global forced backend BEFORE creating any PropertiesSieve instances
+		// This ensures ALL instances throughout the app respect the command-line choice
 		if (forcedBackend != null) {
-			LOGGER.log(Level.INFO, "Using forced backend: {0}", forcedBackend);
+			de.febrildur.sieveeditor.system.credentials.MasterKeyProviderFactory.setGlobalForcedBackend(forcedBackend);
+			LOGGER.log(Level.INFO, "Global forced backend set to: {0}", forcedBackend);
 		}
 
 		// Launch application

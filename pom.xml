@@ -108,6 +108,14 @@
 			<artifactId>rsyntaxtextarea</artifactId>
 			<version>3.6.0</version>
 		</dependency>
+		<!-- FlatLaf: Modern look-and-feel with automatic HiDPI scaling
+		     Benefits: Native 4K support without launcher script, dark mode, modern UI
+		     Source: https://www.formdev.com/flatlaf/ -->
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf</artifactId>
+			<version>3.5.4</version>
+		</dependency>
 		<!-- ManageSieveJ: Java 21 compatible fork from lenucksi (via JitPack)
 		     Source: https://github.com/lenucksi/managesievej
 		     Benefits: Java 21+ support, bug fixes, modernized build
@@ -115,7 +123,7 @@
 		<dependency>
 			<groupId>com.github.lenucksi</groupId>
 			<artifactId>ManageSieveJ</artifactId>
-			<version>managesievej-v0.3.6</version>
+			<version>managesievej-v0.3.7</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>

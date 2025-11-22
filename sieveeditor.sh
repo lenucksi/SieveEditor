@@ -1,22 +1,17 @@
 #!/bin/bash
-# SieveEditor launcher with HiDPI support for 4K displays
+# SieveEditor launcher
 #
-# This script automatically builds the application if needed and launches it
-# with the correct Java scaling parameters for high-resolution displays.
+# This script automatically builds the application if needed and launches it.
+# HiDPI scaling is handled automatically by FlatLaf.
 #
 # USAGE:
-#   ./sieveeditor.sh           # Launch SieveEditor (builds if needed)
-#   SIEVE_SCALE=3.0 ./sieveeditor.sh  # Custom scale factor
+#   ./sieveeditor.sh                   # Launch SieveEditor (builds if needed)
+#   ./sieveeditor.sh -v                # Launch with verbose logging
+#   ./sieveeditor.sh --backend prompt  # Use specific credential backend
 #
 # REQUIREMENTS:
 #   - Java 21 or later
 #   - Maven 3.6+ (only needed if JAR doesn't exist)
-#
-# The script will automatically:
-#   - Check if the JAR file exists
-#   - Build the project with 'mvn clean package -DskipTests' if needed
-#   - Detect your display DPI and set appropriate scaling
-#   - Launch the application with optimized Java parameters
 
 set -e  # Exit on error
 
@@ -61,35 +56,8 @@ if [ ! -f "$JARFILE" ]; then
     echo ""
 fi
 
-# Detect scale factor
-# Based on test results: Xft.dpi is 192 (2x scaling), GNOME scaling-factor is 0
-# We'll use a simple approach: check Xft.dpi or default to 2.0 for 4K
-
-SCALE=2.0  # Default for 4K displays
-
-# Try to detect from Xft.dpi if available
-if command -v xrdb &> /dev/null; then
-    DPI=$(xrdb -query 2>/dev/null | grep "Xft.dpi:" | awk '{print $2}')
-    if [ -n "$DPI" ] && [ "$DPI" -gt 0 ]; then
-        # Calculate scale from DPI (96 is standard DPI, 192 = 2x, 144 = 1.5x, etc.)
-        SCALE=$(awk "BEGIN {printf \"%.1f\", $DPI/96}")
-        echo "Detected DPI: $DPI, using scale: $SCALE"
-    fi
-fi
-
-# Allow override via environment variable
-if [ -n "$SIEVE_SCALE" ]; then
-    SCALE=$SIEVE_SCALE
-    echo "Using custom scale from SIEVE_SCALE: $SCALE"
-fi
-
-echo "Starting SieveEditor with scale factor: $SCALE"
-
-# Java options for HiDPI support
-JAVA_OPTS="-Dsun.java2d.uiScale.enabled=true"
-JAVA_OPTS="$JAVA_OPTS -Dsun.java2d.uiScale=$SCALE"
-JAVA_OPTS="$JAVA_OPTS -Dawt.useSystemAAFontSettings=lcd"
-JAVA_OPTS="$JAVA_OPTS -Dswing.aatext=true"
-
-# Launch application
-exec java $JAVA_OPTS -jar "$JARFILE" "$@"
+# Launch application with font rendering options
+exec java \
+    -Dawt.useSystemAAFontSettings=lcd \
+    -Dswing.aatext=true \
+    -jar "$JARFILE" "$@"

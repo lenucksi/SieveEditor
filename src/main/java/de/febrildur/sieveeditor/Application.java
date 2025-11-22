@@ -50,12 +50,42 @@ public class Application extends JFrame {
 	private SieveScript script;
 
 	private AbstractAction actionConnect = new ActionConnect(this);
+	private AbstractAction actionDisconnect = new AbstractAction("Disconnect") {
+		@Override
+		public void actionPerformed(java.awt.event.ActionEvent e) {
+			if (server != null) {
+				try {
+					server.logout();
+				} catch (IOException | ParseException ex) {
+					// Ignore logout errors
+				}
+				server = null;
+				script = null;
+				textArea.setText("");
+				setTitle("Sieve Editor");
+				updateStatus();
+			}
+		}
+	};
 	private AbstractAction actionActivateDeactivateScript = new ActionActivateDeactivateScript(this);
 	private AbstractAction actionLoadScript = new ActionLoadScript(this);
 	private AbstractAction actionCheckScript = new ActionCheckScript(this);
 	private AbstractAction actionSaveScript = new ActionSaveScript(this);
 	private AbstractAction actionSaveScriptAs = new ActionSaveScriptAs(this);
 	private AbstractAction actionReplace = new ActionReplace(this);
+	private AbstractAction actionQuit = new AbstractAction("Quit") {
+		@Override
+		public void actionPerformed(java.awt.event.ActionEvent e) {
+			if (server != null) {
+				try {
+					server.logout();
+				} catch (IOException | ParseException ex) {
+					// Ignore logout errors
+				}
+			}
+			System.exit(0);
+		}
+	};
 
 	public Application() {
 		this(null);
@@ -82,11 +112,15 @@ public class Application extends JFrame {
 		menu.add(sieve);
 
 		sieve.add(new JMenuItem(actionConnect)).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
+		sieve.add(new JMenuItem(actionDisconnect));
+		sieve.addSeparator();
 		sieve.add(new JMenuItem(actionActivateDeactivateScript));
 		sieve.add(new JMenuItem(actionLoadScript)).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
 		sieve.add(new JMenuItem(actionCheckScript));
 		sieve.add(new JMenuItem(actionSaveScript)).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
 		sieve.add(new JMenuItem(actionSaveScriptAs));
+		sieve.addSeparator();
+		sieve.add(new JMenuItem(actionQuit)).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
 
 		JMenu edit = new JMenu("Edit");
 		menu.add(edit);
@@ -131,6 +165,10 @@ public class Application extends JFrame {
 	}
 
 	public static void main(String[] args) {
+		// Set application name for Linux desktop integration (GNOME dock, etc.)
+		// This must be done before any AWT/Swing components are created
+		setLinuxAppName();
+
 		// Initialize FlatLaf look-and-feel with automatic HiDPI scaling
 		// This must be called before creating any Swing components
 		FlatLightLaf.setup();
@@ -246,10 +284,47 @@ public class Application extends JFrame {
 
 	public void updateStatus() {
 		actionConnect.setEnabled(true);
+		actionDisconnect.setEnabled(server != null);
 		actionActivateDeactivateScript.setEnabled(server != null);
 		actionLoadScript.setEnabled(server != null);
 		actionCheckScript.setEnabled(server != null);
 		actionSaveScript.setEnabled(server != null && script != null);
 		actionSaveScriptAs.setEnabled(server != null);
+		actionQuit.setEnabled(true);
+	}
+
+	/**
+	 * Sets the application name for Linux desktop integration.
+	 *
+	 * On X11, this sets the WM_CLASS property so that GNOME Shell, Unity, and other
+	 * desktop environments can properly associate the application window with its
+	 * .desktop launcher file for dock/taskbar integration.
+	 *
+	 * The name must match the StartupWMClass value in the .desktop file.
+	 */
+	private static void setLinuxAppName() {
+		// Only needed on Linux with X11
+		String os = System.getProperty("os.name", "").toLowerCase();
+		if (!os.contains("linux")) {
+			return;
+		}
+
+		try {
+			java.awt.Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit();
+			Class<?> toolkitClass = toolkit.getClass();
+
+			// Check if this is the X11 toolkit (sun.awt.X11.XToolkit)
+			if (toolkitClass.getName().equals("sun.awt.X11.XToolkit")) {
+				java.lang.reflect.Field awtAppClassNameField =
+					toolkitClass.getDeclaredField("awtAppClassName");
+				awtAppClassNameField.setAccessible(true);
+				// Must match StartupWMClass in .desktop file
+				awtAppClassNameField.set(toolkit, "de.febrildur.sieveeditor.Application");
+				LOGGER.log(Level.FINE, "Set X11 WM_CLASS to de.febrildur.sieveeditor.Application");
+			}
+		} catch (NoSuchFieldException | IllegalAccessException | SecurityException e) {
+			// Not critical - app will still work, just may not integrate with dock
+			LOGGER.log(Level.FINE, "Could not set X11 WM_CLASS (expected on Wayland): {0}", e.getMessage());
+		}
 	}
 }

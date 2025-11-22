@@ -42,12 +42,14 @@ modules:
       - install -Dm644 SieveEditor-jar-with-dependencies.jar /app/sieveeditor/SieveEditor.jar
 
       # Create launcher script
+      # Note: HiDPI scaling is handled automatically by FlatLaf - no manual scaling needed
       - |
         cat > /app/bin/sieveeditor <<'EOF'
         #!/bin/sh
         # SieveEditor launcher script
         exec /app/jre/bin/java \
-          -Dsun.java2d.uiScale=2.0 \
+          -Dawt.useSystemAAFontSettings=lcd \
+          -Dswing.aatext=true \
           -jar /app/sieveeditor/SieveEditor.jar "$@"
         EOF
 

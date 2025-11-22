@@ -1,5 +1,7 @@
 package de.febrildur.sieveeditor.actions;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -7,13 +9,14 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
 
 import com.fluffypeople.managesieve.ParseException;
 import com.fluffypeople.managesieve.SieveScript;
@@ -25,93 +28,180 @@ public class ActionActivateDeactivateScript extends AbstractAction {
 	private Application parentFrame;
 
 	public ActionActivateDeactivateScript(Application parentFrame) {
-		putValue("Name", "List of scripts...");
+		putValue("Name", "Manage Scripts...");
 		this.parentFrame = parentFrame;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		try {
-			List<SieveScript> liste = parentFrame.getServer().getListScripts();
+			final JDialog dialog = new JDialog(parentFrame, "Manage Scripts", true);
+			dialog.setLayout(new BorderLayout(5, 5));
 
-			JPanel panel = new JPanel();
+			// Create table model (non-editable)
+			String[] columnNames = {"Name", "Status"};
+			DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					return false;
+				}
+			};
 
-			final JDialog frame = new JDialog(parentFrame, "Scripts", true);
-			frame.getContentPane().add(panel);
+			JTable table = new JTable(tableModel);
+			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			table.getColumnModel().getColumn(0).setPreferredWidth(250);
+			table.getColumnModel().getColumn(1).setPreferredWidth(80);
 
-			String columnNames[] = { "Name", "Aktiv" };
-			String rowData[][] = new String[liste.size()][2];
-			for (int i = 0; i < liste.size(); i++) {
-				rowData[i][0] = liste.get(i).getName();
-				rowData[i][1] = liste.get(i).isActive() ? "active" : "";
-			}
+			// Load scripts into table
+			refreshTable(tableModel);
 
-			JTable table = new JTable(rowData, columnNames);
-			frame.add(new JScrollPane(table));
+			JScrollPane scrollPane = new JScrollPane(table);
+			dialog.add(scrollPane, BorderLayout.CENTER);
 
-			JPopupMenu popmen = new JPopupMenu();
-			JMenuItem activate = new JMenuItem("activate");
-			activate.addActionListener((event) -> {
-				String script = rowData[table.getSelectedRow()][0];
-				try {
-					parentFrame.getServer().activateScript(script);
-				} catch (IOException | ParseException e1) {
-					JOptionPane.showMessageDialog(parentFrame, e1.getMessage());
+			// Button panel
+			JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+
+			JButton loadBtn = new JButton("Load");
+			loadBtn.setToolTipText("Load selected script into editor");
+			loadBtn.addActionListener(event -> {
+				int row = table.getSelectedRow();
+				if (row < 0) {
+					JOptionPane.showMessageDialog(dialog, "Please select a script first.");
 					return;
 				}
-				JOptionPane.showMessageDialog(parentFrame, "activate " + script);
+				String scriptName = (String) tableModel.getValueAt(row, 0);
+				loadScript(scriptName, dialog);
 			});
-			popmen.add(activate);
+			buttonPanel.add(loadBtn);
 
-			JMenuItem deactivate = new JMenuItem("deactivate all");
-			deactivate.addActionListener((event) -> {
+			JButton activateBtn = new JButton("Activate");
+			activateBtn.setToolTipText("Set selected script as active");
+			activateBtn.addActionListener(event -> {
+				int row = table.getSelectedRow();
+				if (row < 0) {
+					JOptionPane.showMessageDialog(dialog, "Please select a script first.");
+					return;
+				}
+				String scriptName = (String) tableModel.getValueAt(row, 0);
+				try {
+					parentFrame.getServer().activateScript(scriptName);
+					refreshTable(tableModel);
+				} catch (IOException | ParseException ex) {
+					JOptionPane.showMessageDialog(dialog, "Error: " + ex.getMessage());
+				}
+			});
+			buttonPanel.add(activateBtn);
+
+			JButton deactivateBtn = new JButton("Deactivate All");
+			deactivateBtn.setToolTipText("Deactivate all scripts");
+			deactivateBtn.addActionListener(event -> {
 				try {
 					parentFrame.getServer().deactivateScript();
-				} catch (IOException | ParseException e1) {
-					JOptionPane.showMessageDialog(parentFrame, e1.getMessage());
+					refreshTable(tableModel);
+				} catch (IOException | ParseException ex) {
+					JOptionPane.showMessageDialog(dialog, "Error: " + ex.getMessage());
+				}
+			});
+			buttonPanel.add(deactivateBtn);
+
+			JButton renameBtn = new JButton("Rename...");
+			renameBtn.setToolTipText("Rename selected script");
+			renameBtn.addActionListener(event -> {
+				int row = table.getSelectedRow();
+				if (row < 0) {
+					JOptionPane.showMessageDialog(dialog, "Please select a script first.");
 					return;
 				}
-				JOptionPane.showMessageDialog(parentFrame, "deactivate all scripts");
+				String oldName = (String) tableModel.getValueAt(row, 0);
+				String newName = JOptionPane.showInputDialog(dialog, "New name:", oldName);
+				if (newName != null && !newName.isEmpty() && !newName.equals(oldName)) {
+					try {
+						parentFrame.getServer().rename(oldName, newName);
+						refreshTable(tableModel);
+					} catch (IOException | ParseException ex) {
+						JOptionPane.showMessageDialog(dialog, "Error: " + ex.getMessage());
+					}
+				}
 			});
-			popmen.add(deactivate);
+			buttonPanel.add(renameBtn);
 
-			JMenuItem rename = new JMenuItem("rename...");
-			rename.addActionListener((event) -> {
-				try {
-					String script = rowData[table.getSelectedRow()][0];
-					String newName = JOptionPane.showInputDialog("Rename to:", script);
-
-					parentFrame.getServer().rename(script, newName);
-				} catch (IOException | ParseException e1) {
-					JOptionPane.showMessageDialog(parentFrame, e1.getMessage());
+			JButton deleteBtn = new JButton("Delete");
+			deleteBtn.setToolTipText("Delete selected script from server");
+			deleteBtn.addActionListener(event -> {
+				int row = table.getSelectedRow();
+				if (row < 0) {
+					JOptionPane.showMessageDialog(dialog, "Please select a script first.");
 					return;
 				}
-				JOptionPane.showMessageDialog(parentFrame, "deactivate all scripts");
+				String scriptName = (String) tableModel.getValueAt(row, 0);
+				int confirm = JOptionPane.showConfirmDialog(dialog,
+					"Delete script \"" + scriptName + "\"?\n\nThis cannot be undone.",
+					"Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (confirm == JOptionPane.YES_OPTION) {
+					try {
+						parentFrame.getServer().deleteScript(scriptName);
+						refreshTable(tableModel);
+					} catch (IOException | ParseException ex) {
+						JOptionPane.showMessageDialog(dialog, "Error: " + ex.getMessage());
+					}
+				}
 			});
-			popmen.add(rename);
+			buttonPanel.add(deleteBtn);
 
+			dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+			// Double-click to load script
 			table.addMouseListener(new MouseAdapter() {
-				public void mouseReleased(MouseEvent me) {
-					if (me.isPopupTrigger())
-						popmen.show(me.getComponent(), me.getX(), me.getY());
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2) {
+						int row = table.getSelectedRow();
+						if (row >= 0) {
+							String scriptName = (String) tableModel.getValueAt(row, 0);
+							loadScript(scriptName, dialog);
+						}
+					}
 				}
 			});
 
-			// Size dialog to fit contents and center on parent
-			frame.pack();
-			// Set a reasonable minimum size for the table dialog
-			if (frame.getWidth() < 350) {
-				frame.setSize(350, frame.getHeight());
+			// Size and show dialog
+			dialog.pack();
+			// Ensure reasonable minimum size
+			if (dialog.getWidth() < 400) {
+				dialog.setSize(400, dialog.getHeight());
 			}
-			if (frame.getHeight() < 250) {
-				frame.setSize(frame.getWidth(), 250);
+			if (dialog.getHeight() < 300) {
+				dialog.setSize(dialog.getWidth(), 300);
 			}
-			frame.setLocationRelativeTo(parentFrame);
-			frame.setVisible(true);
+			dialog.setLocationRelativeTo(parentFrame);
+			dialog.setVisible(true);
+
 		} catch (IOException | ParseException e1) {
 			JOptionPane.showMessageDialog(parentFrame, e1.getClass().getName() + ": " + e1.getMessage());
 		}
-
 	}
 
+	private void refreshTable(DefaultTableModel model) throws IOException, ParseException {
+		model.setRowCount(0);
+		List<SieveScript> scripts = parentFrame.getServer().getListScripts();
+		for (SieveScript script : scripts) {
+			model.addRow(new Object[]{script.getName(), script.isActive() ? "active" : ""});
+		}
+	}
+
+	private void loadScript(String scriptName, JDialog dialog) {
+		try {
+			List<SieveScript> scripts = parentFrame.getServer().getListScripts();
+			for (SieveScript script : scripts) {
+				if (script.getName().equals(scriptName)) {
+					parentFrame.setScript(script);
+					parentFrame.updateStatus();
+					dialog.dispose();
+					return;
+				}
+			}
+		} catch (IOException | ParseException ex) {
+			JOptionPane.showMessageDialog(dialog, "Error loading script: " + ex.getMessage());
+		}
+	}
 }

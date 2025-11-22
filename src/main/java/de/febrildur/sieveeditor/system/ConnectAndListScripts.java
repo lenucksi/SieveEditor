@@ -126,12 +126,12 @@ public class ConnectAndListScripts {
 		}
 		return ss.getBody();
 	}
-	
+
 	public String checkScript(String script) throws IOException, ParseException {
 		ManageSieveResponse resp = client.checkscript(script);
 		return resp.getMessage();
 	}
-	
+
 	public boolean isLoggedIn() {
 		return client != null;
 	}
@@ -273,21 +273,28 @@ public class ConnectAndListScripts {
 	public void activateScript(String script) throws IOException, ParseException {
 		ManageSieveResponse resp = client.setactive(script);
 		if (!resp.isOk()) {
-			throw new IOException(resp.getMessage()); 
+			throw new IOException(resp.getMessage());
 		}
 	}
-	
+
 	public void deactivateScript() throws IOException, ParseException {
 		ManageSieveResponse resp = client.setactive("");
 		if (!resp.isOk()) {
-			throw new IOException(resp.getMessage()); 
+			throw new IOException(resp.getMessage());
 		}
 	}
 
 	public void rename(String script, String newName) throws IOException, ParseException {
 		ManageSieveResponse resp = client.renamescript(script, newName);
 		if (!resp.isOk()) {
-			throw new IOException(resp.getMessage()); 
+			throw new IOException(resp.getMessage());
+		}
+	}
+
+	public void deleteScript(String scriptName) throws IOException, ParseException {
+		ManageSieveResponse resp = client.deletescript(scriptName);
+		if (!resp.isOk()) {
+			throw new IOException(resp.getMessage());
 		}
 	}
 }

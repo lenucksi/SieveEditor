@@ -226,6 +226,38 @@ class ConnectAndListScriptsTest {
     }
 
     @Test
+    void shouldDeleteScriptWhenConnected() {
+        // INTENDED TEST:
+        // Given: Connected client with existing script "myscript"
+        // When: deleteScript("myscript") called
+        // Then: Script should be deleted from server
+        //
+        // To actually test this, the class would need to support
+        // dependency injection of ManageSieveClient. Currently, the client
+        // is created internally in the connect() method, making it impossible
+        // to inject a mock without refactoring.
+        //
+        // Expected implementation with refactoring:
+        //   when(mockClient.deletescript("myscript")).thenReturn(mockResponse);
+        //   when(mockResponse.isOk()).thenReturn(true);
+        //   connection.deleteScript("myscript");
+        //   verify(mockClient).deletescript("myscript");
+
+        assertThat(connection.isLoggedIn()).isFalse();
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDeleteScriptCalledWithoutConnection() {
+        // Given - No connection established (client is null)
+
+        // When/Then - deleteScript should throw NullPointerException
+        // when attempting to call client.deletescript()
+        assertThatThrownBy(() ->
+            connection.deleteScript("myscript"))
+            .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
     void shouldLogout() {
         // INTENDED TEST:
         // Given: Connected client

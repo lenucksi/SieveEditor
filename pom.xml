@@ -16,6 +16,13 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 		<mockito.version>5.20.0</mockito.version>
+
+		<!-- SonarCloud configuration -->
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.organization>lenucksi</sonar.organization>
+		<sonar.projectKey>lenucksi_SieveEditor</sonar.projectKey>
+		<!-- JaCoCo coverage report location for SonarCloud -->
+		<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 	</properties>
 
 	<scm>
@@ -99,6 +106,17 @@
 				</executions>
 			</plugin>
 		</plugins>
+
+		<!-- Plugin management for version locking -->
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.sonarsource.scanner.maven</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>5.0.0.4389</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<dependencies>

@@ -34,9 +34,12 @@ import de.febrildur.sieveeditor.actions.ActionActivateDeactivateScript;
 import de.febrildur.sieveeditor.actions.ActionCheckScript;
 import de.febrildur.sieveeditor.actions.ActionConnect;
 import de.febrildur.sieveeditor.actions.ActionLoadScript;
+import de.febrildur.sieveeditor.actions.ActionOpenLocalScript;
 import de.febrildur.sieveeditor.actions.ActionReplace;
+import de.febrildur.sieveeditor.actions.ActionSaveLocalScript;
 import de.febrildur.sieveeditor.actions.ActionSaveScript;
 import de.febrildur.sieveeditor.actions.ActionSaveScriptAs;
+import de.febrildur.sieveeditor.actions.InsertMenuBuilder;
 import de.febrildur.sieveeditor.system.ConnectAndListScripts;
 import de.febrildur.sieveeditor.system.PropertiesSieve;
 import de.febrildur.sieveeditor.system.SieveTokenMaker;
@@ -74,6 +77,8 @@ public class Application extends JFrame {
 	private AbstractAction actionSaveScript = new ActionSaveScript(this);
 	private AbstractAction actionSaveScriptAs = new ActionSaveScriptAs(this);
 	private AbstractAction actionReplace = new ActionReplace(this);
+	private AbstractAction actionOpenLocal = new ActionOpenLocalScript(this);
+	private AbstractAction actionSaveLocal = new ActionSaveLocalScript(this);
 	private AbstractAction actionQuit = new AbstractAction("Quit") {
 		@Override
 		public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -109,24 +114,45 @@ public class Application extends JFrame {
 		}
 
 		JMenuBar menu = new JMenuBar();
+
+		// File menu - local file operations
+		JMenu file = new JMenu("File");
+		menu.add(file);
+
+		file.add(new JMenuItem(actionOpenLocal)).setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK));
+		file.add(new JMenuItem(actionSaveLocal)).setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
+		file.addSeparator();
+		file.add(new JMenuItem(actionQuit)).setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
+
+		// Sieve menu - server operations
 		JMenu sieve = new JMenu("Sieve");
 		menu.add(sieve);
 
-		sieve.add(new JMenuItem(actionConnect)).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
+		sieve.add(new JMenuItem(actionConnect)).setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
 		sieve.add(new JMenuItem(actionDisconnect));
 		sieve.addSeparator();
 		sieve.add(new JMenuItem(actionActivateDeactivateScript));
-		sieve.add(new JMenuItem(actionLoadScript)).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
+		sieve.add(new JMenuItem(actionLoadScript)).setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
 		sieve.add(new JMenuItem(actionCheckScript));
-		sieve.add(new JMenuItem(actionSaveScript)).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
+		sieve.add(new JMenuItem(actionSaveScript)).setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
 		sieve.add(new JMenuItem(actionSaveScriptAs));
-		sieve.addSeparator();
-		sieve.add(new JMenuItem(actionQuit)).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
 
+		// Edit menu
 		JMenu edit = new JMenu("Edit");
 		menu.add(edit);
 
-		edit.add(new JMenuItem(actionReplace)).setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK));
+		edit.add(new JMenuItem(actionReplace)).setAccelerator(
+				KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK));
+
+		// Insert menu - templates
+		InsertMenuBuilder insertMenuBuilder = new InsertMenuBuilder(this);
+		menu.add(insertMenuBuilder.createInsertMenu());
 
 		setJMenuBar(menu);
 
@@ -257,6 +283,24 @@ public class Application extends JFrame {
 	public void setScript(SieveScript script) throws IOException, ParseException {
 		this.script = script;
 		textArea.setText(server.getScript(script));
+	}
+
+	/**
+	 * Loads a local script file for editing (offline mode).
+	 *
+	 * This puts the application in "local mode" where:
+	 * - script is null (not connected to server)
+	 * - Window title shows local filename
+	 * - Server operations are disabled
+	 *
+	 * @param content  The script content to load
+	 * @param filename The filename for display in title bar
+	 */
+	public void loadLocalScript(String content, String filename) {
+		textArea.setText(content);
+		script = null;
+		setTitle("Sieve Editor - " + filename + " (Local)");
+		updateStatus();
 	}
 
 	public void save() {

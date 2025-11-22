@@ -1,4 +1,4 @@
-# Security Policy
+# Security Policy - IGNORE FOR NOW, CLAUDE WENT AWOL
 
 ## Supported Versions
 
@@ -193,17 +193,13 @@ rm ~/.sieveprofiles/certificates.properties
 
 ### Completed Enhancements
 
-- [x] Custom certificate trust store UI (v1.0.0)
-- [x] Interactive certificate validation dialog (v1.0.0)
-- [x] SHA-256 fingerprint verification (v1.0.0)
+- [ ] Custom certificate trust store UI (v1.0.0)
+- [ ] Interactive certificate validation dialog (v1.0.0)
+- [ ] SHA-256 fingerprint verification (v1.0.0)
 
 ### Planned Enhancements
 
-- [ ] Certificate pinning for known servers
 - [ ] Certificate expiration warnings
-- [ ] Hardware security module (HSM) support
-- [ ] Two-factor authentication support
-- [ ] Audit logging of all ManageSieve operations
 - [ ] Memory protection for password strings (zeroization)
 - [ ] OS keychain integration (macOS Keychain, Windows Credential Manager)
 

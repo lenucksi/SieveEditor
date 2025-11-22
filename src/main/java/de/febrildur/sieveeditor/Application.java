@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.lang.reflect.InaccessibleObjectException;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -322,9 +323,11 @@ public class Application extends JFrame {
 				awtAppClassNameField.set(toolkit, "de.febrildur.sieveeditor.Application");
 				LOGGER.log(Level.FINE, "Set X11 WM_CLASS to de.febrildur.sieveeditor.Application");
 			}
-		} catch (NoSuchFieldException | IllegalAccessException | SecurityException e) {
+		} catch (NoSuchFieldException | IllegalAccessException | SecurityException
+				| InaccessibleObjectException e) {
 			// Not critical - app will still work, just may not integrate with dock
-			LOGGER.log(Level.FINE, "Could not set X11 WM_CLASS (expected on Wayland): {0}", e.getMessage());
+			// InaccessibleObjectException occurs on Java 17+ due to module encapsulation
+			LOGGER.log(Level.FINE, "Could not set X11 WM_CLASS: {0}", e.getMessage());
 		}
 	}
 }

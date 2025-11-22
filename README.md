@@ -87,6 +87,8 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 - HiDPI/4K display support
 - Script validation
 - Direct server connection via ManageSieve protocol
+- **Local file editing** - Open/save .sieve files locally (Ctrl+L / Ctrl+Shift+S)
+- **Template insertion** - Built-in templates for common Sieve patterns
 
 ## Documentation
 

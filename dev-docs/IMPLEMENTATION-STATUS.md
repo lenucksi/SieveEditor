@@ -1,6 +1,6 @@
 # SieveEditor Implementation Status
 
-Last Updated: 2025-11-04
+Last Updated: 2025-11-22
 
 ## Overview
 
@@ -82,21 +82,47 @@ SieveEditor is a lightweight Java Swing application for editing Sieve mail filte
 
 **Note:** Detailed implementation plan available in `archive/SECURITY-FIXES-PROMPT.md` if needed in future.
 
+### Phase 3: Nice-to-Have Features (Week 4-5) ✅
+
+**Status:** COMPLETED
+**Date:** 2025-11-22
+
+1. **Local File Load/Save** ✅
+   - Added File → Open Local Script (Ctrl+L)
+   - Added File → Save Local Script (Ctrl+Shift+S)
+   - Allows editing scripts offline
+   - File chooser filtered to .sieve files
+   - Auto-adds .sieve extension when saving
+   - Files: `ActionOpenLocalScript.java`, `ActionSaveLocalScript.java`
+
+2. **Template Insertion** ✅
+   - Added Insert menu with 14 built-in templates
+   - User templates from XDG-compliant directory:
+     - Linux: `~/.local/share/sieveeditor/templates/`
+     - Windows: `%LOCALAPPDATA%/febrildur/sieveeditor/templates/`
+     - macOS: `~/Library/Application Support/sieveeditor/templates/`
+   - Templates include: spam filter, vacation, mailing list, priority flagging, etc.
+   - "Open Templates Folder" menu item for easy access
+   - Files: `TemplateService.java`, `SieveTemplate.java`, `InsertMenuBuilder.java`
+
+3. **Research Reports** ✅
+   - Sieve linting libraries: Recommended Apache jSieve 0.8
+   - Template variables: Recommended Apache Commons Text StringSubstitutor
+   - See `dev-docs/RESEARCH-REPORTS.md` for full analysis
+
 ## Remaining Work
 
-### Phase 3: Nice-to-Have Features (Week 4-5)
+### Phase 4: Future Enhancements 📋
 
-1. **Local File Load/Save** 📋
-   - Add File → Open Local Script (Ctrl+L)
-   - Add File → Save Local Script (Ctrl+Shift+S)
-   - Allow editing scripts offline
-   - **Effort:** 2 hours
+1. **Sieve Validation** 📋
+   - Integrate Apache jSieve for local syntax validation
+   - Real-time error highlighting in editor
+   - **Effort:** 4-6 hours
 
-2. **Template Insertion** 📋
-   - Add Insert Template menu
-   - Built-in templates (spam filter, vacation reply, etc.)
-   - User templates from `~/.sievetemplates/`
-   - **Effort:** 3 hours
+2. **Template Variables** 📋
+   - Add variable substitution using Apache Commons Text
+   - Prompt user for values when inserting templates
+   - **Effort:** 2-3 hours
 
 3. **Additional Polish** 📋
    - Add null checks to prevent crashes
@@ -291,9 +317,11 @@ See [NEXT-FEATURES-PROMPT.md](NEXT-FEATURES-PROMPT.md) for the next implementati
 
 ### Remaining 📋
 
-- [ ] Local file load/save
-- [ ] Template insertion
+- [x] Local file load/save ✅
+- [x] Template insertion ✅
 - [ ] Better error messages
+- [ ] Sieve syntax validation
+- [ ] Template variable substitution
 
 ## Conclusion
 

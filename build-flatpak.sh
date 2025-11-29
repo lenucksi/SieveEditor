@@ -69,9 +69,9 @@ echo ""
 
 # Step 2: Install Freedesktop runtime if needed
 echo -e "${YELLOW}Step 2/5: Checking Freedesktop runtime...${NC}"
-if ! flatpak list --runtime | grep -q "org.freedesktop.Platform.*24.08"; then
-    echo "Installing Freedesktop Platform 24.08..."
-    flatpak install -y flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.freedesktop.Sdk.Extension.openjdk21//24.08
+if ! flatpak list --runtime | grep -q "org.freedesktop.Platform.*25.08"; then
+    echo "Installing Freedesktop Platform 25.08..."
+    flatpak install -y flathub org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08 org.freedesktop.Sdk.Extension.openjdk21//25.08
 else
     echo -e "${GREEN}✓ Runtime already installed${NC}"
 fi

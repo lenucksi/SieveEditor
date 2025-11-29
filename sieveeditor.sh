@@ -58,6 +58,8 @@ fi
 
 # Launch application with font rendering options
 exec java \
+    -Dawt.toolkit.name=WLToolkit \
+    -Dsun.java2d.vulkan=True \
     -Dawt.useSystemAAFontSettings=lcd \
     -Dswing.aatext=true \
     -jar "$JARFILE" "$@"

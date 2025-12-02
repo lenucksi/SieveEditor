@@ -14,7 +14,7 @@ public class ActionSaveScriptAs extends AbstractAction {
 		putValue("Name", "Save as...");
 		this.parentFrame = parentFrame;
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String newName = JOptionPane.showInputDialog("Rename to:", parentFrame.getScriptName());

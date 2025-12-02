@@ -18,7 +18,7 @@ public class ActionCheckScript extends AbstractAction {
 		putValue("Name", "Check Script");
 		this.parentFrame = parentFrame;
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String scriptInfo;

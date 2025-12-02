@@ -15,7 +15,7 @@ public class ActionSaveScript extends AbstractAction {
 		putValue("Name", "Save");
 		this.parentFrame = parentFrame;
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		parentFrame.save();

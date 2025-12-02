@@ -131,6 +131,10 @@ jobs:
             --linux-shortcut \
             --linux-menu-group "Network;Email" \
             --linux-app-category "Network" \
+            --java-options '-Dawt.toolkit.name=WLToolkit' \
+            --java-options '-Dsun.java2d.vulkan=True' \
+            --java-options '-Dawt.useSystemAAFontSettings=lcd' \
+            --java-options '-Dswing.aatext=true' \
             --java-options '-Dsun.java2d.uiScale=2.0'
 
       - name: Find package file
@@ -224,6 +228,10 @@ jobs:
             --win-menu ^
             --win-shortcut ^
             --win-menu-group "SieveEditor" ^
+            --java-options "-Dawt.toolkit.name=WLToolkit" ^
+            --java-options "-Dsun.java2d.vulkan=True" ^
+            --java-options "-Dawt.useSystemAAFontSettings=lcd" ^
+            --java-options "-Dswing.aatext=true" ^
             --java-options "-Dsun.java2d.uiScale=2.0"
 
       - name: Find MSI file
@@ -340,6 +348,10 @@ jobs:
             --type dmg \
             --mac-package-name "SieveEditor" \
             --mac-package-identifier "de.febrildur.sieveeditor" \
+            --java-options '-Dawt.toolkit.name=WLToolkit' \
+            --java-options '-Dsun.java2d.vulkan=True' \
+            --java-options '-Dawt.useSystemAAFontSettings=lcd' \
+            --java-options '-Dswing.aatext=true' \
             --java-options '-Dsun.java2d.uiScale=2.0'
 
       - name: Find DMG file

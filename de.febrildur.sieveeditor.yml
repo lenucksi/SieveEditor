@@ -48,6 +48,8 @@ modules:
         #!/bin/sh
         # SieveEditor launcher script
         exec /app/jre/bin/java \
+          -Dawt.toolkit.name=WLToolkit \
+          -Dsun.java2d.vulkan=True \
           -Dawt.useSystemAAFontSettings=lcd \
           -Dswing.aatext=true \
           -jar /app/sieveeditor/SieveEditor.jar "$@"

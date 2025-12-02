@@ -1,15 +1,22 @@
 package de.febrildur.sieveeditor.system.credentials;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for KeePassXCMasterKeyProvider.
  *
+ * BACKEND DEACTIVATED (2025-12-02):
+ * KeePassXC backend is currently broken and deactivated in production code.
+ * All tests are disabled until the backend is fixed.
+ * See dev-docs/CREDENTIAL-BACKENDS-STATUS.md for details.
+ *
  * Note: These tests require KeePassXC to be running and configured.
  * They are primarily documentation of expected behavior.
  * Automated testing against a real KeePassXC instance is not feasible in CI.
  */
+@Disabled("KeePassXC backend is deactivated - see dev-docs/CREDENTIAL-BACKENDS-STATUS.md")
 class KeePassXCMasterKeyProviderTest {
 
 	/**

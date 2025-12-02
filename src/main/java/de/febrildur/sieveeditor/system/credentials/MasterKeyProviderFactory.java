@@ -15,13 +15,19 @@ import java.util.logging.Logger;
 /**
  * Factory for creating MasterKeyProvider instances.
  *
- * Tries providers in this order:
+ * TEMPORARY STATE (2025-12-02):
+ * - KeePassXC backend is DEACTIVATED (broken)
+ * - OS Keychain backend is DEACTIVATED (broken)
+ * - Only "Manual Password Entry" (UserPromptMasterKeyProvider) is available
+ *
+ * The infrastructure for other backends remains in place for future fixes.
+ * See dev-docs/CREDENTIAL-BACKENDS-STATUS.md for details.
+ *
+ * Original design (when backends are fixed):
  * 1. User's saved preference (if exists)
  * 2. KeePassXC (if available and user accepts)
  * 3. OS Keychain (if available and user accepts)
  * 4. User Prompt (always available, ultimate fallback)
- *
- * Shows a selection dialog on first run to let user choose their preferred backend.
  */
 public class MasterKeyProviderFactory {
 
@@ -146,6 +152,9 @@ public class MasterKeyProviderFactory {
 	/**
 	 * Shows a dialog letting the user choose which backend to use.
 	 *
+	 * TEMPORARILY DISABLED: Only returns UserPromptMasterKeyProvider.
+	 * KeePassXC and OS Keychain backends are deactivated until fixed.
+	 *
 	 * @return selected and configured MasterKeyProvider
 	 * @throws CredentialException if user cancels or no provider can be created
 	 */
@@ -153,21 +162,23 @@ public class MasterKeyProviderFactory {
 		List<MasterKeyProvider> availableProviders = new ArrayList<>();
 		MasterKeyProvider userPromptProvider = null;
 
-		// Try KeePassXC (use singleton instance)
-		if (keepassXCInstance == null) {
-			keepassXCInstance = new KeePassXCMasterKeyProvider();
-		}
-		if (keepassXCInstance.isAvailable()) {
-			availableProviders.add(keepassXCInstance);
-		}
+		// DEACTIVATED: KeePassXC backend (broken)
+		// TODO: Re-enable when fixed
+		// if (keepassXCInstance == null) {
+		// 	keepassXCInstance = new KeePassXCMasterKeyProvider();
+		// }
+		// if (keepassXCInstance.isAvailable()) {
+		// 	availableProviders.add(keepassXCInstance);
+		// }
 
-		// Try OS Keychain (use singleton instance)
-		if (osKeychainInstance == null) {
-			osKeychainInstance = new OSKeychainMasterKeyProvider();
-		}
-		if (osKeychainInstance.isAvailable()) {
-			availableProviders.add(osKeychainInstance);
-		}
+		// DEACTIVATED: OS Keychain backend (broken)
+		// TODO: Re-enable when fixed
+		// if (osKeychainInstance == null) {
+		// 	osKeychainInstance = new OSKeychainMasterKeyProvider();
+		// }
+		// if (osKeychainInstance.isAvailable()) {
+		// 	availableProviders.add(osKeychainInstance);
+		// }
 
 		// User Prompt is always available (use singleton instance)
 		if (userPromptInstance == null) {
@@ -176,64 +187,35 @@ public class MasterKeyProviderFactory {
 		userPromptProvider = userPromptInstance;
 		availableProviders.add(userPromptProvider);
 
-		// Build dialog
+		// SIMPLIFIED: Only one backend available, show informational dialog
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		panel.add(new JLabel("How should SieveEditor store your master password?"));
+		panel.add(new JLabel("SieveEditor Master Password Storage"));
 		panel.add(new JLabel(" "));
 		panel.add(new JLabel("The master password encrypts your server passwords."));
-		panel.add(new JLabel("Choose the most convenient and secure option for you:"));
 		panel.add(new JLabel(" "));
-
-		ButtonGroup group = new ButtonGroup();
-		List<JRadioButton> buttons = new ArrayList<>();
-		List<MasterKeyProvider> correspondingProviders = new ArrayList<>();
-
-		for (MasterKeyProvider provider : availableProviders) {
-			JRadioButton button = new JRadioButton(
-				"<html><b>" + provider.getName() + "</b><br>" +
-					"<small>" + provider.getDescription() + "</small></html>"
-			);
-			button.setAlignmentX(Component.LEFT_ALIGNMENT);
-			group.add(button);
-			buttons.add(button);
-			correspondingProviders.add(provider);
-			panel.add(button);
-			panel.add(Box.createVerticalStrut(10));
-		}
-
-		// Pre-select first option (KeePassXC if available, else OS Keychain, else User Prompt)
-		if (!buttons.isEmpty()) {
-			buttons.get(0).setSelected(true);
-		}
+		panel.add(new JLabel("<html><b>Currently using:</b> Manual Password Entry</html>"));
+		panel.add(new JLabel("You will need to enter your master password each time you start the application."));
+		panel.add(new JLabel(" "));
+		panel.add(new JLabel("<html><i>Note: Other storage backends (KeePassXC, OS Keychain) are temporarily</i></html>"));
+		panel.add(new JLabel("<html><i>unavailable and will be restored in a future update.</i></html>"));
 
 		int result = JOptionPane.showConfirmDialog(
 			null,
 			panel,
-			"Choose Master Password Storage",
+			"Master Password Storage",
 			JOptionPane.OK_CANCEL_OPTION,
-			JOptionPane.QUESTION_MESSAGE
+			JOptionPane.INFORMATION_MESSAGE
 		);
 
 		if (result != JOptionPane.OK_OPTION) {
-			throw new CredentialException("User cancelled backend selection");
+			throw new CredentialException("User cancelled");
 		}
 
-		// Find which button was selected
-		for (int i = 0; i < buttons.size(); i++) {
-			if (buttons.get(i).isSelected()) {
-				MasterKeyProvider selected = correspondingProviders.get(i);
-				LOGGER.log(Level.INFO, "User selected backend: {0}", selected.getName());
+		// Save preference
+		saveBackendPreference(userPromptProvider.getName());
 
-				// Save preference
-				saveBackendPreference(selected.getName());
-
-				return selected;
-			}
-		}
-
-		// Fallback to user prompt (should never reach here)
-		LOGGER.log(Level.WARNING, "No backend selected, falling back to user prompt");
+		LOGGER.log(Level.INFO, "Using Manual Password Entry backend");
 		return userPromptProvider;
 	}
 
@@ -241,22 +223,29 @@ public class MasterKeyProviderFactory {
 	 * Creates a provider instance by name.
 	 * Returns singleton instances to preserve password caching across PropertiesSieve instances.
 	 *
+	 * DEACTIVATED BACKENDS: KeePassXC and OS Keychain are temporarily disabled.
+	 * All requests are redirected to UserPromptMasterKeyProvider.
+	 *
 	 * @param name provider name
 	 * @return provider instance (singleton)
 	 */
 	private static MasterKeyProvider createProviderByName(String name) {
 		return switch (name) {
 			case "KeePassXC" -> {
-				if (keepassXCInstance == null) {
-					keepassXCInstance = new KeePassXCMasterKeyProvider();
+				// DEACTIVATED: Redirect to user prompt
+				LOGGER.log(Level.WARNING, "KeePassXC backend is deactivated, using Manual Password Entry");
+				if (userPromptInstance == null) {
+					userPromptInstance = new UserPromptMasterKeyProvider();
 				}
-				yield keepassXCInstance;
+				yield userPromptInstance;
 			}
 			case "Windows Credential Manager", "macOS Keychain", "Linux Secret Service", "System Keychain" -> {
-				if (osKeychainInstance == null) {
-					osKeychainInstance = new OSKeychainMasterKeyProvider();
+				// DEACTIVATED: Redirect to user prompt
+				LOGGER.log(Level.WARNING, "OS Keychain backend is deactivated, using Manual Password Entry");
+				if (userPromptInstance == null) {
+					userPromptInstance = new UserPromptMasterKeyProvider();
 				}
-				yield osKeychainInstance;
+				yield userPromptInstance;
 			}
 			case "Manual Password Entry" -> {
 				if (userPromptInstance == null) {
@@ -278,22 +267,29 @@ public class MasterKeyProviderFactory {
 	 * Creates a provider instance by command-line argument.
 	 * Returns singleton instances to preserve password caching across PropertiesSieve instances.
 	 *
+	 * DEACTIVATED BACKENDS: KeePassXC and OS Keychain are temporarily disabled.
+	 * All requests are redirected to UserPromptMasterKeyProvider.
+	 *
 	 * @param arg backend argument from command line (keepassxc, keychain, prompt)
 	 * @return provider instance (singleton)
 	 */
 	private static MasterKeyProvider createProviderByBackendArg(String arg) {
 		return switch (arg.toLowerCase()) {
 			case "keepassxc", "keepass" -> {
-				if (keepassXCInstance == null) {
-					keepassXCInstance = new KeePassXCMasterKeyProvider();
+				// DEACTIVATED: Redirect to user prompt
+				LOGGER.log(Level.WARNING, "KeePassXC backend is deactivated, using Manual Password Entry");
+				if (userPromptInstance == null) {
+					userPromptInstance = new UserPromptMasterKeyProvider();
 				}
-				yield keepassXCInstance;
+				yield userPromptInstance;
 			}
 			case "keychain", "os", "system" -> {
-				if (osKeychainInstance == null) {
-					osKeychainInstance = new OSKeychainMasterKeyProvider();
+				// DEACTIVATED: Redirect to user prompt
+				LOGGER.log(Level.WARNING, "OS Keychain backend is deactivated, using Manual Password Entry");
+				if (userPromptInstance == null) {
+					userPromptInstance = new UserPromptMasterKeyProvider();
 				}
-				yield osKeychainInstance;
+				yield userPromptInstance;
 			}
 			case "prompt", "manual", "password" -> {
 				if (userPromptInstance == null) {

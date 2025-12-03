@@ -40,3 +40,9 @@ flatpak-build/
 flatpak-repo/
 .flatpak-builder/
 *.flatpak
+app/
+
+
+# Rumdl linter
+.rumdl_cache
+.rumdl-cache

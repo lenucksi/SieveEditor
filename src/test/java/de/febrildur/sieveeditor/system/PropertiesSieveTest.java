@@ -19,7 +19,8 @@ import static org.assertj.core.api.Assertions.*;
  * Comprehensive test suite for PropertiesSieve class.
  * Tests profile management, encryption, and file I/O operations.
  *
- * Note: Test mode for MasterKeyProviderFactory is enabled globally via TestModeExtension.
+ * Note: Test mode for MasterKeyProviderFactory is enabled globally via
+ * TestModeExtension.
  */
 class PropertiesSieveTest {
 
@@ -34,11 +35,19 @@ class PropertiesSieveTest {
         // Save original user.home and set to temp directory for testing
         originalUserHome = System.getProperty("user.home");
         System.setProperty("user.home", tempDir.toString());
+        // System.out.println("Orig User Home" + originalUserHome + "\n new Home for
+        // test:" + System.getProperty("user.home"));
 
         // Clean up any existing files from previous test runs (Windows isolation issue)
         cleanupProfilesDirectory();
 
-        properties = new PropertiesSieve();
+        properties = new PropertiesSieve(); // Creates file with profile "default". Ensure its empty.
+        properties.setPassword("");
+        properties.setUsername("");
+        properties.setServer("");
+        properties.setPort(4190);
+        properties.write();
+
     }
 
     @AfterEach
@@ -47,21 +56,28 @@ class PropertiesSieveTest {
         cleanupProfilesDirectory();
 
         // Restore original user.home
+        String testUserHome = System.getProperty("user.home");
         System.setProperty("user.home", originalUserHome);
+        // System.out.println(
+        // "Test User Home" + testUserHome + "\n restored Home:" +
+        // System.getProperty("user.home"));
     }
 
     private void cleanupProfilesDirectory() throws IOException {
-        Path profilesDir = tempDir.resolve(".local/share/sieveeditor/profiles");
-        if (Files.exists(profilesDir)) {
+        Path profilesDir = tempDir.resolve(".local/share/sieveeditor/profiles"); // FIXME: VErmutlich funktioniert genau
+                                                                                 // das nicht auf Windows mit dieser
+                                                                                 // LocalDir resolution GEschichte
+        if (Files.exists(profilesDir)) { // TODO: Isn't there a blank remove directory call? Sounds like b0rked test
             try (var stream = Files.walk(profilesDir)) {
                 stream.sorted((a, b) -> b.compareTo(a)) // Delete files before directories
-                    .forEach(path -> {
-                        try {
-                            Files.deleteIfExists(path);
-                        } catch (IOException e) {
-                            // Ignore cleanup errors
-                        }
-                    });
+                        .forEach(path -> {
+                            try {
+                                System.out.println("CleanupProfilesDirectory, found:" + path);
+                                Files.deleteIfExists(path);
+                            } catch (IOException e) {
+                                // Ignore cleanup errors
+                            }
+                        });
             }
         }
     }
@@ -129,11 +145,13 @@ class PropertiesSieveTest {
 
     @Test
     void shouldCreateProfilesDirectoryIfNotExists() throws IOException {
-        // Given - PropertiesSieve uses AppDirectoryService which creates XDG directories
+        // Given - PropertiesSieve uses AppDirectoryService which creates XDG
+        // directories
         // The directory is created automatically when PropertiesSieve is instantiated
         Path profilesDir = AppDirectoryService.getProfilesDir();
 
-        // Then - Directory should exist (created by PropertiesSieve in setUp or by getProfilesDir)
+        // Then - Directory should exist (created by PropertiesSieve in setUp or by
+        // getProfilesDir)
         assertThat(profilesDir.toFile()).exists().isDirectory();
     }
 
@@ -150,6 +168,18 @@ class PropertiesSieveTest {
         assertThat(profileFile.toFile()).exists();
     }
 
+    // TODO: Fails on Windows with shouldHandleVeryLongPassword remainders
+    /*
+     * Error: de.febrildur.sieveeditor.system.PropertiesSieveTest.
+     * shouldLoadDefaultValuesWhenFileIsEmpty -- Time elapsed: 0.089 s <<< FAILURE!
+     * java.lang.AssertionError:
+     *
+     * Expecting empty but was:
+     * "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     * at de.febrildur.sieveeditor.system.PropertiesSieveTest.
+     * shouldLoadDefaultValuesWhenFileIsEmpty(PropertiesSieveTest.java:155)
+     *
+     */
     @Test
     void shouldLoadDefaultValuesWhenFileIsEmpty() throws IOException {
         // When
@@ -216,6 +246,8 @@ class PropertiesSieveTest {
         assertThat(loadedPersonal.getUsername()).isEqualTo("personal.user");
     }
 
+    // TODO: Fails on Windows, finds profiles from
+    // shouldHandleProfileNameWithSpecialCharacters test
     @Test
     void shouldGetAvailableProfiles() throws IOException {
         // Given - Create multiple profiles
@@ -223,15 +255,44 @@ class PropertiesSieveTest {
         new PropertiesSieve("profile2").write();
         new PropertiesSieve("profile3").write();
 
+        properties.deleteProfile("default"); // Always created in setup, not desired here.
+
         // When
         List<String> profiles = PropertiesSieve.getAvailableProfiles();
 
         // Then
         assertThat(profiles)
-            .hasSize(3)
-            .contains("profile1", "profile2", "profile3");
+                .hasSize(3)
+                .contains("profile1", "profile2", "profile3");
     }
 
+    // TODO: Fails on Windows
+    /*
+     *
+     * Error: PropertiesSieveTest.shouldReturnDefaultProfileWhenNoneExist:237
+     * Expecting actual:
+     * ["default",
+     * "existing",
+     * "personal",
+     * "profile1",
+     * "profile2",
+     * "profile3",
+     * "test-profile_123",
+     * "valid",
+     * "work"]
+     * to contain exactly (and in same order):
+     * ["default"]
+     * but some elements were not expected:
+     * ["existing",
+     * "personal",
+     * "profile1",
+     * "profile2",
+     * "profile3",
+     * "test-profile_123",
+     * "valid",
+     * "work"]
+     *
+     */
     @Test
     void shouldReturnDefaultProfileWhenNoneExist() {
         // Given - No profiles directory exists yet
@@ -264,12 +325,43 @@ class PropertiesSieveTest {
         assertThat(profiles).containsExactly("default");
     }
 
+    // TODO: Fails on windows
+    /*
+     * Error: PropertiesSieveTest.shouldReturnSortedProfiles:271
+     * Expecting actual:
+     * ["apple",
+     * "banana",
+     * "default",
+     * "existing",
+     * "personal",
+     * "profile1",
+     * "profile2",
+     * "profile3",
+     * "test-profile_123",
+     * "valid",
+     * "work",
+     * "zebra"]
+     * to contain exactly (and in same order):
+     * ["apple", "banana", "zebra"]
+     * but some elements were not expected:
+     * ["default",
+     * "existing",
+     * "personal",
+     * "profile1",
+     * "profile2",
+     * "profile3",
+     * "test-profile_123",
+     * "valid",
+     * "work"]
+     */
     @Test
     void shouldReturnSortedProfiles() throws IOException {
         // Given - Create profiles in random order
         new PropertiesSieve("zebra").write();
         new PropertiesSieve("apple").write();
         new PropertiesSieve("banana").write();
+
+        properties.deleteProfile("default"); // Always created on setup, not desired here.
 
         // When
         List<String> profiles = PropertiesSieve.getAvailableProfiles();
@@ -301,7 +393,8 @@ class PropertiesSieveTest {
 
     @Test
     void shouldReturnDefaultWhenLastUsedFileDoesNotExist() throws IOException {
-        // Given - Ensure no last used file exists (may have been created by other tests)
+        // Given - Ensure no last used file exists (may have been created by other
+        // tests)
         Path configDir = AppDirectoryService.getUserConfigDir();
         Path lastUsedFile = configDir.resolve(".lastused");
         Files.deleteIfExists(lastUsedFile);
@@ -391,7 +484,7 @@ class PropertiesSieveTest {
 
         // When/Then - Should not throw exception
         assertThatCode(() -> PropertiesSieve.migrateOldProperties())
-            .doesNotThrowAnyException();
+                .doesNotThrowAnyException();
     }
 
     // ===== Encryption Tests =====
@@ -432,10 +525,10 @@ class PropertiesSieveTest {
         File profileFile = tempDir.resolve(".sieveprofiles/default.properties").toFile();
         profileFile.getParentFile().mkdirs();
         Files.writeString(profileFile.toPath(),
-            "sieve.server=example.com\n" +
-            "sieve.port=4190\n" +
-            "sieve.user=user\n" +
-            "sieve.password=ENC(CORRUPT_ENCRYPTED_DATA_INVALID)");
+                "sieve.server=example.com\n" +
+                        "sieve.port=4190\n" +
+                        "sieve.user=user\n" +
+                        "sieve.password=ENC(CORRUPT_ENCRYPTED_DATA_INVALID)");
 
         // When
         PropertiesSieve loaded = new PropertiesSieve();
@@ -506,6 +599,9 @@ class PropertiesSieveTest {
     @Test
     void shouldHandleVeryLongPassword() throws IOException {
         // Given - 256 character password
+
+        // FIXME: Pollutes other tests. Probably should new file before and then kill
+        // afterwards.
         String longPassword = "a".repeat(256);
         properties.setPassword(longPassword);
 
@@ -517,6 +613,8 @@ class PropertiesSieveTest {
 
         // Then
         assertThat(loaded.getPassword()).isEqualTo(longPassword);
+
+        loaded.setPassword("");
     }
 
     @Test
@@ -537,19 +635,51 @@ class PropertiesSieveTest {
     @Test
     void shouldHandleProfileNameWithSpecialCharacters() throws IOException {
         // Given
-        PropertiesSieve profile = new PropertiesSieve("test-profile_123");
+        String profileName = "test-profile_123";
+        PropertiesSieve profile = new PropertiesSieve(profileName);
         profile.setServer("example.com");
 
         // When
         profile.write();
 
-        PropertiesSieve loaded = new PropertiesSieve("test-profile_123");
+        PropertiesSieve loaded = new PropertiesSieve(profileName);
         loaded.load();
 
         // Then
         assertThat(loaded.getServer()).isEqualTo("example.com");
+
+        // Attempt to clean written profile to not pollute other tests.
+        profile.deleteProfile(profileName);
+        profile.write();
     }
 
+    // FIXME: Fails on windows with more than existing content
+    /*
+     *
+     * Error: PropertiesSieveTest.shouldNotListNonPropertiesFiles:560
+     * Expecting actual:
+     * ["default",
+     * "existing",
+     * "personal",
+     * "profile1",
+     * "profile2",
+     * "profile3",
+     * "test-profile_123",
+     * "valid",
+     * "work"]
+     * to contain exactly (and in same order):
+     * ["valid"]
+     * but some elements were not expected:
+     * ["default",
+     * "existing",
+     * "personal",
+     * "profile1",
+     * "profile2",
+     * "profile3",
+     * "test-profile_123",
+     * "work"]
+     *
+     */
     @Test
     void shouldNotListNonPropertiesFiles() throws IOException {
         // Given - Create some non-.properties files
@@ -559,6 +689,8 @@ class PropertiesSieveTest {
         new File(profilesDir, ".lastused").createNewFile();
 
         new PropertiesSieve("valid").write();
+
+        properties.deleteProfile("default"); // Always created on setup, not desired here.
 
         // When
         List<String> profiles = PropertiesSieve.getAvailableProfiles();
@@ -609,7 +741,7 @@ class PropertiesSieveTest {
     void shouldNotThrowExceptionWhenDeletingNonexistentProfile() {
         // When/Then - Should not throw exception
         assertThatCode(() -> PropertiesSieve.deleteProfile("nonexistent"))
-            .doesNotThrowAnyException();
+                .doesNotThrowAnyException();
     }
 
     @Test

@@ -71,7 +71,14 @@ public class ActionConnect extends AbstractAction {
 				}
 			}
 		});
-		profilePanel.add(newProfileButton, BorderLayout.EAST);
+
+		JButton deleteProfileButton = new JButton("-");
+		deleteProfileButton.setToolTipText("Delete profile");
+
+		JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 3, 0));
+		buttonPanel.add(newProfileButton);
+		buttonPanel.add(deleteProfileButton);
+		profilePanel.add(buttonPanel, BorderLayout.EAST);
 		panel.add(profilePanel);
 
 		// Load properties for selected profile
@@ -106,6 +113,45 @@ public class ActionConnect extends AbstractAction {
 
 		// Track the currently displayed profile to save its data when switching
 		final String[] currentDisplayedProfile = {(String) profileCombo.getSelectedItem()};
+
+		// Add delete button action listener (needs currentDisplayedProfile to be declared first)
+		deleteProfileButton.addActionListener(ev -> {
+			String selectedProfile = (String) profileCombo.getSelectedItem();
+			if (selectedProfile == null) {
+				return;
+			}
+
+			int confirm = JOptionPane.showConfirmDialog(frame,
+				"Are you sure you want to delete profile '" + selectedProfile + "'?",
+				"Delete Profile",
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.WARNING_MESSAGE);
+
+			if (confirm == JOptionPane.YES_OPTION) {
+				boolean deleted = PropertiesSieve.deleteProfile(selectedProfile);
+				if (deleted) {
+					profileCombo.removeItem(selectedProfile);
+					// Select "default" profile if available, or the first profile
+					if (profileCombo.getItemCount() > 0) {
+						String newSelection;
+						if (profiles.contains("default")) {
+							newSelection = "default";
+							profileCombo.setSelectedItem(newSelection);
+						} else {
+							profileCombo.setSelectedIndex(0);
+							newSelection = (String) profileCombo.getSelectedItem();
+						}
+						// Update the tracking variable to the newly selected profile
+						currentDisplayedProfile[0] = newSelection;
+					}
+				} else {
+					JOptionPane.showMessageDialog(frame,
+						"Failed to delete profile: " + selectedProfile,
+						"Delete Error",
+						JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
 
 		// When profile changes, save current data then reload new properties
 		profileCombo.addActionListener(ev -> {

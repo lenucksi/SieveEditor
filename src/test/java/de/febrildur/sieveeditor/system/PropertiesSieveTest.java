@@ -559,4 +559,70 @@ class PropertiesSieveTest {
         // Then - Should only list .properties files
         assertThat(profiles).containsExactly("valid");
     }
+
+    // ===== Profile Deletion Tests =====
+
+    @Test
+    void shouldDeleteProfileByName() throws IOException {
+        // Given - Create a profile
+        PropertiesSieve profile = new PropertiesSieve("todelete");
+        profile.setServer("example.com");
+        profile.setPort(4190);
+        profile.write();
+
+        // Verify profile exists
+        assertThat(PropertiesSieve.profileExists("todelete")).isTrue();
+        assertThat(PropertiesSieve.getAvailableProfiles()).contains("todelete");
+
+        // When
+        PropertiesSieve.deleteProfile("todelete");
+
+        // Then
+        assertThat(PropertiesSieve.profileExists("todelete")).isFalse();
+        assertThat(PropertiesSieve.getAvailableProfiles()).doesNotContain("todelete");
+    }
+
+    @Test
+    void shouldDeleteProfileFile() throws IOException {
+        // Given - Create a profile
+        PropertiesSieve profile = new PropertiesSieve("todelete");
+        profile.write();
+
+        Path profileFile = AppDirectoryService.getProfilesDir().resolve("todelete.properties");
+        assertThat(profileFile.toFile()).exists();
+
+        // When
+        PropertiesSieve.deleteProfile("todelete");
+
+        // Then - File should be deleted
+        assertThat(profileFile.toFile()).doesNotExist();
+    }
+
+    @Test
+    void shouldNotThrowExceptionWhenDeletingNonexistentProfile() {
+        // When/Then - Should not throw exception
+        assertThatCode(() -> PropertiesSieve.deleteProfile("nonexistent"))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldReturnTrueWhenProfileDeleted() throws IOException {
+        // Given
+        new PropertiesSieve("todelete").write();
+
+        // When
+        boolean result = PropertiesSieve.deleteProfile("todelete");
+
+        // Then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenProfileDoesNotExist() {
+        // When
+        boolean result = PropertiesSieve.deleteProfile("nonexistent");
+
+        // Then
+        assertThat(result).isFalse();
+    }
 }

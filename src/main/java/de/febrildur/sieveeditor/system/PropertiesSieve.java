@@ -335,6 +335,28 @@ public class PropertiesSieve {
 	}
 
 	/**
+	 * Deletes a profile by name.
+	 *
+	 * @param profileName the name of the profile to delete
+	 * @return true if the profile was deleted, false if it didn't exist
+	 */
+	public static boolean deleteProfile(String profileName) {
+		Path profileFile = AppDirectoryService.getProfilesDir().resolve(profileName + ".properties");
+		try {
+			boolean deleted = Files.deleteIfExists(profileFile);
+			if (deleted) {
+				LOGGER.log(Level.INFO, "Deleted profile: {0}", profileName);
+			} else {
+				LOGGER.log(Level.FINE, "Profile does not exist: {0}", profileName);
+			}
+			return deleted;
+		} catch (IOException e) {
+			LOGGER.log(Level.WARNING, "Failed to delete profile: " + profileName, e);
+			return false;
+		}
+	}
+
+	/**
 	 * Migrates profiles from old ~/.sieveprofiles to new platform-specific locations.
 	 */
 	public static void migrateOldProperties() {

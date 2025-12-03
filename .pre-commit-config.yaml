@@ -17,6 +17,10 @@ repos:
   hooks:
     - id: conventional-precommit-linter
       stages: [commit-msg]
+      args:
+        - --types=feat,fix,docs,style,refactor,test,chore,ci,build,perf,remove,revert,change
+        - --allow-breaking
+        - --subject-min-length=15
 - repo: https://github.com/rvben/rumdl-pre-commit
   rev: v0.0.187  # Use the latest release tag
   hooks:
@@ -29,3 +33,14 @@ repos:
 
 minimum_pre_commit_version: 3.3.0
 default_install_hook_types: [pre-commit, commit-msg]
+
+
+#Type: Indicates the nature of the change. Common types include:
+#    feat: A new feature
+#    fix: A bug fix
+#    docs: Documentation changes
+#    style: Code style changes, Linter fixes (formatting, missing semicolons, etc.)
+#    refactor: Code refactoring without adding features or fixing bugs
+#    test: Adding or modifying tests
+#    chore: Miscellaneous tasks like build processes or auxiliary tools
+#    ci: Changes to continuous integration scripts

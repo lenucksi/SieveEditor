@@ -49,10 +49,10 @@ public class PropertiesSieve {
 
 	private final StandardPBEStringEncryptor encryptor;
 	private final MasterKeyProvider masterKeyProvider;
-	private String server;
-	private int port;
-	private String username;
-	private String password;
+	private String server = "";
+	private int port = 4190; // Default ManageSieve port
+	private String username = "";
+	private String password = "";
 
 	private String profileName;
 	private String propFileName;

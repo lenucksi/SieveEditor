@@ -53,15 +53,11 @@ jobs:
       - name: Verify Maven installation
         run: mvn --version
 
-      - name: Run tests
-        run: mvn test -B -V
+      - name: Build and test with coverage
+        run: mvn verify -B -V
         shell: bash
         env:
           MAVEN_OPTS: -Xmx1024m
-
-      - name: Build JAR
-        run: mvn package -DskipTests -B
-        shell: bash
 
       - name: Verify JAR was created
         run: |

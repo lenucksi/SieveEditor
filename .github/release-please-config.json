@@ -6,6 +6,13 @@
       "changelog-path": "CHANGELOG.md",
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
+      "extra-files": [
+        {
+          "type": "xml",
+          "path": "flatpak/de.febrildur.sieveeditor.metainfo.xml",
+          "xpath": "/component/releases/release/@version"
+        }
+      ],
       "changelog-sections": [
         {"type": "feat", "section": "Features", "hidden": false},
         {"type": "fix", "section": "Bug Fixes", "hidden": false},

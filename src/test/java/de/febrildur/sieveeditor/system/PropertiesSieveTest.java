@@ -39,7 +39,22 @@ class PropertiesSieveTest {
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDown() throws IOException {
+        // Clean up all profile files to prevent test pollution on Windows
+        Path profilesDir = tempDir.resolve(".local/share/sieveeditor/profiles");
+        if (Files.exists(profilesDir)) {
+            try (var stream = Files.walk(profilesDir)) {
+                stream.sorted((a, b) -> b.compareTo(a)) // Delete files before directories
+                    .forEach(path -> {
+                        try {
+                            Files.deleteIfExists(path);
+                        } catch (IOException e) {
+                            // Ignore cleanup errors
+                        }
+                    });
+            }
+        }
+
         // Restore original user.home
         System.setProperty("user.home", originalUserHome);
     }

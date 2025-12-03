@@ -30,10 +30,13 @@ class PropertiesSieveTest {
     Path tempDir;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         // Save original user.home and set to temp directory for testing
         originalUserHome = System.getProperty("user.home");
         System.setProperty("user.home", tempDir.toString());
+
+        // Clean up any existing files from previous test runs (Windows isolation issue)
+        cleanupProfilesDirectory();
 
         properties = new PropertiesSieve();
     }
@@ -41,6 +44,13 @@ class PropertiesSieveTest {
     @AfterEach
     void tearDown() throws IOException {
         // Clean up all profile files to prevent test pollution on Windows
+        cleanupProfilesDirectory();
+
+        // Restore original user.home
+        System.setProperty("user.home", originalUserHome);
+    }
+
+    private void cleanupProfilesDirectory() throws IOException {
         Path profilesDir = tempDir.resolve(".local/share/sieveeditor/profiles");
         if (Files.exists(profilesDir)) {
             try (var stream = Files.walk(profilesDir)) {
@@ -54,9 +64,6 @@ class PropertiesSieveTest {
                     });
             }
         }
-
-        // Restore original user.home
-        System.setProperty("user.home", originalUserHome);
     }
 
     // ===== Basic Get/Set Operations =====

@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1](https://github.com/lenucksi/SieveEditor/compare/v1.0.0...v1.0.1) (2025-12-04)
+
+
+### Miscellaneous Chores
+
+* **release:** release 1.0.1 ([8a10edf](https://github.com/lenucksi/SieveEditor/commit/8a10edf792df587b22656fd8881221e5fa708bc4))
+
 ## [1.0.0](https://github.com/lenucksi/SieveEditor/compare/0.9.2...v1.0.0) (2025-12-04)
 
 

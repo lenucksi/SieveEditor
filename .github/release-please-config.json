@@ -9,7 +9,7 @@
       "extra-files": [
         {
           "type": "xml",
-          "path": "flatpak/de.febrildur.sieveeditor.metainfo.xml",
+          "path": "flatpak/io.github.lenucksi.SieveEditor.metainfo.xml",
           "xpath": "/component/releases/release/@version"
         }
       ],

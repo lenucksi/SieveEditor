@@ -1,6 +1,6 @@
-app-id: de.febrildur.sieveeditor
+app-id: io.github.lenucksi.SieveEditor
 runtime: org.freedesktop.Platform
-runtime-version: '24.08'
+runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.openjdk21
@@ -14,12 +14,12 @@ finish-args:
   - --share=ipc
   # Network access for ManageSieve connections
   - --share=network
-  # D-Bus access for Secret Service API (GNOME Keyring/KWallet for credential storage)
-  - --talk-name=org.freedesktop.secrets
-  # Allow access to XDG data directory for profile storage
-  - --filesystem=xdg-data/sieveeditor:create
-  # Allow access to XDG config directory for settings
-  - --filesystem=xdg-config/sieveeditor:create
+  # D-Bus access for Secret Service API (GNOME Keyring/KWallet for credential storage, deactivated for now until backend are done)
+  # - --talk-name=org.freedesktop.secrets
+  # Allow access to XDG data directory for profile storage (apparently auto-provided by Flatpak per App, so comment for now)
+  # - --filesystem=xdg-data/sieveeditor:create
+  # Allow access to XDG config directory for settings (apparently auto-provided by Flatpak per App, so comment for now)
+  # - --filesystem=xdg-config/sieveeditor:create
   # Legacy: Allow access to old profile location for migration
   - --filesystem=~/.sieveprofiles:ro
 
@@ -59,13 +59,13 @@ modules:
       - chmod +x /app/bin/sieveeditor
 
       # Install desktop file
-      - install -Dm644 de.febrildur.sieveeditor.desktop /app/share/applications/de.febrildur.sieveeditor.desktop
+      - install -Dm644 io.github.lenucksi.SieveEditor.desktop /app/share/applications/io.github.lenucksi.SieveEditor.desktop
 
       # Install icon (if exists)
-      - install -Dm644 de.febrildur.sieveeditor.png /app/share/icons/hicolor/256x256/apps/de.febrildur.sieveeditor.png || true
+      - install -Dm644 io.github.lenucksi.SieveEditor.png /app/share/icons/hicolor/256x256/apps/io.github.lenucksi.SieveEditor.png || true
 
       # Install appdata/metainfo
-      - install -Dm644 de.febrildur.sieveeditor.metainfo.xml /app/share/metainfo/de.febrildur.sieveeditor.metainfo.xml
+      - install -Dm644 io.github.lenucksi.SieveEditor.metainfo.xml /app/share/metainfo/io.github.lenucksi.SieveEditor.metainfo.xml
 
     sources:
       # JAR file from build
@@ -74,13 +74,13 @@ modules:
 
       # Desktop file
       - type: file
-        path: flatpak/de.febrildur.sieveeditor.desktop
+        path: flatpak/io.github.lenucksi.SieveEditor.desktop
 
       # Icon
       - type: file
-        path: flatpak/de.febrildur.sieveeditor.png
-        dest-filename: de.febrildur.sieveeditor.png
+        path: flatpak/io.github.lenucksi.SieveEditor.png
+        dest-filename: io.github.lenucksi.SieveEditor.png
 
       # AppStream metadata
       - type: file
-        path: flatpak/de.febrildur.sieveeditor.metainfo.xml
+        path: flatpak/io.github.lenucksi.SieveEditor.metainfo.xml

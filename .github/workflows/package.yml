@@ -352,7 +352,7 @@ jobs:
             --copyright "Copyright 2025 SieveEditor Contributors" \
             --type dmg \
             --mac-package-name "SieveEditor" \
-            --mac-package-identifier "de.febrildur.sieveeditor" \
+            --mac-package-identifier "io.github.lenucksi.SieveEditor" \
             --java-options '-Dawt.toolkit.name=WLToolkit' \
             --java-options '-Dsun.java2d.vulkan=True' \
             --java-options '-Dawt.useSystemAAFontSettings=lcd' \
@@ -385,7 +385,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-jar
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08
       options: --privileged
 
     steps:
@@ -424,8 +424,8 @@ jobs:
         uses: flatpak/flatpak-github-actions/flatpak-builder@92ae9851ad316786193b1fd3f40c4b51eb5cb101 # v6.6
         with:
           bundle: SieveEditor-${{ steps.version.outputs.version }}.flatpak
-          manifest-path: flatpak/de.febrildur.sieveeditor.yml
-          cache-key: flatpak-builder-${{ hashFiles('de.febrildur.sieveeditor.yml') }}
+          manifest-path: flatpak/io.github.lenucksi.SieveEditor.yml
+          cache-key: flatpak-builder-${{ hashFiles('io.github.lenucksi.SieveEditor.yml') }}
           arch: x86_64
           branch: master
           upload-artifact: false

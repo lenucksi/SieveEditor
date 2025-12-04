@@ -21,7 +21,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+cd "$SCRIPT_DIR/.."
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -69,17 +69,40 @@ echo ""
 
 # Step 2: Install Freedesktop runtime if needed
 echo -e "${YELLOW}Step 2/5: Checking Freedesktop runtime...${NC}"
+MISSING_RUNTIME=false
 if ! flatpak list --runtime | grep -q "org.freedesktop.Platform.*25.08"; then
-    echo "Installing Freedesktop Platform 25.08..."
+    echo "Missing: org.freedesktop.Platform//25.08"
+    MISSING_RUNTIME=true
+fi
+if ! flatpak list --runtime | grep -q "org.freedesktop.Sdk.*25.08"; then
+    echo "Missing: org.freedesktop.Sdk//25.08"
+    MISSING_RUNTIME=true
+fi
+if ! flatpak list --runtime | grep -q "org.freedesktop.Sdk.Extension.openjdk21.*25.08"; then
+    echo "Missing: org.freedesktop.Sdk.Extension.openjdk21//25.08"
+    MISSING_RUNTIME=true
+fi
+
+if [ "$MISSING_RUNTIME" = true ]; then
+    echo "Installing missing runtimes..."
     flatpak install -y flathub org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08 org.freedesktop.Sdk.Extension.openjdk21//25.08
+    echo -e "${GREEN}✓ Runtimes installed${NC}"
 else
-    echo -e "${GREEN}✓ Runtime already installed${NC}"
+    echo -e "${GREEN}✓ All runtimes already installed${NC}"
 fi
 echo ""
 
 # Step 3: Build Flatpak
 echo -e "${YELLOW}Step 3/5: Building Flatpak...${NC}"
-flatpak-builder --force-clean --repo=flatpak-repo flatpak-build de.febrildur.sieveeditor.yml
+# Create symlinks so flatpak-builder can find files with manifest's relative paths
+mkdir -p flatpak/flatpak
+ln -sf ../target flatpak/target
+ln -sf ../io.github.lenucksi.SieveEditor.desktop flatpak/flatpak/io.github.lenucksi.SieveEditor.desktop
+ln -sf ../io.github.lenucksi.SieveEditor.png flatpak/flatpak/io.github.lenucksi.SieveEditor.png
+ln -sf ../io.github.lenucksi.SieveEditor.metainfo.xml flatpak/flatpak/io.github.lenucksi.SieveEditor.metainfo.xml
+flatpak-builder --force-clean --repo=flatpak-repo flatpak-build flatpak/io.github.lenucksi.SieveEditor.yml
+# Clean up symlinks
+rm -rf flatpak/target flatpak/flatpak
 echo -e "${GREEN}✓ Flatpak built successfully${NC}"
 echo ""
 
@@ -98,7 +121,7 @@ fi
 
 if $LINTER_AVAILABLE; then
     echo "Linting manifest..."
-    $LINTER_CMD manifest de.febrildur.sieveeditor.yml || true
+    $LINTER_CMD manifest flatpak/io.github.lenucksi.SieveEditor.yml || true
     echo ""
     echo "Linting repository..."
     $LINTER_CMD repo flatpak-repo || true
@@ -112,7 +135,7 @@ echo ""
 
 # Step 5: Create bundle (optional but useful for distribution)
 echo -e "${YELLOW}Step 5/6: Creating Flatpak bundle...${NC}"
-flatpak build-bundle flatpak-repo SieveEditor.flatpak de.febrildur.sieveeditor
+flatpak build-bundle flatpak-repo SieveEditor.flatpak io.github.lenucksi.SieveEditor
 BUNDLE_SIZE=$(du -h SieveEditor.flatpak | cut -f1)
 echo -e "${GREEN}✓ Bundle created: SieveEditor.flatpak ($BUNDLE_SIZE)${NC}"
 echo ""
@@ -120,14 +143,14 @@ echo ""
 # Step 6: Install if requested
 if [ "$1" = "install" ] || [ "$1" = "run" ]; then
     echo -e "${YELLOW}Step 6/6: Installing Flatpak...${NC}"
-    flatpak install -y --user --reinstall flatpak-repo de.febrildur.sieveeditor
+    flatpak install -y --user --reinstall flatpak-repo io.github.lenucksi.SieveEditor
     echo -e "${GREEN}✓ Flatpak installed${NC}"
     echo ""
 
     if [ "$1" = "run" ]; then
         echo -e "${GREEN}Launching SieveEditor...${NC}"
         echo ""
-        flatpak run de.febrildur.sieveeditor
+        flatpak run io.github.lenucksi.SieveEditor
     fi
 else
     echo -e "${YELLOW}Step 6/6: Skipping installation${NC}"
@@ -144,14 +167,14 @@ echo "  • Build dir:  flatpak-build/"
 echo "  • Bundle:     SieveEditor.flatpak"
 echo ""
 echo "To install:"
-echo "  flatpak install --user flatpak-repo de.febrildur.sieveeditor"
+echo "  flatpak install --user flatpak-repo io.github.lenucksi.SieveEditor"
 echo ""
 echo "To install from bundle:"
 echo "  flatpak install --user SieveEditor.flatpak"
 echo ""
 echo "To run:"
-echo "  flatpak run de.febrildur.sieveeditor"
+echo "  flatpak run io.github.lenucksi.SieveEditor"
 echo ""
 echo "To uninstall:"
-echo "  flatpak uninstall de.febrildur.sieveeditor"
+echo "  flatpak uninstall io.github.lenucksi.SieveEditor"
 echo ""

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>de.febrildur.sieveeditor</id>
+  <id>io.github.lenucksi.SieveEditor</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
   <name>SieveEditor</name>
@@ -24,7 +24,7 @@
     </ul>
   </description>
 
-  <launchable type="desktop-id">de.febrildur.sieveeditor.desktop</launchable>
+  <launchable type="desktop-id">io.github.lenucksi.SieveEditor.desktop</launchable>
 
   <url type="homepage">https://github.com/lenucksi/SieveEditor</url>
   <url type="bugtracker">https://github.com/lenucksi/SieveEditor/issues</url>

@@ -3,18 +3,32 @@ ignorePaths: []
 dictionaryDefinitions: []
 dictionaries: []
 words:
-- KeePass
-- KeePassXC
-- fluffypeople
-- managesieve
-- assertj
-- atmf
-- febrildur
-- fifesoft
-- jasypt
-- managesievej
-- openrewrite
-- rsyntaxtextarea
-- sieveeditor
+  - aatext
+  - assertj
+  - atmf
+  - choco
+  - Dawt
+  - Dskip
+  - Dsun
+  - Dswing
+  - elif
+  - fakeroot
+  - febrildur
+  - fifesoft
+  - flathub
+  - fluffypeople
+  - jasypt
+  - jpackage
+  - KeePass
+  - KeePassXC
+  - managesieve
+  - managesievej
+  - metainfo
+  - openrewrite
+  - rsyntaxtextarea
+  - sieveeditor
+  - sieveprofiles
+  - temurin
+  - wixtoolset
 ignoreWords: []
 import: []

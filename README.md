@@ -2,9 +2,46 @@
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flenucksi%2FSieveEditor.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Flenucksi%2FSieveEditor?ref=badge_shield)
 
-> **🔒 Security Notice:** Version 1.0.0 includes critical security fixes. If upgrading from v0.9.x, please read the [Migration Guide](MIGRATION-GUIDE-v1.0.md). **You will need to re-enter your passwords** after upgrading.
+A desktop editor for Sieve mail filter scripts on ManageSieve-compatible servers.
 
-A Editor for Sieve Scripts on a compatible ManagedSieve-Server
+## Screenshots
+
+<details>
+<summary>View Screenshots</summary>
+
+### Main Window
+
+![Main Window](screenshots/mainwindow.png)
+
+### Script Management
+
+![Manage Scripts](screenshots/manage-scripts.png)
+
+### Connection Dialog
+
+![Connect](screenshots/connect.png)
+
+### Search and Replace
+
+![Search Replace](screenshots/searchreplace.png)
+
+### Sieve Menu
+
+![Sieve Menu](screenshots/menu-sieve.png)
+
+### Template Menu
+
+![Template Menu](screenshots/menu-template.png)
+
+### Local Operations Menu
+
+![Local Operations](screenshots/menu-localops.png)
+
+### Script Validation
+
+![Script Check](screenshots/script-check.png)
+
+</details>
 
 ## Building from Source
 
@@ -14,66 +51,24 @@ A Editor for Sieve Scripts on a compatible ManagedSieve-Server
 - Maven 3.6+
 - Git
 
-### Clone with Submodules
-
-This project includes ManageSieveJ as a git submodule. Clone with:
+### Clone
 
 ```bash
-git clone --recurse-submodules https://github.com/Zwixx/SieveEditor.git
-```
-
-Or if already cloned:
-
-```bash
-git submodule update --init --recursive
-```
-
-### Updating Submodules
-
-To update ManageSieveJ to the latest version from the fork:
-
-```bash
-./update-submodules.sh
-```
-
-Or manually:
-
-```bash
-cd lib/ManageSieveJ
-git pull origin master
-cd ../..
-git add lib/ManageSieveJ
-git commit -m "Update ManageSieveJ submodule"
-./build.sh
+git clone https://github.com/lenucksi/SieveEditor.git
+cd SieveEditor
 ```
 
 ### Build
 
-This is a Maven multi-module project. Simply run:
+Build using Maven:
 
 ```bash
-./build.sh
+mvn clean package
 ```
 
-Or use Maven directly:
-
-```bash
-mvn clean package -Dmaven.javadoc.skip=true -DskipTests
-```
-
-The build will:
-
-1. Compile ManageSieveJ (lib/ManageSieveJ/)
-2. Compile SieveEditor (app/)
-3. Create the standalone JAR
+This will create `target/SieveEditor-jar-with-dependencies.jar`
 
 ### Run
-
-```bash
-./sieveeditor.sh
-```
-
-Or:
 
 ```bash
 java -jar target/SieveEditor-jar-with-dependencies.jar
@@ -92,10 +87,16 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 
 ## Documentation
 
-See [dev-docs/](dev-docs/) for detailed documentation:
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Contributing guidelines and development workflow
+- [README-TESTS.md](README-TESTS.md) - Test infrastructure and coverage
+- [SECURITY.md](SECURITY.md) - Security policy and vulnerability reporting
 
-- [IMPLEMENTATION-STATUS.md](dev-docs/IMPLEMENTATION-STATUS.md) - Project status and history
-- [MANAGESIEVEJ-FORK-ANALYSIS.md](dev-docs/MANAGESIEVEJ-FORK-ANALYSIS.md) - Dependency analysis
+## Important
+
+No support or guarantees for function, safety or security of any sorts.
+Expect that this software will kill your dog and eat it. There will be bugs. It will likely not be fit for the purpose you intend to use it for. You might loose data, passwords or encounter security incidents.
+
+It is explicitly forbidden to use it for any purpose that would be, direct or indirectly, be connected to anything that would be related to safety or security of building, entity, machinery, human life, etc. You have been warned; use at your own risk.
 
 ## License
 

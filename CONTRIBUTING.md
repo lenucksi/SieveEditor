@@ -31,7 +31,7 @@ Be respectful, constructive, and professional in all interactions.
 ### Clone Repository
 
 ```bash
-git clone --recursive https://github.com/lenucksi/SieveEditor.git
+git clone https://github.com/lenucksi/SieveEditor.git
 cd SieveEditor
 ```
 
@@ -42,40 +42,12 @@ cd SieveEditor
 ./scripts/test-local.sh
 
 # Or manually:
-cd lib/ManageSieveJ && mvn clean install -DskipTests
-cd ../../app && mvn test
+mvn clean test
 ```
-
-### Enable Git Hooks (REQUIRED)
-
-**Enable conventional commit validation:**
-
-```bash
-git config core.hooksPath .githooks
-```
-
-This activates the commit-msg hook that validates your commit messages against the Conventional Commits specification. All commits must pass validation before being accepted.
-
-**Verify hook is active:**
-
-```bash
-git config core.hooksPath
-# Should output: .githooks
-```
-
-**What the hook does:**
-
-- ✅ Validates commit message format
-- ✅ Ensures type is valid (`feat`, `fix`, `docs`, etc.)
-- ✅ Checks subject line length
-- ✅ Provides helpful error messages if validation fails
-
-**Hook location:** `.githooks/commit-msg`
 
 ### Run Application
 
 ```bash
-cd app
 mvn package
 java -jar target/SieveEditor-jar-with-dependencies.jar
 ```
@@ -87,37 +59,10 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 1. **Fork** the repository
 2. **Create** a feature branch: `git checkout -b feature/my-feature`
 3. **Make** your changes
-4. **Test** your changes: `./scripts/test-local.sh`
+4. **Test** your changes: `mvn clean verify`
 5. **Commit** using [Conventional Commits](#commit-message-convention)
 6. **Push** to your fork: `git push origin feature/my-feature`
 7. **Create** a Pull Request
-
-### Using Claude Code (Optional)
-
-If you're using [Claude Code](https://claude.ai/code), this project includes a `.claude/` harness for enhanced development:
-
-**Slash Commands:**
-
-- `/build` - Compile the project
-- `/test` - Run tests with coverage
-- `/clean` - Clean build artifacts
-- `/package` - Create JAR distribution
-- `/coverage` - Generate coverage report
-- `/verify` - Run complete verification
-
-**Skills:**
-
-- `conventional-commits` - Interactive helper to create well-formed commit messages
-
-**Session Hooks:**
-
-- Auto-verifies Java/Maven on session start
-- Configures git hooks automatically
-- Displays available commands
-
-See `.claude/README.md` for more details.
-
----
 
 ## Commit Message Convention
 
@@ -198,43 +143,11 @@ Existing profiles will need manual migration.
 Fixes #24
 ```
 
-### Scope (Optional)
-
-Common scopes:
-
-- `profiles` - Profile management
-- `actions` - UI action handlers
-- `tokenizer` - Syntax highlighting
-- `connection` - ManageSieve protocol
-- `ui` - User interface components
-- `security` - Security-related changes
-- `tests` - Test infrastructure
-- `build` - Build configuration
-- `release` - Release automation
-
-### Commit Message Validation
-
-All commits are validated by the git hook at `.githooks/commit-msg`. If your commit is rejected:
-
-1. Check the error message - it shows what's wrong
-2. Fix the format and try again
-3. Use the `conventional-commits` skill in Claude Code for help
-4. See examples above for reference
-
-**Common mistakes:**
-
-- ❌ `Added new feature` → ✅ `feat: add new feature` (use imperative mood)
-- ❌ `feat:added feature` → ✅ `feat: add feature` (space after colon)
-- ❌ `feature: add something` → ✅ `feat: add something` (wrong type name)
-- ❌ `Fix bug` → ✅ `fix: resolve issue` (missing type prefix)
-
----
-
 ## Pull Request Process
 
 ### Before Submitting
 
-1. ✅ Tests pass locally: `./scripts/test-local.sh`
+1. ✅ Tests pass locally: `mvn clean verify`
 2. ✅ Code follows existing style
 3. ✅ Commit messages follow Conventional Commits
 4. ✅ Update documentation if needed
@@ -278,7 +191,6 @@ Describe testing performed
 **All tests:**
 
 ```bash
-cd app
 mvn test
 ```
 
@@ -299,7 +211,7 @@ mvn test -Dtest=PropertiesSieveTest#shouldSaveAndLoadProperties
 - Use JUnit 5 with AssertJ assertions
 - Follow AAA pattern (Arrange-Act-Assert)
 - Use descriptive test names: `shouldDoSomethingWhenCondition()`
-- See `TEST-COVERAGE-ANALYSIS.md` for detailed guidelines
+- See [README-TESTS.md](README-TESTS.md) for detailed guidelines
 
 **Example:**
 
@@ -324,7 +236,7 @@ void shouldEncryptPasswordWhenSaving() {
 
 - **Overall:** 70%+
 - **Critical components:** 80%+
-- See `TEST-COVERAGE-ANALYSIS.md` for component-specific targets
+- See [README-TESTS.md](README-TESTS.md) for component-specific targets
 
 ---
 
@@ -364,7 +276,6 @@ Instead:
 ### JAR (All Platforms)
 
 ```bash
-cd app
 mvn clean package
 java -jar target/SieveEditor-jar-with-dependencies.jar
 ```
@@ -376,14 +287,14 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 sudo apt-get install fakeroot
 
 # Build JAR first
- mvn clean package
+mvn clean package
 
 # Create DEB package
 jpackage --input target \
   --main-jar SieveEditor-jar-with-dependencies.jar \
   --main-class de.febrildur.sieveeditor.Application \
   --name SieveEditor \
-  --app-version 0.0.1 \
+  --app-version 0.9.3 \
   --type deb \
   --linux-shortcut
 ```
@@ -394,7 +305,6 @@ jpackage --input target \
 # Prerequisites: WiX Toolset 3.0+
 
 # Build JAR first
-cd app
 mvn clean package
 
 # Create MSI
@@ -402,7 +312,7 @@ jpackage --input target `
   --main-jar SieveEditor-jar-with-dependencies.jar `
   --main-class de.febrildur.sieveeditor.Application `
   --name SieveEditor `
-  --app-version 0.0.1 `
+  --app-version 0.9.3 `
   --type msi `
   --win-menu `
   --win-shortcut
@@ -414,14 +324,14 @@ jpackage --input target `
 # Prerequisites: Xcode Command Line Tools
 
 # Build JAR first
- mvn clean package
+mvn clean package
 
 # Create DMG
 jpackage --input target \
   --main-jar SieveEditor-jar-with-dependencies.jar \
   --main-class de.febrildur.sieveeditor.Application \
   --name SieveEditor \
-  --app-version 0.0.1 \
+  --app-version 0.9.3 \
   --type dmg
 ```
 
@@ -429,9 +339,8 @@ jpackage --input target \
 
 ## Documentation
 
-- **Architecture:** See `dev-docs/`
-- **Test Strategy:** See `TEST-COVERAGE-ANALYSIS.md`
-- **CI/CD:** See `CI-CD-STRATEGY-2025.md`
+- **Test Strategy:** See [README-TESTS.md](README-TESTS.md)
+- **Security Policy:** See [SECURITY.md](SECURITY.md)
 - **API Docs:** Generate with `mvn javadoc:javadoc`
 
 ---

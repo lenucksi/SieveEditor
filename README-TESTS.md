@@ -2,41 +2,38 @@
 
 ## Overview
 
-This directory contains the test infrastructure for SieveEditor. The test framework uses:
+This project contains comprehensive test infrastructure for SieveEditor using:
 
-- **JUnit 5** (5.10.1) - Test framework
-- **Mockito** (5.8.0) - Mocking framework
-- **AssertJ** (3.24.2) - Fluent assertions
-- **JaCoCo** (0.8.11) - Code coverage (temporarily disabled)
+- **JUnit 5** (6.0.1) - Test framework
+- **Mockito** (5.20.0) - Mocking framework
+- **AssertJ** (3.27.6) - Fluent assertions
+- **JaCoCo** (0.8.14) - Code coverage
 
 ## Running Tests
 
 ### Basic Test Execution
 
 ```bash
-cd app
 mvn test
 ```
 
-### With Coverage Report (when JaCoCo is enabled)
+### With Coverage Report
 
 ```bash
-cd app
-mvn clean test
+mvn clean verify
 # View report at: target/site/jacoco/index.html
 ```
 
 ### Quick Build Without Tests
 
 ```bash
-cd app
 mvn clean package -DskipTests
 ```
 
 ## Test Structure
 
 ```text
-app/src/test/java/de/febrildur/sieveeditor/
+src/test/java/de/febrildur/sieveeditor/
 ├── SmokeTest.java                 # Infrastructure verification
 ├── system/                         # Core business logic tests
 │   ├── PropertiesSieveTest.java
@@ -59,23 +56,20 @@ app/src/test/java/de/febrildur/sieveeditor/
 
 ### Completed
 
-- ✅ Test dependencies added to pom.xml
-- ✅ Test directory structure created
-- ✅ Smoke test created
-- ✅ Test utilities created (TestConfiguration)
-- ✅ Maven Surefire plugin configured
+- Some small tests
+- JaCoCo plugin enabled and configured
 
 ### In Progress
 
-- ⏳ JaCoCo plugin (temporarily disabled due to network issues)
-- ⏳ Writing actual test implementations
+- Writing actual test implementations
+- Increasing test coverage
 
 ### Pending
 
-- ⏳ Security tests
-- ⏳ Core business logic tests
-- ⏳ UI action tests
-- ⏳ Tokenizer tests
+- Security tests
+- Core business logic tests
+- UI action tests
+- Tokenizer tests
 
 ## Test Coverage Goals
 
@@ -157,23 +151,25 @@ mvn test
 
 Check that:
 
-1. You're in the `app/` directory
+1. You're in the project root directory
 2. Java 21 is installed: `java -version`
 3. Maven dependencies are downloaded: `mvn dependency:resolve`
 
-### JaCoCo Issues
+### Coverage Report Not Generated
 
-JaCoCo is temporarily disabled. To re-enable:
+Run the verify phase to generate coverage:
 
-1. Uncomment the JaCoCo plugin in `pom.xml`
-2. Run `mvn clean test`
+```bash
+mvn clean verify
+```
+
+The report will be at `target/site/jacoco/index.html`
 
 ## Next Steps
 
-1. Enable JaCoCo when network is available
-2. Write security tests (SSL validation, encryption)
-3. Write core business logic tests
-4. Write UI action tests
-5. Achieve 70%+ overall coverage
+1. Write security tests (SSL validation, encryption)
+2. Write core business logic tests
+3. Write UI action tests
+4. Achieve 70%+ overall coverage
 
-See `TEST-COVERAGE-ANALYSIS.md` in the project root for detailed test planning.
+For more information, see [CONTRIBUTING.md](CONTRIBUTING.md).

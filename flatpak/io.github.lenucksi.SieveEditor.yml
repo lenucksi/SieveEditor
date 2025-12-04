@@ -70,17 +70,17 @@ modules:
     sources:
       # JAR file from build
       - type: file
-        path: target/SieveEditor-jar-with-dependencies.jar
+        path: ../target/SieveEditor-jar-with-dependencies.jar
 
       # Desktop file
       - type: file
-        path: flatpak/io.github.lenucksi.SieveEditor.desktop
+        path: io.github.lenucksi.SieveEditor.desktop
 
       # Icon
       - type: file
-        path: flatpak/io.github.lenucksi.SieveEditor.png
+        path: io.github.lenucksi.SieveEditor.png
         dest-filename: io.github.lenucksi.SieveEditor.png
 
       # AppStream metadata
       - type: file
-        path: flatpak/io.github.lenucksi.SieveEditor.metainfo.xml
+        path: io.github.lenucksi.SieveEditor.metainfo.xml

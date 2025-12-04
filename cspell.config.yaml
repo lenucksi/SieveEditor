@@ -8,5 +8,13 @@ words:
 - fluffypeople
 - managesieve
 - assertj
+- atmf
+- febrildur
+- fifesoft
+- jasypt
+- managesievej
+- openrewrite
+- rsyntaxtextarea
+- sieveeditor
 ignoreWords: []
 import: []

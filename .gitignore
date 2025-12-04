@@ -46,3 +46,5 @@ app/
 # Rumdl linter
 .rumdl_cache
 .rumdl-cache
+
+.vscode/

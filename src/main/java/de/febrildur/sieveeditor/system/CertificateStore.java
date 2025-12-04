@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.security.MessageDigest;
@@ -88,7 +87,8 @@ public class CertificateStore {
 			byte[] digest = md.digest(cert.getEncoded());
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < digest.length; i++) {
-				if (i > 0) sb.append(":");
+				if (i > 0)
+					sb.append(":");
 				sb.append(String.format("%02X", digest[i]));
 			}
 			return sb.toString();
@@ -134,7 +134,7 @@ public class CertificateStore {
 	/**
 	 * Marks a certificate as trusted by the user.
 	 *
-	 * @param cert the certificate to trust
+	 * @param cert       the certificate to trust
 	 * @param serverName the server name (for display purposes)
 	 */
 	public synchronized void trustCertificate(X509Certificate cert, String serverName) {
@@ -142,9 +142,9 @@ public class CertificateStore {
 			String fingerprint = getFingerprint(cert);
 			String key = TRUSTED_PREFIX + fingerprint;
 			String value = String.format("%s|%s|%s",
-				serverName,
-				cert.getSubjectX500Principal().getName(),
-				System.currentTimeMillis());
+					serverName,
+					cert.getSubjectX500Principal().getName(),
+					System.currentTimeMillis());
 			properties.setProperty(key, value);
 
 			// Remove from rejected list if present
@@ -160,7 +160,7 @@ public class CertificateStore {
 	/**
 	 * Marks a certificate as rejected by the user.
 	 *
-	 * @param cert the certificate to reject
+	 * @param cert       the certificate to reject
 	 * @param serverName the server name (for display purposes)
 	 */
 	public synchronized void rejectCertificate(X509Certificate cert, String serverName) {
@@ -168,9 +168,9 @@ public class CertificateStore {
 			String fingerprint = getFingerprint(cert);
 			String key = REJECTED_PREFIX + fingerprint;
 			String value = String.format("%s|%s|%s",
-				serverName,
-				cert.getSubjectX500Principal().getName(),
-				System.currentTimeMillis());
+					serverName,
+					cert.getSubjectX500Principal().getName(),
+					System.currentTimeMillis());
 			properties.setProperty(key, value);
 
 			// Remove from trusted list if present

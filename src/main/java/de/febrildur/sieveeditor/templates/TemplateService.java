@@ -2,7 +2,6 @@ package de.febrildur.sieveeditor.templates;
 
 import de.febrildur.sieveeditor.system.AppDirectoryService;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -114,240 +113,240 @@ public class TemplateService {
                 "Spam Filter to Folder",
                 "Move spam-flagged emails to Spam folder",
                 """
-                require ["fileinto"];
+                        require ["fileinto"];
 
-                # Move spam to Spam folder
-                if header :contains "X-Spam-Flag" "YES" {
-                    fileinto "Spam";
-                    stop;
-                }
-                """));
+                        # Move spam to Spam folder
+                        if header :contains "X-Spam-Flag" "YES" {
+                            fileinto "Spam";
+                            stop;
+                        }
+                        """));
 
         // Vacation auto-reply
         templates.add(SieveTemplate.builtin(
                 "Vacation Auto-Reply",
                 "Send automatic out-of-office replies",
                 """
-                require ["vacation"];
+                        require ["vacation"];
 
-                # Auto-reply for vacation
-                vacation :days 7 :subject "Out of Office"
-                "I am currently out of office and will return on [DATE].
-                Your email will be read upon my return.";
-                """));
+                        # Auto-reply for vacation
+                        vacation :days 7 :subject "Out of Office"
+                        "I am currently out of office and will return on [DATE].
+                        Your email will be read upon my return.";
+                        """));
 
         // File by subject keyword
         templates.add(SieveTemplate.builtin(
                 "Fileinto by Subject",
                 "Route emails to folder based on subject keywords",
                 """
-                require ["fileinto"];
+                        require ["fileinto"];
 
-                # File emails by subject keyword
-                if header :contains "subject" "[KEYWORD]" {
-                    fileinto "[FOLDER]";
-                    stop;
-                }
-                """));
+                        # File emails by subject keyword
+                        if header :contains "subject" "[KEYWORD]" {
+                            fileinto "[FOLDER]";
+                            stop;
+                        }
+                        """));
 
         // File by sender address
         templates.add(SieveTemplate.builtin(
                 "Fileinto by Sender",
                 "Route emails from specific sender to folder",
                 """
-                require ["fileinto"];
+                        require ["fileinto"];
 
-                # File emails from specific sender
-                if address :is "from" "sender@example.com" {
-                    fileinto "[FOLDER]";
-                    stop;
-                }
-                """));
+                        # File emails from specific sender
+                        if address :is "from" "sender@example.com" {
+                            fileinto "[FOLDER]";
+                            stop;
+                        }
+                        """));
 
         // Reject large messages
         templates.add(SieveTemplate.builtin(
                 "Reject by Size",
                 "Reject emails larger than specified size",
                 """
-                require ["reject"];
+                        require ["reject"];
 
-                # Reject emails larger than 10MB
-                if size :over 10M {
-                    reject "Message too large. Please send files via file sharing.";
-                }
-                """));
+                        # Reject emails larger than 10MB
+                        if size :over 10M {
+                            reject "Message too large. Please send files via file sharing.";
+                        }
+                        """));
 
         // Discard by sender
         templates.add(SieveTemplate.builtin(
                 "Discard by Sender",
                 "Silently discard emails from specific sender",
                 """
-                # Silently discard emails from specific sender
-                if address :is "from" "spam@example.com" {
-                    discard;
-                    stop;
-                }
-                """));
+                        # Silently discard emails from specific sender
+                        if address :is "from" "spam@example.com" {
+                            discard;
+                            stop;
+                        }
+                        """));
 
         // Mailing list filter
         templates.add(SieveTemplate.builtin(
                 "Mailing List Filter",
                 "Route mailing list emails to dedicated folder",
                 """
-                require ["fileinto", "mailbox"];
+                        require ["fileinto", "mailbox"];
 
-                # Route mailing list emails by List-Id header
-                if header :contains "List-Id" "listname.example.com" {
-                    fileinto :create "INBOX.Lists.[LISTNAME]";
-                    stop;
-                }
-                """));
+                        # Route mailing list emails by List-Id header
+                        if header :contains "List-Id" "listname.example.com" {
+                            fileinto :create "INBOX.Lists.[LISTNAME]";
+                            stop;
+                        }
+                        """));
 
         // Priority flagging
         templates.add(SieveTemplate.builtin(
                 "Priority Flagging",
                 "Flag high-priority messages from important senders",
                 """
-                require ["imap4flags", "fileinto"];
+                        require ["imap4flags", "fileinto"];
 
-                # Flag and file VIP messages
-                if anyof (
-                    address :is "from" "boss@company.com",
-                    address :is "from" "ceo@company.com",
-                    header :contains "X-Priority" "1"
-                ) {
-                    setflag "\\\\Flagged";
-                    fileinto "INBOX.Priority";
-                    stop;
-                }
-                """));
+                        # Flag and file VIP messages
+                        if anyof (
+                            address :is "from" "boss@company.com",
+                            address :is "from" "ceo@company.com",
+                            header :contains "X-Priority" "1"
+                        ) {
+                            setflag "\\\\Flagged";
+                            fileinto "INBOX.Priority";
+                            stop;
+                        }
+                        """));
 
         // Notification filtering
         templates.add(SieveTemplate.builtin(
                 "Notification Filter",
                 "Route automated notifications to separate folder",
                 """
-                require ["fileinto"];
+                        require ["fileinto"];
 
-                # Detect and file automated notifications
-                if anyof (
-                    header :contains "from" "noreply@",
-                    header :contains "from" "no-reply@",
-                    header :is "Precedence" "bulk",
-                    header :is "Precedence" "list"
-                ) {
-                    fileinto "INBOX.Notifications";
-                    stop;
-                }
-                """));
+                        # Detect and file automated notifications
+                        if anyof (
+                            header :contains "from" "noreply@",
+                            header :contains "from" "no-reply@",
+                            header :is "Precedence" "bulk",
+                            header :is "Precedence" "list"
+                        ) {
+                            fileinto "INBOX.Notifications";
+                            stop;
+                        }
+                        """));
 
         // Domain-based filtering
         templates.add(SieveTemplate.builtin(
                 "Filter by Domain",
                 "Route emails from specific domain to folder",
                 """
-                require ["fileinto"];
+                        require ["fileinto"];
 
-                # File all emails from a domain
-                if address :domain "from" "example.com" {
-                    fileinto "INBOX.Example";
-                    stop;
-                }
-                """));
+                        # File all emails from a domain
+                        if address :domain "from" "example.com" {
+                            fileinto "INBOX.Example";
+                            stop;
+                        }
+                        """));
 
         // Multiple condition filter
         templates.add(SieveTemplate.builtin(
                 "Multiple Conditions",
                 "Complex filter with AND/OR conditions",
                 """
-                require ["fileinto", "imap4flags"];
+                        require ["fileinto", "imap4flags"];
 
-                # Complex filter: high priority from specific domain
-                if allof (
-                    address :domain "from" "important-client.com",
-                    anyof (
-                        header :contains "subject" "urgent",
-                        header :contains "X-Priority" "1"
-                    )
-                ) {
-                    setflag "\\\\Flagged";
-                    fileinto "INBOX.Urgent";
-                    stop;
-                }
-                """));
+                        # Complex filter: high priority from specific domain
+                        if allof (
+                            address :domain "from" "important-client.com",
+                            anyof (
+                                header :contains "subject" "urgent",
+                                header :contains "X-Priority" "1"
+                            )
+                        ) {
+                            setflag "\\\\Flagged";
+                            fileinto "INBOX.Urgent";
+                            stop;
+                        }
+                        """));
 
         // Duplicate detection (Dovecot)
         templates.add(SieveTemplate.builtin(
                 "Duplicate Detection",
                 "Detect and file duplicate messages (Dovecot)",
                 """
-                require ["duplicate", "fileinto"];
+                        require ["duplicate", "fileinto"];
 
-                # Detect duplicate messages within 24 hours
-                if duplicate :seconds 86400 {
-                    fileinto "INBOX.Duplicates";
-                    stop;
-                }
-                """));
+                        # Detect duplicate messages within 24 hours
+                        if duplicate :seconds 86400 {
+                            fileinto "INBOX.Duplicates";
+                            stop;
+                        }
+                        """));
 
         // Subaddress/plus addressing
         templates.add(SieveTemplate.builtin(
                 "Subaddress Routing",
                 "Route emails by plus-address tag (user+tag@domain)",
                 """
-                require ["subaddress", "fileinto", "variables"];
+                        require ["subaddress", "fileinto", "variables"];
 
-                # Route by plus-address tag
-                if subaddress :matches "to" "*" {
-                    set :lower "tag" "${1}";
-                    fileinto "INBOX.${tag}";
-                    stop;
-                }
-                """));
+                        # Route by plus-address tag
+                        if subaddress :matches "to" "*" {
+                            set :lower "tag" "${1}";
+                            fileinto "INBOX.${tag}";
+                            stop;
+                        }
+                        """));
 
         // Complete starter script
         templates.add(SieveTemplate.builtin(
                 "Complete Starter Script",
                 "Full script with common rules and structure",
                 """
-                require [
-                    "fileinto",
-                    "mailbox",
-                    "imap4flags"
-                ];
+                        require [
+                            "fileinto",
+                            "mailbox",
+                            "imap4flags"
+                        ];
 
-                # ===== SPAM FILTERING =====
-                if header :contains "X-Spam-Flag" "YES" {
-                    fileinto "Spam";
-                    stop;
-                }
+                        # ===== SPAM FILTERING =====
+                        if header :contains "X-Spam-Flag" "YES" {
+                            fileinto "Spam";
+                            stop;
+                        }
 
-                # ===== PRIORITY RULES =====
-                # VIP senders get flagged
-                if address :is "from" ["boss@company.com", "important@example.com"] {
-                    setflag "\\\\Flagged";
-                    fileinto :create "INBOX.Priority";
-                    stop;
-                }
+                        # ===== PRIORITY RULES =====
+                        # VIP senders get flagged
+                        if address :is "from" ["boss@company.com", "important@example.com"] {
+                            setflag "\\\\Flagged";
+                            fileinto :create "INBOX.Priority";
+                            stop;
+                        }
 
-                # ===== MAILING LISTS =====
-                if header :contains "List-Id" "mylist" {
-                    fileinto :create "INBOX.Lists.MyList";
-                    stop;
-                }
+                        # ===== MAILING LISTS =====
+                        if header :contains "List-Id" "mylist" {
+                            fileinto :create "INBOX.Lists.MyList";
+                            stop;
+                        }
 
-                # ===== NOTIFICATIONS =====
-                if anyof (
-                    header :contains "from" "noreply@",
-                    header :is "Precedence" "bulk"
-                ) {
-                    fileinto :create "INBOX.Notifications";
-                    stop;
-                }
+                        # ===== NOTIFICATIONS =====
+                        if anyof (
+                            header :contains "from" "noreply@",
+                            header :is "Precedence" "bulk"
+                        ) {
+                            fileinto :create "INBOX.Notifications";
+                            stop;
+                        }
 
-                # ===== DEFAULT: Keep in Inbox =====
-                keep;
-                """));
+                        # ===== DEFAULT: Keep in Inbox =====
+                        keep;
+                        """));
 
         return templates;
     }

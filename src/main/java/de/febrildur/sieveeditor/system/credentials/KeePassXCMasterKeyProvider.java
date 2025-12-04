@@ -1,8 +1,6 @@
 package de.febrildur.sieveeditor.system.credentials;
 
 import org.purejava.KeepassProxyAccess;
-import org.purejava.KeepassProxyAccessException;
-
 import javax.swing.*;
 import java.util.Map;
 import java.util.logging.Level;
@@ -11,7 +9,8 @@ import java.util.logging.Logger;
 /**
  * Master key provider that uses KeePassXC for secure storage.
  *
- * Stores the master encryption key as an entry in the user's KeePassXC database.
+ * Stores the master encryption key as an entry in the user's KeePassXC
+ * database.
  * This is the most secure option as it leverages KeePassXC's strong encryption
  * and allows the master key to sync across devices if the database is synced.
  *
@@ -50,7 +49,8 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 		LOGGER.log(Level.INFO, "getMasterKey() called");
 		ensureConnected();
 
-		// If we just did a fresh association, the entry doesn't exist yet - skip getLogins
+		// If we just did a fresh association, the entry doesn't exist yet - skip
+		// getLogins
 		if (freshlyAssociated) {
 			LOGGER.log(Level.INFO, "Freshly associated - no entry exists yet, returning null");
 			return null;
@@ -61,7 +61,7 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 			// Try to get existing login
 			Map<String, String> idKeyMap = Map.of("id", associationId, "key", publicKey);
 			Map<String, Object> logins = kpa.getLogins(ENTRY_URL, null, true,
-				java.util.List.of(idKeyMap));
+					java.util.List.of(idKeyMap));
 
 			LOGGER.log(Level.INFO, "getLogins() returned: " + (logins != null ? "data" : "null"));
 
@@ -80,11 +80,13 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Exception while retrieving master key: " + e.getClass().getName() + ": " + e.getMessage());
+			LOGGER.log(Level.WARNING,
+					"Exception while retrieving master key: " + e.getClass().getName() + ": " + e.getMessage());
 			// Entry probably doesn't exist - this is normal on first run
 		}
 
-		// Entry doesn't exist yet (first run) - return null so caller can generate and store one
+		// Entry doesn't exist yet (first run) - return null so caller can generate and
+		// store one
 		LOGGER.log(Level.INFO, "Master key entry not found in KeePassXC (first run), will generate new key");
 		return null;
 	}
@@ -97,14 +99,14 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 		LOGGER.log(Level.INFO, "Attempting to store master key in KeePassXC...");
 		// Create or update the entry in KeePassXC
 		boolean success = kpa.setLogin(
-			ENTRY_URL,          // url
-			null,               // submitUrl
-			associationId,      // id
-			ENTRY_USERNAME,     // login
-			masterKey,          // password
-			null,               // group (let user choose)
-			null,               // groupUuid
-			null                // uuid (create new if null)
+				ENTRY_URL, // url
+				null, // submitUrl
+				associationId, // id
+				ENTRY_USERNAME, // login
+				masterKey, // password
+				null, // group (let user choose)
+				null, // groupUuid
+				null // uuid (create new if null)
 		);
 
 		LOGGER.log(Level.INFO, "setLogin() returned: " + success);
@@ -137,8 +139,10 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 	}
 
 	/**
-	 * Retrieves association credentials that were automatically loaded by the library.
-	 * The KeepassProxyAccess library automatically persists credentials to disk after
+	 * Retrieves association credentials that were automatically loaded by the
+	 * library.
+	 * The KeepassProxyAccess library automatically persists credentials to disk
+	 * after
 	 * successful association and loads them on construction.
 	 *
 	 * @return true if valid credentials exist, false otherwise
@@ -163,7 +167,8 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 
 	/**
 	 * Ensures KeePassXC is connected and the database is unlocked.
-	 * Shows dialogs to guide the user through starting and unlocking KeePassXC if needed.
+	 * Shows dialogs to guide the user through starting and unlocking KeePassXC if
+	 * needed.
 	 *
 	 * Proper workflow:
 	 * 1. Create KeepassProxyAccess (auto-loads saved credentials from disk)
@@ -181,7 +186,8 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 			return;
 		}
 
-		// Create KeepassProxyAccess instance - this automatically loads saved credentials
+		// Create KeepassProxyAccess instance - this automatically loads saved
+		// credentials
 		kpa = new KeepassProxyAccess();
 
 		// Step 1: Connect to KeePassXC
@@ -197,12 +203,11 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 
 			// Show dialog to user
 			JOptionPane.showMessageDialog(
-				null,
-				"Your KeePassXC database is locked.\n\n" +
-					"Please unlock your database in KeePassXC, then click OK to continue.",
-				"Unlock KeePassXC Database",
-				JOptionPane.INFORMATION_MESSAGE
-			);
+					null,
+					"Your KeePassXC database is locked.\n\n" +
+							"Please unlock your database in KeePassXC, then click OK to continue.",
+					"Unlock KeePassXC Database",
+					JOptionPane.INFORMATION_MESSAGE);
 
 			// Try to trigger unlock prompt in KeePassXC
 			var hash = kpa.getDatabasehash(true);
@@ -210,7 +215,7 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 			// Check if database is still locked
 			if (!hash.isPresent() || kpa.isDatabaseLocked()) {
 				throw new CredentialException("KeePassXC database is still locked. " +
-					"Please unlock your database and try again.");
+						"Please unlock your database and try again.");
 			}
 
 			LOGGER.log(Level.INFO, "KeePassXC database unlocked successfully");
@@ -233,14 +238,17 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 					// Fall through to associate
 				}
 			} catch (Exception e) {
-				LOGGER.log(Level.WARNING, "Failed to test saved credentials: " + e.getMessage() + ", will re-associate");
+				LOGGER.log(Level.WARNING,
+						"Failed to test saved credentials: " + e.getMessage() + ", will re-associate");
 				// Fall through to associate
 			}
 		}
 
 		// Step 4: Associate with KeePassXC (either first time or credentials invalid)
-		// Note: KeePassXC issue #7099 causes delayed association responses from Java apps
-		// The library handles this by delaying the response lookup, but we need to retry
+		// Note: KeePassXC issue #7099 causes delayed association responses from Java
+		// apps
+		// The library handles this by delaying the response lookup, but we need to
+		// retry
 		associateWithRetry();
 		// The library automatically saves credentials after successful association
 
@@ -265,7 +273,7 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 		final int DELAY_MS = 2000; // 2 seconds between attempts
 
 		for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-			LOGGER.log(Level.FINE, "Association attempt {0}/{1}", new Object[]{attempt, MAX_ATTEMPTS});
+			LOGGER.log(Level.FINE, "Association attempt {0}/{1}", new Object[] { attempt, MAX_ATTEMPTS });
 
 			boolean associated = kpa.associate();
 
@@ -292,7 +300,8 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 					// We got credentials! Association actually succeeded
 					this.associationId = id;
 					this.publicKey = key;
-					LOGGER.log(Level.INFO, "Association succeeded (exportConnection returned credentials despite false return)");
+					LOGGER.log(Level.INFO,
+							"Association succeeded (exportConnection returned credentials despite false return)");
 					return;
 				}
 			} catch (Exception e) {
@@ -301,7 +310,8 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 
 			// If not last attempt, wait before retrying
 			if (attempt < MAX_ATTEMPTS) {
-				LOGGER.log(Level.INFO, "Waiting {0}ms before retry (KeePassXC issue #7099 - delayed response)", DELAY_MS);
+				LOGGER.log(Level.INFO, "Waiting {0}ms before retry (KeePassXC issue #7099 - delayed response)",
+						DELAY_MS);
 				try {
 					Thread.sleep(DELAY_MS);
 				} catch (InterruptedException e) {
@@ -313,8 +323,8 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 
 		// All attempts failed
 		throw new CredentialException("Failed to associate with KeePassXC after " + MAX_ATTEMPTS + " attempts. " +
-			"Please ensure you click 'Allow' when KeePassXC shows the association request dialog. " +
-			"If you don't see a dialog, check if KeePassXC is running in the background.");
+				"Please ensure you click 'Allow' when KeePassXC shows the association request dialog. " +
+				"If you don't see a dialog, check if KeePassXC is running in the background.");
 	}
 
 	/**
@@ -336,17 +346,16 @@ public class KeePassXCMasterKeyProvider implements MasterKeyProvider {
 
 				// Show dialog asking user to start KeePassXC
 				int result = JOptionPane.showOptionDialog(
-					null,
-					"KeePassXC is not running.\n\n" +
-						"Please start KeePassXC, then click Retry.\n" +
-						"If you prefer to use a different storage method, click 'Use Fallback'.",
-					"KeePassXC Not Running",
-					JOptionPane.YES_NO_CANCEL_OPTION,
-					JOptionPane.WARNING_MESSAGE,
-					null,
-					new Object[]{"Retry", "Use Fallback", "Exit"},
-					"Retry"
-				);
+						null,
+						"KeePassXC is not running.\n\n" +
+								"Please start KeePassXC, then click Retry.\n" +
+								"If you prefer to use a different storage method, click 'Use Fallback'.",
+						"KeePassXC Not Running",
+						JOptionPane.YES_NO_CANCEL_OPTION,
+						JOptionPane.WARNING_MESSAGE,
+						null,
+						new Object[] { "Retry", "Use Fallback", "Exit" },
+						"Retry");
 
 				if (result == 0) { // Retry
 					attempts++;

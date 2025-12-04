@@ -3,7 +3,6 @@ package de.febrildur.sieveeditor.system.credentials;
 import de.febrildur.sieveeditor.system.AppDirectoryService;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,7 +33,8 @@ public class MasterKeyProviderFactory {
 	private static final Logger LOGGER = Logger.getLogger(MasterKeyProviderFactory.class.getName());
 	private static final String PREFERENCE_FILE = ".storage-backend";
 
-	// Global forced backend set via command-line, applies to ALL PropertiesSieve instances
+	// Global forced backend set via command-line, applies to ALL PropertiesSieve
+	// instances
 	private static String globalForcedBackend = null;
 
 	// Test mode flag - when true, uses a non-interactive provider
@@ -43,14 +43,16 @@ public class MasterKeyProviderFactory {
 	// Custom provider for test mode
 	private static MasterKeyProvider testModeProvider = null;
 
-	// Singleton cache of provider instances - ensures password caching works across PropertiesSieve instances
+	// Singleton cache of provider instances - ensures password caching works across
+	// PropertiesSieve instances
 	private static KeePassXCMasterKeyProvider keepassXCInstance = null;
 	private static OSKeychainMasterKeyProvider osKeychainInstance = null;
 	private static UserPromptMasterKeyProvider userPromptInstance = null;
 
 	/**
 	 * Sets the global forced backend for ALL PropertiesSieve instances.
-	 * This should be called once at application startup if a backend is specified via command-line.
+	 * This should be called once at application startup if a backend is specified
+	 * via command-line.
 	 *
 	 * @param backend backend to use (keepassxc, keychain, prompt), or null to clear
 	 */
@@ -65,13 +67,14 @@ public class MasterKeyProviderFactory {
 	 * Enables test mode with a non-interactive provider.
 	 * When test mode is enabled, no GUI dialogs will be shown.
 	 *
-	 * @param provider the provider to use in test mode (use TestMasterKeyProvider for tests)
+	 * @param provider the provider to use in test mode (use TestMasterKeyProvider
+	 *                 for tests)
 	 */
 	public static void setTestMode(MasterKeyProvider provider) {
 		testMode = true;
 		testModeProvider = provider;
 		LOGGER.log(Level.INFO, "Test mode enabled with provider: {0}",
-			provider != null ? provider.getName() : "null");
+				provider != null ? provider.getName() : "null");
 	}
 
 	/**
@@ -93,7 +96,8 @@ public class MasterKeyProviderFactory {
 	}
 
 	/**
-	 * Creates a MasterKeyProvider instance based on user preference or auto-detection.
+	 * Creates a MasterKeyProvider instance based on user preference or
+	 * auto-detection.
 	 *
 	 * @return configured MasterKeyProvider instance
 	 * @throws CredentialException if no provider can be created
@@ -105,7 +109,8 @@ public class MasterKeyProviderFactory {
 	/**
 	 * Creates a MasterKeyProvider instance with explicit backend selection.
 	 *
-	 * @param forcedBackend backend to use (keepassxc, keychain, prompt), or null for auto-detection
+	 * @param forcedBackend backend to use (keepassxc, keychain, prompt), or null
+	 *                      for auto-detection
 	 * @return configured MasterKeyProvider instance
 	 * @throws CredentialException if no provider can be created
 	 */
@@ -126,7 +131,8 @@ public class MasterKeyProviderFactory {
 			if (provider.isAvailable()) {
 				return provider;
 			} else {
-				LOGGER.log(Level.WARNING, "Forced backend {0} is not available, falling back to selection dialog", backendToUse);
+				LOGGER.log(Level.WARNING, "Forced backend {0} is not available, falling back to selection dialog",
+						backendToUse);
 			}
 		}
 		// Check if user has a saved preference
@@ -138,7 +144,8 @@ public class MasterKeyProviderFactory {
 					LOGGER.log(Level.INFO, "Using saved backend preference: {0}", savedBackend);
 					return provider;
 				} else {
-					LOGGER.log(Level.WARNING, "Saved backend {0} is no longer available, showing selection dialog", savedBackend);
+					LOGGER.log(Level.WARNING, "Saved backend {0} is no longer available, showing selection dialog",
+							savedBackend);
 				}
 			} catch (Exception e) {
 				LOGGER.log(Level.WARNING, "Failed to create saved backend " + savedBackend, e);
@@ -165,19 +172,19 @@ public class MasterKeyProviderFactory {
 		// DEACTIVATED: KeePassXC backend (broken)
 		// TODO: Re-enable when fixed
 		// if (keepassXCInstance == null) {
-		// 	keepassXCInstance = new KeePassXCMasterKeyProvider();
+		// keepassXCInstance = new KeePassXCMasterKeyProvider();
 		// }
 		// if (keepassXCInstance.isAvailable()) {
-		// 	availableProviders.add(keepassXCInstance);
+		// availableProviders.add(keepassXCInstance);
 		// }
 
 		// DEACTIVATED: OS Keychain backend (broken)
 		// TODO: Re-enable when fixed
 		// if (osKeychainInstance == null) {
-		// 	osKeychainInstance = new OSKeychainMasterKeyProvider();
+		// osKeychainInstance = new OSKeychainMasterKeyProvider();
 		// }
 		// if (osKeychainInstance.isAvailable()) {
-		// 	availableProviders.add(osKeychainInstance);
+		// availableProviders.add(osKeychainInstance);
 		// }
 
 		// User Prompt is always available (use singleton instance)
@@ -197,16 +204,16 @@ public class MasterKeyProviderFactory {
 		panel.add(new JLabel("<html><b>Currently using:</b> Manual Password Entry</html>"));
 		panel.add(new JLabel("You will need to enter your master password each time you start the application."));
 		panel.add(new JLabel(" "));
-		panel.add(new JLabel("<html><i>Note: Other storage backends (KeePassXC, OS Keychain) are temporarily</i></html>"));
+		panel.add(new JLabel(
+				"<html><i>Note: Other storage backends (KeePassXC, OS Keychain) are temporarily</i></html>"));
 		panel.add(new JLabel("<html><i>unavailable and will be restored in a future update.</i></html>"));
 
 		int result = JOptionPane.showConfirmDialog(
-			null,
-			panel,
-			"Master Password Storage",
-			JOptionPane.OK_CANCEL_OPTION,
-			JOptionPane.INFORMATION_MESSAGE
-		);
+				null,
+				panel,
+				"Master Password Storage",
+				JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.INFORMATION_MESSAGE);
 
 		if (result != JOptionPane.OK_OPTION) {
 			throw new CredentialException("User cancelled");
@@ -221,7 +228,8 @@ public class MasterKeyProviderFactory {
 
 	/**
 	 * Creates a provider instance by name.
-	 * Returns singleton instances to preserve password caching across PropertiesSieve instances.
+	 * Returns singleton instances to preserve password caching across
+	 * PropertiesSieve instances.
 	 *
 	 * DEACTIVATED BACKENDS: KeePassXC and OS Keychain are temporarily disabled.
 	 * All requests are redirected to UserPromptMasterKeyProvider.
@@ -265,7 +273,8 @@ public class MasterKeyProviderFactory {
 
 	/**
 	 * Creates a provider instance by command-line argument.
-	 * Returns singleton instances to preserve password caching across PropertiesSieve instances.
+	 * Returns singleton instances to preserve password caching across
+	 * PropertiesSieve instances.
 	 *
 	 * DEACTIVATED BACKENDS: KeePassXC and OS Keychain are temporarily disabled.
 	 * All requests are redirected to UserPromptMasterKeyProvider.

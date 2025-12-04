@@ -1,6 +1,5 @@
 package de.febrildur.sieveeditor.actions;
 
-import de.febrildur.sieveeditor.Application;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
@@ -34,41 +33,41 @@ class ActionSaveScriptTest {
      * INTENDED TEST (requires refactoring):
      *
      * @Test
-     * void shouldShowSuccessMessageWhenSaveSucceeds() {
-     *     // Given
-     *     TestApplication app = new TestApplication();
-     *     when(app.save()).thenReturn(true);
+     *       void shouldShowSuccessMessageWhenSaveSucceeds() {
+     *       // Given
+     *       TestApplication app = new TestApplication();
+     *       when(app.save()).thenReturn(true);
      *
-     *     ActionSaveScript action = new ActionSaveScript(app);
+     *       ActionSaveScript action = new ActionSaveScript(app);
      *
-     *     // When
-     *     action.actionPerformed(new ActionEvent(this, 0, "save"));
+     *       // When
+     *       action.actionPerformed(new ActionEvent(this, 0, "save"));
      *
-     *     // Then
-     *     verify(app).save();
-     *     verify(app).updateStatus();
-     *     assertThat(app.getLastMessage()).contains("saved");
-     * }
+     *       // Then
+     *       verify(app).save();
+     *       verify(app).updateStatus();
+     *       assertThat(app.getLastMessage()).contains("saved");
+     *       }
      */
 
     /**
      * INTENDED TEST (requires refactoring):
      *
      * @Test
-     * void shouldNotShowSuccessMessageWhenSaveFails() {
-     *     // Given
-     *     TestApplication app = new TestApplication();
-     *     when(app.save()).thenReturn(false);
+     *       void shouldNotShowSuccessMessageWhenSaveFails() {
+     *       // Given
+     *       TestApplication app = new TestApplication();
+     *       when(app.save()).thenReturn(false);
      *
-     *     ActionSaveScript action = new ActionSaveScript(app);
+     *       ActionSaveScript action = new ActionSaveScript(app);
      *
-     *     // When
-     *     action.actionPerformed(new ActionEvent(this, 0, "save"));
+     *       // When
+     *       action.actionPerformed(new ActionEvent(this, 0, "save"));
      *
-     *     // Then
-     *     verify(app).save();
-     *     verify(app, never()).showMessage(anyString());
-     * }
+     *       // Then
+     *       verify(app).save();
+     *       verify(app, never()).showMessage(anyString());
+     *       }
      */
 
     /**
@@ -83,20 +82,20 @@ class ActionSaveScriptTest {
      *
      * To make testable:
      * 1. Extract dialog interface:
-     *    interface DialogService {
-     *        void showInfo(String message);
-     *    }
+     * interface DialogService {
+     * void showInfo(String message);
+     * }
      *
      * 2. Inject dependencies:
-     *    ActionSaveScript(Application app, DialogService dialogs)
+     * ActionSaveScript(Application app, DialogService dialogs)
      *
      * 3. Use interface for Application:
-     *    interface ScriptEditor {
-     *        boolean save();
-     *        void updateStatus();
-     *    }
+     * interface ScriptEditor {
+     * boolean save();
+     * void updateStatus();
+     * }
      *
      * 4. Then can test:
-     *    ActionSaveScript action = new ActionSaveScript(mockApp, mockDialogs);
+     * ActionSaveScript action = new ActionSaveScript(mockApp, mockDialogs);
      */
 }

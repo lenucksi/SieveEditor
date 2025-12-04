@@ -3,7 +3,6 @@ package de.febrildur.sieveeditor.system;
 import com.fluffypeople.managesieve.ManageSieveClient;
 import com.fluffypeople.managesieve.ManageSieveResponse;
 import com.fluffypeople.managesieve.ParseException;
-import com.fluffypeople.managesieve.SieveScript;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,16 +11,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 /**
  * Test suite for ConnectAndListScripts class.
- * Tests ManageSieve protocol operations, connection handling, and error scenarios.
+ * Tests ManageSieve protocol operations, connection handling, and error
+ * scenarios.
  *
  * Note: These tests use mocking since we don't have a real ManageSieve server.
  * For integration tests with a real server, see integration/ directory.
@@ -88,39 +83,41 @@ class ConnectAndListScriptsTest {
     @Test
     void shouldRejectNullServer() {
         // When/Then - ManageSieveClient will throw IOException, not NPE
-        // The implementation doesn't validate null parameters before attempting connection
-        assertThatThrownBy(() ->
-            connection.connect(null, 4190, "user", "pass"))
-            .isInstanceOf(IOException.class);
+        // The implementation doesn't validate null parameters before attempting
+        // connection
+        assertThatThrownBy(() -> connection.connect(null, 4190, "user", "pass"))
+                .isInstanceOf(IOException.class);
     }
 
     @Test
     void shouldRejectNullUsername() {
         // When/Then - Will attempt connection and fail, throwing IOException
-        // The implementation doesn't validate null parameters before attempting connection
-        assertThatThrownBy(() ->
-            connection.connect("server.example.com", 4190, null, "pass"))
-            .isInstanceOf(IOException.class);
+        // The implementation doesn't validate null parameters before attempting
+        // connection
+        assertThatThrownBy(() -> connection.connect("server.example.com", 4190, null, "pass"))
+                .isInstanceOf(IOException.class);
     }
 
     @Test
     void shouldRejectNullPassword() {
         // When/Then - Will attempt connection and fail, throwing IOException
-        // The implementation doesn't validate null parameters before attempting connection
-        assertThatThrownBy(() ->
-            connection.connect("server.example.com", 4190, "user", null))
-            .isInstanceOf(IOException.class);
+        // The implementation doesn't validate null parameters before attempting
+        // connection
+        assertThatThrownBy(() -> connection.connect("server.example.com", 4190, "user", null))
+                .isInstanceOf(IOException.class);
     }
 
     @Test
     void shouldAcceptValidConnectionParameters() {
-        // When/Then - Should not throw for valid parameters (will fail to connect but validates params)
+        // When/Then - Should not throw for valid parameters (will fail to connect but
+        // validates params)
         assertThatCode(() -> {
             try {
                 connection.connect("localhost", 4190, "user", "pass");
             } catch (IOException | ParseException e) {
                 // Expected - no server running
-                // We're just checking parameter validation doesn't throw IllegalArgumentException
+                // We're just checking parameter validation doesn't throw
+                // IllegalArgumentException
             }
         }).doesNotThrowAnyException();
     }
@@ -134,7 +131,7 @@ class ConnectAndListScriptsTest {
             try {
                 connection.connect("localhost", 4190, "user", "pass"); // Standard
                 connection.connect("localhost", 2000, "user", "pass"); // Custom
-                connection.connect("localhost", 1, "user", "pass");    // Minimum
+                connection.connect("localhost", 1, "user", "pass"); // Minimum
                 connection.connect("localhost", 65535, "user", "pass"); // Maximum
             } catch (IOException | ParseException e) {
                 // Expected - no server running
@@ -142,7 +139,8 @@ class ConnectAndListScriptsTest {
         }).doesNotThrowAnyException();
     }
 
-    // ===== Script Operations Tests (Theoretical - need dependency injection to test properly) =====
+    // ===== Script Operations Tests (Theoretical - need dependency injection to
+    // test properly) =====
 
     /**
      * Note: The following tests demonstrate the INTENDED test cases.
@@ -238,10 +236,10 @@ class ConnectAndListScriptsTest {
         // to inject a mock without refactoring.
         //
         // Expected implementation with refactoring:
-        //   when(mockClient.deletescript("myscript")).thenReturn(mockResponse);
-        //   when(mockResponse.isOk()).thenReturn(true);
-        //   connection.deleteScript("myscript");
-        //   verify(mockClient).deletescript("myscript");
+        // when(mockClient.deletescript("myscript")).thenReturn(mockResponse);
+        // when(mockResponse.isOk()).thenReturn(true);
+        // connection.deleteScript("myscript");
+        // verify(mockClient).deletescript("myscript");
 
         assertThat(connection.isLoggedIn()).isFalse();
     }
@@ -252,9 +250,8 @@ class ConnectAndListScriptsTest {
 
         // When/Then - deleteScript should throw NullPointerException
         // when attempting to call client.deletescript()
-        assertThatThrownBy(() ->
-            connection.deleteScript("myscript"))
-            .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> connection.deleteScript("myscript"))
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -293,9 +290,8 @@ class ConnectAndListScriptsTest {
     @Test
     void shouldThrowIOExceptionOnConnectionFailure() {
         // When/Then
-        assertThatThrownBy(() ->
-            connection.connect("nonexistent.invalid.server", 4190, "user", "pass"))
-            .isInstanceOf(IOException.class);
+        assertThatThrownBy(() -> connection.connect("nonexistent.invalid.server", 4190, "user", "pass"))
+                .isInstanceOf(IOException.class);
     }
 
     @Test
@@ -303,9 +299,8 @@ class ConnectAndListScriptsTest {
         // Given - No connection established
 
         // When/Then - Operations should fail gracefully
-        assertThatThrownBy(() ->
-            connection.getListScripts())
-            .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> connection.getListScripts())
+                .isInstanceOf(NullPointerException.class);
     }
 
     // ===== Helper Methods =====
@@ -329,22 +324,22 @@ class ConnectAndListScriptsTest {
      * RECOMMENDED REFACTORING:
      *
      * 1. Extract interface:
-     *    public interface SieveServerConnection {
-     *        void connect(...);
-     *        List<SieveScript> getListScripts();
-     *        // etc.
-     *    }
+     * public interface SieveServerConnection {
+     * void connect(...);
+     * List<SieveScript> getListScripts();
+     * // etc.
+     * }
      *
      * 2. Make ConnectAndListScripts implement it:
-     *    public class ConnectAndListScripts implements SieveServerConnection
+     * public class ConnectAndListScripts implements SieveServerConnection
      *
      * 3. Add constructor injection:
-     *    public ConnectAndListScripts(ManageSieveClient client) {
-     *        this.client = client;
-     *    }
+     * public ConnectAndListScripts(ManageSieveClient client) {
+     * this.client = client;
+     * }
      *
      * 4. Then tests can inject mocks:
-     *    ConnectAndListScripts conn = new ConnectAndListScripts(mockClient);
+     * ConnectAndListScripts conn = new ConnectAndListScripts(mockClient);
      *
      * Without this refactoring, only integration tests with real servers
      * can properly test this class.

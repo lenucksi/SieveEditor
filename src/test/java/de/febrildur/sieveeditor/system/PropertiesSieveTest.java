@@ -37,16 +37,13 @@ class PropertiesSieveTest {
         // Save original user.home and set to temp directory for testing
         originalUserHome = System.getProperty("user.home");
         System.setProperty("user.home", tempDir.toString());
-        // System.out.println("Orig User Home" + originalUserHome + "\n new Home for
-        // test:" + System.getProperty("user.home"));
 
-        testingPropFilePath = tempDir.resolve(".local/share/sieveeditor/profiles"); // FIXME: VErmutlich funktioniert
+        testingPropFilePath = tempDir.resolve(".local/share/sieveeditor/profiles");
 
+        // We need to bypass the real AppDirectory service for testing.
+        // AppDirectoryService reads this property and then switches to the path here.
+        // Kludgy but the least ugly.
         System.setProperty(SIEVEEDITOR_TEST_DIR, testingPropFilePath.toAbsolutePath().toString());
-        // FIXME: AppDirectoryServce can probably be extended with custom location for
-        // testing somewhere in constructors and static and then used everywhere there
-        // and here. otherweise would need epic extension to handle this everywhere. If
-        // not, it fucks up windows testing.
 
         // Clean up any existing files from previous test runs (Windows isolation issue)
         cleanupProfilesDirectory();
@@ -66,20 +63,13 @@ class PropertiesSieveTest {
         cleanupProfilesDirectory();
 
         // Restore original user.home
-        String testUserHome = System.getProperty("user.home");
         System.setProperty("user.home", originalUserHome);
-        // System.out.println(
-        // "Test User Home" + testUserHome + "\n restored Home:" +
-        // System.getProperty("user.home"));
 
         System.clearProperty(SIEVEEDITOR_TEST_DIR);
     }
 
     private void cleanupProfilesDirectory() throws IOException {
-        // das nicht auf Windows mit dieser
-        // LocalDir resolution GEschichte
-        if (Files.exists(testingPropFilePath)) { // TODO: Isn't there a blank remove directory call? Sounds like b0rked
-                                                 // test
+        if (Files.exists(testingPropFilePath)) {
             try (var stream = Files.walk(testingPropFilePath)) {
                 stream.sorted((a, b) -> b.compareTo(a)) // Delete files before directories
                         .forEach(path -> {
@@ -246,13 +236,9 @@ class PropertiesSieveTest {
         assertThat(loadedPersonal.getUsername()).isEqualTo("personal.user");
     }
 
-    // TODO: Fails on Windows, finds profiles from
-    // shouldHandleProfileNameWithSpecialCharacters test
     @Test
     void shouldGetAvailableProfiles() throws IOException {
         // Given - Create multiple profiles
-        // FIXME: Leads to creation through AppDirectoryService, not the default in user
-        // home this cleaned up on init, i.e.: This writes to the user dir.
         new PropertiesSieve("profile1").write();
         new PropertiesSieve("profile2").write();
         new PropertiesSieve("profile3").write();
@@ -269,33 +255,6 @@ class PropertiesSieveTest {
 
     }
 
-    // TODO: Fails on Windows
-    /*
-     *
-     * Error: PropertiesSieveTest.shouldReturnDefaultProfileWhenNoneExist:237
-     * Expecting actual:
-     * ["default",
-     * "existing",
-     * "personal",
-     * "profile1",
-     * "profile2",
-     * "profile3",
-     * "test-profile_123",
-     * "valid",
-     * "work"]
-     * to contain exactly (and in same order):
-     * ["default"]
-     * but some elements were not expected:
-     * ["existing",
-     * "personal",
-     * "profile1",
-     * "profile2",
-     * "profile3",
-     * "test-profile_123",
-     * "valid",
-     * "work"]
-     *
-     */
     @Test
     void shouldReturnDefaultProfileWhenNoneExist() {
         // Given - No profiles directory exists yet
@@ -328,35 +287,6 @@ class PropertiesSieveTest {
         assertThat(profiles).containsExactly("default");
     }
 
-    // TODO: Fails on windows
-    /*
-     * Error: PropertiesSieveTest.shouldReturnSortedProfiles:271
-     * Expecting actual:
-     * ["apple",
-     * "banana",
-     * "default",
-     * "existing",
-     * "personal",
-     * "profile1",
-     * "profile2",
-     * "profile3",
-     * "test-profile_123",
-     * "valid",
-     * "work",
-     * "zebra"]
-     * to contain exactly (and in same order):
-     * ["apple", "banana", "zebra"]
-     * but some elements were not expected:
-     * ["default",
-     * "existing",
-     * "personal",
-     * "profile1",
-     * "profile2",
-     * "profile3",
-     * "test-profile_123",
-     * "valid",
-     * "work"]
-     */
     @Test
     void shouldReturnSortedProfiles() throws IOException {
         // Given - Create profiles in random order
@@ -603,8 +533,6 @@ class PropertiesSieveTest {
     void shouldHandleVeryLongPassword() throws IOException {
         // Given - 256 character password
 
-        // FIXME: Pollutes other tests. Probably should new file before and then kill
-        // afterwards.
         String longPassword = "a".repeat(256);
         properties.setPassword(longPassword);
 
@@ -656,37 +584,9 @@ class PropertiesSieveTest {
         profile.write();
     }
 
-    // FIXME: Fails on windows with more than existing content
-    /*
-     *
-     * Error: PropertiesSieveTest.shouldNotListNonPropertiesFiles:560
-     * Expecting actual:
-     * ["default",
-     * "existing",
-     * "personal",
-     * "profile1",
-     * "profile2",
-     * "profile3",
-     * "test-profile_123",
-     * "valid",
-     * "work"]
-     * to contain exactly (and in same order):
-     * ["valid"]
-     * but some elements were not expected:
-     * ["default",
-     * "existing",
-     * "personal",
-     * "profile1",
-     * "profile2",
-     * "profile3",
-     * "test-profile_123",
-     * "work"]
-     *
-     */
     @Test
     void shouldNotListNonPropertiesFiles() throws IOException {
-        // Given - Create some non-.properties files //FIXME: Needs adaption to real
-        // env.
+        // Given - Create some non-.properties files
         File profilesDir = tempDir.resolve(".sieveprofiles").toFile();
         profilesDir.mkdirs();
         new File(profilesDir, "readme.txt").createNewFile();

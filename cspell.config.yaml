@@ -1,0 +1,12 @@
+version: "0.2"
+ignorePaths: []
+dictionaryDefinitions: []
+dictionaries: []
+words:
+- KeePass
+- KeePassXC
+- fluffypeople
+- managesieve
+- assertj
+ignoreWords: []
+import: []

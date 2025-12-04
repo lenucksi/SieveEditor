@@ -57,7 +57,12 @@ jobs:
         with:
           name: sieveeditor-jar
           path: target/SieveEditor-jar-with-dependencies.jar
-          retention-days: 7
+          retention-days: 30
+
+      - name: Attest JAR provenance
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
+        with:
+          subject-path: target/SieveEditor-jar-with-dependencies.jar
 
   # Linux packaging: DEB, RPM
   package-linux:
@@ -419,7 +424,7 @@ jobs:
         uses: flatpak/flatpak-github-actions/flatpak-builder@92ae9851ad316786193b1fd3f40c4b51eb5cb101 # v6.6
         with:
           bundle: SieveEditor-${{ steps.version.outputs.version }}.flatpak
-          manifest-path: de.febrildur.sieveeditor.yml
+          manifest-path: flatpak/de.febrildur.sieveeditor.yml
           cache-key: flatpak-builder-${{ hashFiles('de.febrildur.sieveeditor.yml') }}
           arch: x86_64
           branch: master

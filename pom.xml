@@ -142,7 +142,7 @@
 		<dependency>
 			<groupId>com.github.lenucksi</groupId>
 			<artifactId>ManageSieveJ</artifactId>
-			<version>managesievej-v0.3.8</version>
+			<version>managesievej-v0.3.9</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>

@@ -24,8 +24,10 @@ import static org.assertj.core.api.Assertions.*;
  */
 class PropertiesSieveTest {
 
+    private static final String SIEVEEDITOR_TEST_DIR = "sieveeditor.test.dir";
     private PropertiesSieve properties;
     private String originalUserHome;
+    private Path testingPropFilePath;
 
     @TempDir
     Path tempDir;
@@ -37,6 +39,14 @@ class PropertiesSieveTest {
         System.setProperty("user.home", tempDir.toString());
         // System.out.println("Orig User Home" + originalUserHome + "\n new Home for
         // test:" + System.getProperty("user.home"));
+
+        testingPropFilePath = tempDir.resolve(".local/share/sieveeditor/profiles"); // FIXME: VErmutlich funktioniert
+
+        System.setProperty(SIEVEEDITOR_TEST_DIR, testingPropFilePath.toAbsolutePath().toString());
+        // FIXME: AppDirectoryServce can probably be extended with custom location for
+        // testing somewhere in constructors and static and then used everywhere there
+        // and here. otherweise would need epic extension to handle this everywhere. If
+        // not, it fucks up windows testing.
 
         // Clean up any existing files from previous test runs (Windows isolation issue)
         cleanupProfilesDirectory();
@@ -61,14 +71,16 @@ class PropertiesSieveTest {
         // System.out.println(
         // "Test User Home" + testUserHome + "\n restored Home:" +
         // System.getProperty("user.home"));
+
+        System.clearProperty(SIEVEEDITOR_TEST_DIR);
     }
 
     private void cleanupProfilesDirectory() throws IOException {
-        Path profilesDir = tempDir.resolve(".local/share/sieveeditor/profiles"); // FIXME: VErmutlich funktioniert genau
-                                                                                 // das nicht auf Windows mit dieser
-                                                                                 // LocalDir resolution GEschichte
-        if (Files.exists(profilesDir)) { // TODO: Isn't there a blank remove directory call? Sounds like b0rked test
-            try (var stream = Files.walk(profilesDir)) {
+        // das nicht auf Windows mit dieser
+        // LocalDir resolution GEschichte
+        if (Files.exists(testingPropFilePath)) { // TODO: Isn't there a blank remove directory call? Sounds like b0rked
+                                                 // test
+            try (var stream = Files.walk(testingPropFilePath)) {
                 stream.sorted((a, b) -> b.compareTo(a)) // Delete files before directories
                         .forEach(path -> {
                             try {
@@ -168,18 +180,6 @@ class PropertiesSieveTest {
         assertThat(profileFile.toFile()).exists();
     }
 
-    // TODO: Fails on Windows with shouldHandleVeryLongPassword remainders
-    /*
-     * Error: de.febrildur.sieveeditor.system.PropertiesSieveTest.
-     * shouldLoadDefaultValuesWhenFileIsEmpty -- Time elapsed: 0.089 s <<< FAILURE!
-     * java.lang.AssertionError:
-     *
-     * Expecting empty but was:
-     * "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-     * at de.febrildur.sieveeditor.system.PropertiesSieveTest.
-     * shouldLoadDefaultValuesWhenFileIsEmpty(PropertiesSieveTest.java:155)
-     *
-     */
     @Test
     void shouldLoadDefaultValuesWhenFileIsEmpty() throws IOException {
         // When
@@ -251,6 +251,8 @@ class PropertiesSieveTest {
     @Test
     void shouldGetAvailableProfiles() throws IOException {
         // Given - Create multiple profiles
+        // FIXME: Leads to creation through AppDirectoryService, not the default in user
+        // home this cleaned up on init, i.e.: This writes to the user dir.
         new PropertiesSieve("profile1").write();
         new PropertiesSieve("profile2").write();
         new PropertiesSieve("profile3").write();
@@ -264,6 +266,7 @@ class PropertiesSieveTest {
         assertThat(profiles)
                 .hasSize(3)
                 .contains("profile1", "profile2", "profile3");
+
     }
 
     // TODO: Fails on Windows
@@ -682,7 +685,8 @@ class PropertiesSieveTest {
      */
     @Test
     void shouldNotListNonPropertiesFiles() throws IOException {
-        // Given - Create some non-.properties files
+        // Given - Create some non-.properties files //FIXME: Needs adaption to real
+        // env.
         File profilesDir = tempDir.resolve(".sieveprofiles").toFile();
         profilesDir.mkdirs();
         new File(profilesDir, "readme.txt").createNewFile();

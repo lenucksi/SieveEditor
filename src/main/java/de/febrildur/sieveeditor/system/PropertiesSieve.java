@@ -33,17 +33,17 @@ public class PropertiesSieve {
 	// Encryption algorithms in order of preference
 	// AES-based (strongest, require IV generator)
 	private static final String[] AES_ALGORITHMS = {
-		"PBEWITHHMACSHA512ANDAES_256",  // Strongest
-		"PBEWITHHMACSHA256ANDAES_256"   // Strong
+			"PBEWITHHMACSHA512ANDAES_256", // Strongest
+			"PBEWITHHMACSHA256ANDAES_256" // Strong
 	};
 	// TripleDES-based (strong, no IV needed, widely compatible)
 	private static final String[] TRIPLEDES_ALGORITHMS = {
-		"PBEWithSHA1AndDESede",         // TripleDES with SHA1
-		"PBEWithMD5AndTripleDES"        // TripleDES with MD5
+			"PBEWithSHA1AndDESede", // TripleDES with SHA1
+			"PBEWithMD5AndTripleDES" // TripleDES with MD5
 	};
 	// DES-based (weak but universally compatible, last resort)
 	private static final String[] DES_ALGORITHMS = {
-		"PBEWithMD5AndDES"              // Original algorithm (weak)
+			"PBEWithMD5AndDES" // Original algorithm (weak)
 	};
 	private static final int KEY_OBTENTION_ITERATIONS = 10000;
 
@@ -68,13 +68,14 @@ public class PropertiesSieve {
 	public PropertiesSieve(String profileName, String forcedBackend) {
 		this.profileName = profileName;
 
-		// Initialize master key provider (may show UI dialogs for user selection/authentication)
+		// Initialize master key provider (may show UI dialogs for user
+		// selection/authentication)
 		try {
 			this.masterKeyProvider = MasterKeyProviderFactory.create(forcedBackend);
 		} catch (CredentialException e) {
 			LOGGER.log(Level.SEVERE, "Failed to initialize master key provider", e);
 			throw new RuntimeException("Failed to initialize secure credential storage. " +
-				"Please ensure you have a supported credential manager available.", e);
+					"Please ensure you have a supported credential manager available.", e);
 		}
 
 		this.encryptor = createEncryptor();
@@ -91,8 +92,10 @@ public class PropertiesSieve {
 	}
 
 	/**
-	 * Creates a configured encryptor with strong algorithm and master key from secure storage.
-	 * Tries algorithms in order of strength, falling back to more compatible options.
+	 * Creates a configured encryptor with strong algorithm and master key from
+	 * secure storage.
+	 * Tries algorithms in order of strength, falling back to more compatible
+	 * options.
 	 *
 	 * Algorithm tiers:
 	 * 1. AES-based (strongest, requires IV generator)
@@ -109,7 +112,7 @@ public class PropertiesSieve {
 		} catch (CredentialException e) {
 			LOGGER.log(Level.SEVERE, "Failed to retrieve master key", e);
 			throw new RuntimeException("Failed to retrieve master encryption key. " +
-				"Cannot proceed without encryption key.", e);
+					"Cannot proceed without encryption key.", e);
 		}
 
 		// If this is first time, generate and store a random master key
@@ -140,7 +143,7 @@ public class PropertiesSieve {
 				return enc;
 			} catch (Exception e) {
 				LOGGER.log(Level.FINE, "AES algorithm {0} not available: {1}",
-					new Object[]{algorithm, e.getMessage()});
+						new Object[] { algorithm, e.getMessage() });
 				lastException = e;
 			}
 		}
@@ -159,7 +162,7 @@ public class PropertiesSieve {
 				return enc;
 			} catch (Exception e) {
 				LOGGER.log(Level.FINE, "TripleDES algorithm {0} not available: {1}",
-					new Object[]{algorithm, e.getMessage()});
+						new Object[] { algorithm, e.getMessage() });
 				lastException = e;
 			}
 		}
@@ -175,11 +178,11 @@ public class PropertiesSieve {
 				// Test the algorithm by encrypting a test string
 				enc.encrypt("test");
 				LOGGER.log(Level.WARNING, "Using weak DES encryption algorithm: {0}. " +
-					"Consider upgrading JCE for stronger encryption.", algorithm);
+						"Consider upgrading JCE for stronger encryption.", algorithm);
 				return enc;
 			} catch (Exception e) {
 				LOGGER.log(Level.SEVERE, "Even DES algorithm {0} failed: {1}",
-					new Object[]{algorithm, e.getMessage()});
+						new Object[] { algorithm, e.getMessage() });
 				lastException = e;
 			}
 		}
@@ -187,7 +190,7 @@ public class PropertiesSieve {
 		// None of the algorithms worked
 		LOGGER.log(Level.SEVERE, "No encryption algorithm available", lastException);
 		throw new RuntimeException("No suitable encryption algorithm available. " +
-			"Please ensure Java Cryptography Extension (JCE) is properly configured.", lastException);
+				"Please ensure Java Cryptography Extension (JCE) is properly configured.", lastException);
 	}
 
 	/**
@@ -239,8 +242,8 @@ public class PropertiesSieve {
 			prop.setProperty("sieve.server", server != null ? server : "");
 			prop.setProperty("sieve.port", Integer.toString(port));
 			prop.setProperty("sieve.user", username != null ? username : "");
-			prop.setProperty("sieve.password", password != null ?
-				String.format("ENC(%s)", encryptor.encrypt(password)) : "");
+			prop.setProperty("sieve.password",
+					password != null ? String.format("ENC(%s)", encryptor.encrypt(password)) : "");
 
 			prop.store(output, null);
 
@@ -284,7 +287,6 @@ public class PropertiesSieve {
 		this.password = password;
 	}
 
-	// Profile management methods
 	public static List<String> getAvailableProfiles() {
 		Path profilesDir = AppDirectoryService.getProfilesDir();
 		File profilesDirFile = profilesDir.toFile();
@@ -294,10 +296,10 @@ public class PropertiesSieve {
 		}
 
 		List<String> profiles = Arrays.stream(profilesDirFile.listFiles())
-			.filter(f -> f.getName().endsWith(".properties"))
-			.map(f -> f.getName().replace(".properties", ""))
-			.sorted()
-			.collect(Collectors.toList());
+				.filter(f -> f.getName().endsWith(".properties"))
+				.map(f -> f.getName().replace(".properties", ""))
+				.sorted()
+				.collect(Collectors.toList());
 
 		if (profiles.isEmpty()) {
 			return Arrays.asList("default");
@@ -330,6 +332,8 @@ public class PropertiesSieve {
 	}
 
 	public static boolean profileExists(String profileName) {
+		Path lastUsedFile = AppDirectoryService.getUserConfigDir().resolve(".lastused");
+
 		Path profileFile = AppDirectoryService.getProfilesDir().resolve(profileName + ".properties");
 		return Files.exists(profileFile);
 	}
@@ -357,7 +361,8 @@ public class PropertiesSieve {
 	}
 
 	/**
-	 * Migrates profiles from old ~/.sieveprofiles to new platform-specific locations.
+	 * Migrates profiles from old ~/.sieveprofiles to new platform-specific
+	 * locations.
 	 */
 	public static void migrateOldProperties() {
 		Path legacyDir = AppDirectoryService.getLegacyProfilesDir();
@@ -367,23 +372,23 @@ public class PropertiesSieve {
 
 		Path newProfilesDir = AppDirectoryService.getProfilesDir();
 		LOGGER.log(Level.INFO, "Migrating profiles from {0} to {1}",
-			new Object[]{legacyDir, newProfilesDir});
+				new Object[] { legacyDir, newProfilesDir });
 
 		try {
 			Files.list(legacyDir)
-				.filter(p -> p.toString().endsWith(".properties"))
-				.forEach(oldFile -> {
-					try {
-						Path newFile = newProfilesDir.resolve(oldFile.getFileName());
-						if (!Files.exists(newFile)) {
-							Files.copy(oldFile, newFile);
-							AppDirectoryService.setSecureFilePermissions(newFile);
-							LOGGER.log(Level.INFO, "Migrated profile: {0}", oldFile.getFileName());
+					.filter(p -> p.toString().endsWith(".properties"))
+					.forEach(oldFile -> {
+						try {
+							Path newFile = newProfilesDir.resolve(oldFile.getFileName());
+							if (!Files.exists(newFile)) {
+								Files.copy(oldFile, newFile);
+								AppDirectoryService.setSecureFilePermissions(newFile);
+								LOGGER.log(Level.INFO, "Migrated profile: {0}", oldFile.getFileName());
+							}
+						} catch (IOException e) {
+							LOGGER.log(Level.WARNING, "Failed to migrate profile: " + oldFile, e);
 						}
-					} catch (IOException e) {
-						LOGGER.log(Level.WARNING, "Failed to migrate profile: " + oldFile, e);
-					}
-				});
+					});
 
 			// Also migrate .lastused file if it exists
 			Path oldLastUsed = legacyDir.resolve(".lastused");

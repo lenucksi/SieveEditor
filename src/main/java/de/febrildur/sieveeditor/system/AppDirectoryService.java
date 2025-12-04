@@ -16,7 +16,8 @@ import java.util.logging.Logger;
 
 /**
  * Provides platform-specific application directories following OS standards:
- * - Linux: XDG Base Directory Specification (~/.local/share, ~/.config, ~/.cache)
+ * - Linux: XDG Base Directory Specification (~/.local/share, ~/.config,
+ * ~/.cache)
  * - Windows: AppData (%LOCALAPPDATA%)
  * - macOS: Application Support (~/Library/Application Support)
  */
@@ -26,6 +27,8 @@ public class AppDirectoryService {
 	private static final String APP_NAME = "sieveeditor";
 	private static final String APP_AUTHOR = "febrildur";
 	private static final String APP_VERSION = null; // Don't include version in path
+
+	private static final String SIEVEEDITOR_TEST_DIR = "sieveeditor.test.dir";
 
 	private static final AppDirs APP_DIRS = AppDirsFactory.getInstance();
 
@@ -40,8 +43,16 @@ public class AppDirectoryService {
 	 * @return Path to user data directory
 	 */
 	public static Path getUserDataDir() {
-		String dataDir = APP_DIRS.getUserDataDir(APP_NAME, APP_VERSION, APP_AUTHOR);
-		Path path = Paths.get(dataDir);
+		Path path = null;
+		if (System.getProperties().containsKey(SIEVEEDITOR_TEST_DIR)) {
+			path = Path.of(System.getProperty(SIEVEEDITOR_TEST_DIR));
+			LOGGER.log(Level.WARNING,
+					"AppDirectoryService.getUserDataDir: Using explicit properties file location. Should only be used in testing. BE CAREFUL! \n Using:"
+							+ path);
+		} else {
+			String dataDir = APP_DIRS.getUserDataDir(APP_NAME, APP_VERSION, APP_AUTHOR);
+			path = Paths.get(dataDir);
+		}
 		ensureDirectoryExists(path, "700");
 		return path;
 	}
@@ -96,7 +107,7 @@ public class AppDirectoryService {
 
 		try {
 			return Files.list(legacyDir)
-				.anyMatch(p -> p.toString().endsWith(".properties"));
+					.anyMatch(p -> p.toString().endsWith(".properties"));
 		} catch (IOException e) {
 			LOGGER.log(Level.WARNING, "Failed to check legacy directory", e);
 			return false;
@@ -106,7 +117,7 @@ public class AppDirectoryService {
 	/**
 	 * Ensures a directory exists with secure permissions (700 on POSIX systems).
 	 *
-	 * @param dir Path to directory
+	 * @param dir        Path to directory
 	 * @param posixPerms POSIX permissions string (e.g., "700", "600")
 	 */
 	private static void ensureDirectoryExists(Path dir, String posixPerms) {
@@ -121,11 +132,10 @@ public class AppDirectoryService {
 			// Set permissions on POSIX systems (Linux, macOS)
 			try {
 				Set<PosixFilePermission> perms = PosixFilePermissions.fromString(
-					"rwx------".substring(0, posixPerms.length() == 3 ? 9 : 6)
-				);
+						"rwx------".substring(0, posixPerms.length() == 3 ? 9 : 6));
 				Files.setPosixFilePermissions(dir, perms);
 				LOGGER.log(Level.FINE, "Set directory permissions to {0} for: {1}",
-					new Object[]{posixPerms, dir});
+						new Object[] { posixPerms, dir });
 			} catch (UnsupportedOperationException e) {
 				// Non-POSIX system (Windows) - permissions handled by OS
 				LOGGER.log(Level.FINE, "POSIX permissions not supported on this OS");

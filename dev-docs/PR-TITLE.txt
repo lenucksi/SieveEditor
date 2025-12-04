@@ -1,3 +1,0 @@
-feat(security)!: fix 5 vulnerabilities and add interactive certificate trust dialog
-
-BREAKING CHANGE: Passwords must be re-entered due to encryption key change. Self-signed certificates now require user approval through interactive dialog.

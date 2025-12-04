@@ -19,7 +19,7 @@ set -e  # Exit on error
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Define JAR file location
-JARFILE="$SCRIPT_DIR/target/SieveEditor-jar-with-dependencies.jar"
+JARFILE="$SCRIPT_DIR/../target/SieveEditor-jar-with-dependencies.jar"
 
 # Build if JAR doesn't exist
 if [ ! -f "$JARFILE" ]; then

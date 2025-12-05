@@ -1,0 +1,150 @@
+name: Update Flatpak Maven Dependencies
+
+on:
+  # Run on release
+  release:
+    types: [published]
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+  # Run weekly to catch dependency updates
+  schedule:
+    - cron: '0 3 * * 1'  # Every Monday at 3 AM UTC
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for proper commits
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Make scripts executable
+        run: chmod +x scripts/fetch-maven-deps-for-flatpak.sh
+
+      - name: Fetch Maven dependencies
+        run: scripts/fetch-maven-deps-for-flatpak.sh
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet flatpak/maven-dependencies.yaml; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes detected in maven-dependencies.yaml"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in maven-dependencies.yaml"
+
+            # Show diff summary
+            echo "## Dependency Changes" >> $GITHUB_STEP_SUMMARY
+            echo '```diff' >> $GITHUB_STEP_SUMMARY
+            git diff flatpak/maven-dependencies.yaml | head -100 >> $GITHUB_STEP_SUMMARY || true
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Commit changes (on release)
+        if: steps.changes.outputs.changed == 'true' && github.event_name == 'release'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add flatpak/maven-dependencies.yaml
+
+          # Get release tag if available
+          RELEASE_TAG="${{ github.event.release.tag_name }}"
+          if [ -n "$RELEASE_TAG" ]; then
+            COMMIT_MSG="deps(flatpak): update Maven dependencies for ${RELEASE_TAG}"
+          else
+            COMMIT_MSG="deps(flatpak): update Maven dependencies"
+          fi
+
+          git commit -m "$COMMIT_MSG" \
+            -m "Automated dependency update from GitHub Actions" \
+            -m "Triggered by: ${{ github.event_name }}" \
+            -m "Workflow: ${{ github.workflow }}"
+
+          git push
+
+      - name: Create Pull Request (on schedule or manual)
+        if: steps.changes.outputs.changed == 'true' && github.event_name != 'release'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            deps(flatpak): update Maven dependencies
+
+            Automated dependency update from scheduled workflow.
+
+            Please review the changes to ensure all dependencies are expected.
+          branch: update-flatpak-deps-${{ github.run_number }}
+          delete-branch: true
+          title: 'deps(flatpak): Update Maven dependencies'
+          body: |
+            ## Automated Dependency Update
+
+            This PR updates the Flatpak Maven dependencies file.
+
+            ### Changes
+            - Updated `flatpak/maven-dependencies.yaml`
+            - Generated from latest `pom.xml`
+
+            ### Triggered By
+            - Event: ${{ github.event_name }}
+            - Workflow: ${{ github.workflow }}
+            - Run: ${{ github.run_number }}
+
+            ### Next Steps
+            1. Review the dependency changes below
+            2. Ensure all new/updated dependencies are expected
+            3. Merge if everything looks good
+
+            ### Dependency Diff
+            See the "Files changed" tab for the full diff.
+
+            ---
+            🤖 This PR was automatically created by GitHub Actions
+          labels: |
+            dependencies
+            flatpak
+            automated
+
+      - name: Upload dependency file as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maven-dependencies-${{ github.run_number }}
+          path: flatpak/maven-dependencies.yaml
+          retention-days: 30
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Workflow Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Event: \`${{ github.event_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Changes detected: \`${{ steps.changes.outputs.changed }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Output file: \`flatpak/maven-dependencies.yaml\`" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f flatpak/maven-dependencies.yaml ]; then
+            ENTRY_COUNT=$(grep -c "^- type: file" flatpak/maven-dependencies.yaml || echo "0")
+            echo "- Total entries: \`${ENTRY_COUNT}\`" >> $GITHUB_STEP_SUMMARY
+          fi

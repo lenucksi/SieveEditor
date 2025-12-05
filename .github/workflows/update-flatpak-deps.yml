@@ -129,7 +129,7 @@ jobs:
 
       - name: Upload dependency file as artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: maven-dependencies-${{ github.run_number }}
           path: flatpak/maven-dependencies.yaml

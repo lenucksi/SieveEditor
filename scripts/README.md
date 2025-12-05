@@ -1,0 +1,152 @@
+# SieveEditor Scripts
+
+This directory contains automation scripts for the SieveEditor project.
+
+## Flatpak Maven Dependency Tools
+
+### fetch-maven-deps-for-flatpak.sh
+
+Automated script for generating Flatpak Maven dependencies.
+
+**Usage**:
+
+```bash
+# From repository root (default output: flatpak/maven-dependencies.yaml)
+scripts/fetch-maven-deps-for-flatpak.sh
+
+# Custom output directory
+scripts/fetch-maven-deps-for-flatpak.sh /path/to/output
+```
+
+**What it does**:
+
+1. Cleans up old temporary directories
+2. Runs Maven build with temporary local repository
+3. Extracts download log
+4. Generates `maven-dependencies.yaml` with SHA256 checksums
+5. Shows diff if previous version exists
+6. Cleans up temporary files
+
+**Output**: `flatpak/maven-dependencies.yaml` (or custom directory)
+
+---
+
+### generate_flatpak_maven_sources.py
+
+Python script that converts Maven download logs to Flatpak YAML format.
+
+**Usage**:
+
+```bash
+python3 scripts/generate_flatpak_maven_sources.py <log_file> <maven_repo> <output_yaml>
+```
+
+**Example**:
+
+```bash
+python3 scripts/generate_flatpak_maven_sources.py \
+  mvn-download.log \
+  mvn-dep-fetch-abc123/ \
+  maven-dependencies.yaml
+```
+
+**Features**:
+
+- Validates log file matches repository contents
+- Supports multiple Maven repositories (Central, JitPack, etc.)
+- Calculates SHA256 checksums
+- Strict error checking
+
+---
+
+### test_generate_flatpak_maven_sources.py
+
+Unit tests for the generator script.
+
+**Usage**:
+
+```bash
+# Run all tests
+python3 -m unittest scripts/test_generate_flatpak_maven_sources.py
+
+# Verbose output
+python3 -m unittest scripts/test_generate_flatpak_maven_sources.py -v
+
+# Run specific test
+python3 -m unittest scripts.test_generate_flatpak_maven_sources.TestExtractRelativePath
+```
+
+**Coverage**: 19 tests covering:
+
+- URL parsing (Maven Central, JitPack)
+- Log file parsing
+- Repository scanning
+- SHA256 calculation
+- YAML generation
+
+---
+
+## Other Scripts
+
+### build-flatpak.sh
+
+Builds the Flatpak package locally.
+
+**Usage**: `scripts/build-flatpak.sh`
+
+---
+
+### check-dependencies.sh
+
+Checks for missing or outdated dependencies.
+
+**Usage**: `scripts/check-dependencies.sh`
+
+---
+
+### sieveeditor.sh
+
+Launcher script for SieveEditor.
+
+**Usage**: `scripts/sieveeditor.sh`
+
+---
+
+## Requirements
+
+### For Flatpak dependency tools
+
+- **Python 3.6+** (standard library only, no external packages)
+- **Maven 3.6+**
+- **Java 21** (for building the project)
+- **Bash 4.0+**
+
+### For other scripts
+
+See individual script headers for requirements.
+
+## Testing
+
+```bash
+# Test Flatpak dependency generation
+scripts/fetch-maven-deps-for-flatpak.sh
+
+# Verify output
+ls -lh flatpak/maven-dependencies.yaml
+grep -c "^- type: file" flatpak/maven-dependencies.yaml  # Should be ~324
+```
+
+## Contributing
+
+When adding new scripts:
+
+1. Make them executable: `chmod +x scripts/newscript.sh`
+2. Add shebang line: `#!/bin/bash` or `#!/usr/bin/env python3`
+3. Add description comment at top
+4. Update this README
+5. Follow existing naming conventions
+6. Add error handling
+
+## License
+
+Same as SieveEditor project.

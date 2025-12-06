@@ -1,0 +1,60 @@
+name: Update Metainfo Release
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - master
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-metainfo:
+    name: Update Metainfo Release Description
+    # Only run on release-please PRs
+    if: startsWith(github.event.pull_request.head.ref, 'release-please--')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - name: Checkout PR branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: '3.x'
+
+      - name: Update metainfo.xml with release notes
+        run: |
+          python3 scripts/update-metainfo-release.py
+        continue-on-error: false
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet flatpak/io.github.lenucksi.SieveEditor.metainfo.xml; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit metainfo changes
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add flatpak/io.github.lenucksi.SieveEditor.metainfo.xml
+          git commit -m "chore(flatpak): update metainfo.xml release description
+
+          Automatically generated from CHANGELOG.md by update-metainfo-release.py"
+          git push

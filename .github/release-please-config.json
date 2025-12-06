@@ -11,6 +11,10 @@
           "type": "xml",
           "path": "flatpak/io.github.lenucksi.SieveEditor.metainfo.xml",
           "xpath": "/component/releases/release/@version"
+        },
+        {
+          "type": "generic",
+          "path": "flatpak/io.github.lenucksi.SieveEditor.metainfo.xml"
         }
       ],
       "changelog-sections": [

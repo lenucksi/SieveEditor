@@ -30,7 +30,9 @@
   <url type="bugtracker">https://github.com/lenucksi/SieveEditor/issues</url>
   <url type="vcs-browser">https://github.com/lenucksi/SieveEditor</url>
 
-  <developer_name>SieveEditor Contributors</developer_name>
+  <developer id="io.github.lenucksi" >
+	  <name>SieveEditor Contributors</name>
+  </developer>
 
   <categories>
     <category>Network</category>
@@ -48,35 +50,35 @@
   <screenshots>
     <screenshot type="default">
       <caption>Main window with syntax highlighting</caption>
-      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/master/screenshots/mainwindow.png</image>
+      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/v1.0.2/screenshots/mainwindow.png</image>
     </screenshot>
     <screenshot>
       <caption>Server connection dialog</caption>
-      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/master/screenshots/connect.png</image>
+      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/v1.0.2/screenshots/connect.png</image>
     </screenshot>
     <screenshot>
       <caption>Manage scripts dialog</caption>
-      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/master/screenshots/manage-scripts.png</image>
+      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/v1.0.2/screenshots/manage-scripts.png</image>
     </screenshot>
     <screenshot>
       <caption>Sieve menu options</caption>
-      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/master/screenshots/menu-sieve.png</image>
+      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/v1.0.2/screenshots/menu-sieve.png</image>
     </screenshot>
     <screenshot>
       <caption>Search and replace functionality</caption>
-      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/master/screenshots/searchreplace.png</image>
+      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/v1.0.2/screenshots/searchreplace.png</image>
     </screenshot>
     <screenshot>
       <caption>Template menu options</caption>
-      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/master/screenshots/menu-template.png</image>
+      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/v1.0.2/screenshots/menu-template.png</image>
     </screenshot>
     <screenshot>
       <caption>Server script check</caption>
-      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/master/screenshots/script-check.png</image>
+      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/v1.0.2/screenshots/script-check.png</image>
     </screenshot>
     <screenshot>
       <caption>File menu options</caption>
-      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/master/screenshots/menu-localops.png</image>
+      <image>https://raw.githubusercontent.com/lenucksi/SieveEditor/v1.0.2/screenshots/menu-localops.png</image>
     </screenshot>
   </screenshots>
 
@@ -85,7 +87,7 @@
   </content_rating>
 
   <releases>
-    <release version="0.9.2.6" date="2025-11-15">
+    <release version="1.0.2" date="2025-12-05">
       <description>
         <p>Initial release with core functionality</p>
       </description>

@@ -37,7 +37,7 @@ jobs:
 
     steps:
       - name: Checkout SieveEditor repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: sieveeditor
 
@@ -51,7 +51,7 @@ jobs:
           repositories: ${{ inputs.flathub_repo || 'lenucksi/flathub' }}
 
       - name: Checkout Flathub repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ inputs.flathub_repo || 'lenucksi/flathub' }}
           token: ${{ steps.app-token.outputs.token }}

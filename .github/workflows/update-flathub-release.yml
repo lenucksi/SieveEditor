@@ -1,0 +1,140 @@
+name: Update Flathub Release Version
+
+# This workflow updates the Flatpak manifest in the Flathub repository
+# when a new release is published, so Flathub builds the new version
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to update to (e.g., v0.0.2)'
+        required: true
+        type: string
+      flathub_branch:
+        description: 'Branch to push to in Flathub repo'
+        required: false
+        default: 'master'
+        type: string
+      flathub_repo:
+        description: 'Flathub repository (org/repo)'
+        required: false
+        default: 'lenucksi/flathub'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  update-flathub-manifest:
+    runs-on: ubuntu-latest
+
+    # Only run if GitHub App is configured
+    if: vars.FLATHUB_APP_ID != '' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout SieveEditor repository
+        uses: actions/checkout@v4
+        with:
+          path: sieveeditor
+
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.FLATHUB_APP_ID }}
+          private-key: ${{ secrets.FLATHUB_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ inputs.flathub_repo || 'lenucksi/flathub' }}
+
+      - name: Checkout Flathub repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.flathub_repo || 'lenucksi/flathub' }}
+          token: ${{ steps.app-token.outputs.token }}
+          path: flathub
+          ref: ${{ inputs.flathub_branch || 'master' }}
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "release" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+          else
+            VERSION="${{ inputs.version }}"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Updating to version: ${VERSION}"
+
+      - name: Update Flatpak manifest with new version
+        working-directory: flathub
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          # Find the Flatpak manifest file
+          MANIFEST=$(find . -maxdepth 1 -name "*.yml" -o -name "*.yaml" -o -name "*.json" | grep -E "io\.github\.lenucksi\.SieveEditor" | head -1)
+
+          if [ -z "$MANIFEST" ]; then
+            echo "ERROR: Could not find Flatpak manifest file"
+            exit 1
+          fi
+
+          echo "Found manifest: ${MANIFEST}"
+
+          # Update the tag in the manifest
+          # This assumes the manifest has a source with type: git and tag: field
+          sed -i "s|tag: v[0-9]\+\.[0-9]\+\.[0-9]\+|tag: ${VERSION}|g" "$MANIFEST"
+
+          echo "Updated manifest with version ${VERSION}"
+          cat "$MANIFEST"
+
+      - name: Check for changes
+        id: changes
+        working-directory: flathub
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes detected - version might already be up to date"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Changes detected"
+
+            echo "## Flathub Manifest Changes" >> $GITHUB_STEP_SUMMARY
+            echo '```diff' >> $GITHUB_STEP_SUMMARY
+            git diff | head -100 >> $GITHUB_STEP_SUMMARY || true
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Commit and push to Flathub
+        if: steps.changes.outputs.changed == 'true'
+        working-directory: flathub
+        run: |
+          git config user.name "sieveeditor-flathub-bot[bot]"
+          git config user.email "${{ vars.FLATHUB_APP_ID }}+sieveeditor-flathub-bot[bot]@users.noreply.github.com"
+
+          VERSION="${{ steps.version.outputs.version }}"
+          MANIFEST=$(find . -maxdepth 1 -name "*.yml" -o -name "*.yaml" -o -name "*.json" | grep -E "io\.github\.lenucksi\.SieveEditor" | head -1)
+
+          git add "$MANIFEST"
+
+          git commit -m "Update to SieveEditor ${VERSION}" \
+            -m "Automated version update from SieveEditor release" \
+            -m "Source: ${{ github.repository }}" \
+            -m "Release: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${VERSION}"
+
+          git push origin ${{ inputs.flathub_branch || 'master' }}
+
+          echo "## Pushed to Flathub" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Repository: \`${{ inputs.flathub_repo || 'lenucksi/flathub' }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: \`${{ inputs.flathub_branch || 'master' }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Version: \`${VERSION}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Manifest: \`${MANIFEST}\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: No changes summary
+        if: steps.changes.outputs.changed == 'false'
+        run: |
+          echo "## No Changes" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The Flatpak manifest is already up to date with version ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY

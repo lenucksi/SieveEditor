@@ -1,0 +1,129 @@
+name: Push Maven Dependencies to Flathub
+
+# This workflow pushes updated maven-dependencies.yaml to the Flathub repository
+# Uses GitHub App for authentication (recommended over deploy keys)
+
+on:
+  workflow_dispatch:
+    inputs:
+      flathub_branch:
+        description: 'Branch to push to in Flathub repo'
+        required: false
+        default: 'master'
+        type: string
+      flathub_repo:
+        description: 'Flathub repository (org/repo)'
+        required: false
+        default: 'lenucksi/flathub'
+        type: string
+
+  # Uncomment after Flathub acceptance to auto-push on dependency updates
+  # push:
+  #   paths:
+  #     - 'flatpak/maven-dependencies.yaml'
+  #   branches:
+  #     - master
+
+permissions:
+  contents: read
+
+jobs:
+  push-to-flathub:
+    runs-on: ubuntu-latest
+
+    # Only run if GitHub App is configured
+    # Requires: FLATHUB_APP_ID (variable) and FLATHUB_APP_PRIVATE_KEY (secret)
+    if: vars.FLATHUB_APP_ID != '' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout SieveEditor repository
+        uses: actions/checkout@v4
+        with:
+          path: sieveeditor
+
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.FLATHUB_APP_ID }}
+          private-key: ${{ secrets.FLATHUB_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ inputs.flathub_repo || 'lenucksi/flathub' }}
+
+      - name: Checkout Flathub repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.flathub_repo || 'lenucksi/flathub' }}
+          token: ${{ steps.app-token.outputs.token }}
+          path: flathub
+          ref: ${{ inputs.flathub_branch || 'sieve-editor-submission' }}
+
+      - name: Copy maven-dependencies.yaml to Flathub repo
+        run: |
+          echo "Copying maven-dependencies.yaml to Flathub repository..."
+
+          # Check if file exists in source
+          if [ ! -f sieveeditor/flatpak/maven-dependencies.yaml ]; then
+            echo "ERROR: maven-dependencies.yaml not found in source repository"
+            exit 1
+          fi
+
+          # Copy to Flathub repo
+          cp sieveeditor/flatpak/maven-dependencies.yaml flathub/
+
+          echo "File copied successfully"
+
+      - name: Check for changes in Flathub repo
+        id: changes
+        working-directory: flathub
+        run: |
+          if git diff --quiet maven-dependencies.yaml; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes detected in Flathub repository"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in Flathub repository"
+
+            # Show diff summary
+            echo "## Flathub Dependency Changes" >> $GITHUB_STEP_SUMMARY
+            echo '```diff' >> $GITHUB_STEP_SUMMARY
+            git diff maven-dependencies.yaml | head -100 >> $GITHUB_STEP_SUMMARY || true
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Commit and push to Flathub
+        if: steps.changes.outputs.changed == 'true'
+        working-directory: flathub
+        run: |
+          git config user.name "sieveeditor-flathub-bot[bot]"
+          git config user.email "${{ vars.FLATHUB_APP_ID }}+sieveeditor-flathub-bot[bot]@users.noreply.github.com"
+
+          git add maven-dependencies.yaml
+
+          # Get version from SieveEditor pom.xml if available
+          if [ -f ../sieveeditor/pom.xml ]; then
+            VERSION=$(grep -oP '<version>\K[^<]+' ../sieveeditor/pom.xml | head -1)
+            COMMIT_MSG="Update Maven dependencies for SieveEditor ${VERSION}"
+          else
+            COMMIT_MSG="Update Maven dependencies"
+          fi
+
+          git commit -m "$COMMIT_MSG" \
+            -m "Automated update from SieveEditor repository" \
+            -m "Source: ${{ github.repository }}" \
+            -m "Commit: ${{ github.sha }}"
+
+          git push origin ${{ inputs.flathub_branch || 'sieve-editor-submission' }}
+
+          echo "## Pushed to Flathub" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Repository: \`flathub/io.github.lenucksi.SieveEditor\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: \`${{ inputs.flathub_branch || 'master' }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit message: \`${COMMIT_MSG}\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: No changes summary
+        if: steps.changes.outputs.changed == 'false'
+        run: |
+          echo "## No Changes" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The maven-dependencies.yaml file in Flathub is already up to date." >> $GITHUB_STEP_SUMMARY

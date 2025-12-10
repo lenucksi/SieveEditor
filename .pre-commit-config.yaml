@@ -22,7 +22,7 @@ repos:
         - --allow-breaking
         - --subject-min-length=15
 - repo: https://github.com/rvben/rumdl-pre-commit
-  rev: v0.0.188  # Use the latest release tag
+  rev: v0.0.192  # Use the latest release tag
   hooks:
     - id: rumdl
       # To only check (default):

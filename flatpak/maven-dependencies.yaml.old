@@ -1111,21 +1111,21 @@
   url: https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/6.0.1/junit-platform-engine-6.0.1.pom
   sha256: a2245ef270652c07d596ce71d8d670d0a8a99251cdcef454f3965199ac9c4e9a
 - type: file
-  dest: .m2/repository/org/mockito/mockito-core/5.21.0
-  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.21.0/mockito-core-5.21.0.jar
-  sha256: 03db23de742cbca42aa3d6127fdace560fac37b036d931870801f84c288bd286
+  dest: .m2/repository/org/mockito/mockito-core/5.20.0
+  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.20.0/mockito-core-5.20.0.jar
+  sha256: d1a96d252128d3a4247cfd8a2e76412efa3cc103977be17933c942117a24f374
 - type: file
-  dest: .m2/repository/org/mockito/mockito-core/5.21.0
-  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.21.0/mockito-core-5.21.0.pom
-  sha256: 0221b31f96df01a158c645371aad81b2d3f5bee0f589ca0d0c2eaa6e8da092f3
+  dest: .m2/repository/org/mockito/mockito-core/5.20.0
+  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.20.0/mockito-core-5.20.0.pom
+  sha256: 9903e20755c0c4887aab9c4f10061fb7f11151d3a9fadd964e9fba427226d135
 - type: file
-  dest: .m2/repository/org/mockito/mockito-junit-jupiter/5.21.0
-  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-junit-jupiter/5.21.0/mockito-junit-jupiter-5.21.0.jar
-  sha256: 107148b99e8cd0170302babc1f260123c405190ce83a0d2666b618be488c9b17
+  dest: .m2/repository/org/mockito/mockito-junit-jupiter/5.20.0
+  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-junit-jupiter/5.20.0/mockito-junit-jupiter-5.20.0.jar
+  sha256: fd6c703c2b00b914f3adbc27b18077a708f3d6992f19242c444e737c6cce024e
 - type: file
-  dest: .m2/repository/org/mockito/mockito-junit-jupiter/5.21.0
-  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-junit-jupiter/5.21.0/mockito-junit-jupiter-5.21.0.pom
-  sha256: b8d0f5cf01122a011a759f6f2821bf1e3d8b33c5482a3e72b88ac028df8d43ba
+  dest: .m2/repository/org/mockito/mockito-junit-jupiter/5.20.0
+  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-junit-jupiter/5.20.0/mockito-junit-jupiter-5.20.0.pom
+  sha256: 81a549ffc9c84a879fc1ee64d63007ab00a53a4ef96afb53690f2845691eaf98
 - type: file
   dest: .m2/repository/org/objenesis/objenesis-parent/3.3
   url: https://repo.maven.apache.org/maven2/org/objenesis/objenesis-parent/3.3/objenesis-parent-3.3.pom

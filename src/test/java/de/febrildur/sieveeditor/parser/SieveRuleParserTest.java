@@ -270,4 +270,72 @@ class SieveRuleParserTest {
 		assertThat(result.getRules().get(0).getRuleNumber()).isEqualTo(42);
 		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Test Rule");
 	}
+
+	@Test
+	void shouldHandleWindowsLineEndings() {
+		// Given
+		String script = "## Flag: |UniqueId:1 |Rulename: First\r\n## Flag: |UniqueId:2 |Rulename: Second\r\n";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(2);
+		assertThat(result.getRules().get(0).getRuleNumber()).isEqualTo(1);
+		assertThat(result.getRules().get(1).getRuleNumber()).isEqualTo(2);
+	}
+
+	@Test
+	void shouldHandleMixedLineEndings() {
+		// Given
+		String script = "## Flag: |UniqueId:1 |Rulename: Unix\n## Flag: |UniqueId:2 |Rulename: Windows\r\n## Flag: |UniqueId:3 |Rulename: Another Unix\n";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(3);
+	}
+
+	@Test
+	void shouldHandleWhitespaceAroundPipes() {
+		// Given - whitespace between | and UniqueId/Rulename
+		String script = "## Flag: | UniqueId:1 | Rulename: Test";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(1);
+		assertThat(result.getRules().get(0).getRuleNumber()).isEqualTo(1);
+		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Test");
+	}
+
+	@Test
+	void shouldHandleCompactFormat() {
+		// Given - minimal whitespace (should still work)
+		String script = "##Flag:|UniqueId:1|Rulename:Test Rule";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(1);
+		assertThat(result.getRules().get(0).getRuleNumber()).isEqualTo(1);
+		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Test Rule");
+	}
+
+	@Test
+	void shouldHandleTrailingWhitespace() {
+		// Given - trailing whitespace and tabs
+		String script = "## Flag: |UniqueId:1 |Rulename: Test\t\t  \n## Flag: |UniqueId:2 |Rulename: Another  \t";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(2);
+		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Test");
+		assertThat(result.getRules().get(1).getLabel()).isEqualTo("Another");
+	}
 }

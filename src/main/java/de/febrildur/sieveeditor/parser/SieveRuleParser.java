@@ -23,9 +23,14 @@ public class SieveRuleParser {
 	/**
 	 * Pattern to match rule comments: ## Flag: |UniqueId:N |Rulename: Description
 	 * Captures: group 1 = unique ID number, group 2 = rule name
+	 *
+	 * Made robust to handle:
+	 * - Variable whitespace between components
+	 * - Optional trailing whitespace
+	 * - Windows and Unix line endings
 	 */
 	private static final Pattern RULE_PATTERN = Pattern.compile(
-		"^\\s*##\\s*Flag:\\s*\\|UniqueId:(\\d+)\\s*\\|Rulename:\\s*(.*)$",
+		"^\\s*##\\s*Flag:\\s*\\|\\s*UniqueId:\\s*(\\d+)\\s*\\|\\s*Rulename:\\s*(.*)$",
 		Pattern.CASE_INSENSITIVE
 	);
 
@@ -69,7 +74,8 @@ public class SieveRuleParser {
 			return new ParseResult(rules, warnings);
 		}
 
-		String[] lines = scriptText.split("\n");
+		// Handle both Unix (\n) and Windows (\r\n) line endings
+		String[] lines = scriptText.split("\\r?\\n");
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i];
 			int lineNumber = i + 1; // 1-based line numbers

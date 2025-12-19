@@ -124,7 +124,7 @@
         "id": "7",
         "title": "Implement Sieve script structure navigator",
         "description": "Add IDE-like structured view showing list/tree of Sieve rules as navigable objects, using comment lines above rules as labels, with detection of rule numbering inconsistencies.",
-        "status": "pending",
+        "status": "done",
         "priority": "high",
         "tags": [
           "ui",
@@ -138,7 +138,8 @@
           "Click to jump to rule in editor",
           "Warnings for numbering issues (duplicates, gaps)"
         ],
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2025-12-19T19:10:19.715Z"
       },
       {
         "id": "8",
@@ -200,9 +201,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-19T19:01:16.073Z",
+      "lastModified": "2025-12-19T19:10:19.715Z",
       "taskCount": 10,
-      "completedCount": 3,
+      "completedCount": 4,
       "tags": [
         "master"
       ]

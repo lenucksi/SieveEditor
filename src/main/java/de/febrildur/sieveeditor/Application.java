@@ -16,6 +16,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -51,6 +52,7 @@ public class Application extends JFrame {
 	private ConnectAndListScripts server;
 	private PropertiesSieve prop;
 	private RSyntaxTextArea textArea;
+	private de.febrildur.sieveeditor.ui.RuleNavigatorPanel ruleNavigator;
 	private SieveScript script;
 
 	private AbstractAction actionConnect = new ActionConnect(this);
@@ -171,7 +173,17 @@ public class Application extends JFrame {
 		textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, scaledFontSize));
 
 		RTextScrollPane sp = new RTextScrollPane(textArea);
-		cp.add(sp);
+
+		// Create rule navigator panel
+		ruleNavigator = new de.febrildur.sieveeditor.ui.RuleNavigatorPanel();
+		ruleNavigator.setJumpToLineCallback(this::jumpToLine);
+
+		// Create split pane with navigator on left, editor on right
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, ruleNavigator, sp);
+		splitPane.setDividerLocation(250); // 250px for navigator
+		splitPane.setResizeWeight(0.0); // Give all extra space to editor
+
+		cp.add(splitPane);
 
 		setContentPane(cp);
 		setTitle("Sieve Editor");
@@ -283,6 +295,7 @@ public class Application extends JFrame {
 	public void setScript(SieveScript script) throws IOException, ParseException {
 		this.script = script;
 		textArea.setText(server.getScript(script));
+		updateRuleNavigator();
 	}
 
 	/**
@@ -301,6 +314,7 @@ public class Application extends JFrame {
 		script = null;
 		setTitle("Sieve Editor - " + filename + " (Local)");
 		updateStatus();
+		updateRuleNavigator();
 	}
 
 	public void save() {
@@ -368,6 +382,15 @@ public class Application extends JFrame {
 		} catch (javax.swing.text.BadLocationException e) {
 			// Line number is out of range - ignore silently
 			// This can happen if error message refers to a line that doesn't exist
+		}
+	}
+
+	/**
+	 * Updates the rule navigator with the current script content.
+	 */
+	public void updateRuleNavigator() {
+		if (ruleNavigator != null) {
+			ruleNavigator.updateRules(getScriptText());
 		}
 	}
 

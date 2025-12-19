@@ -53,6 +53,7 @@ public class Application extends JFrame {
 	private PropertiesSieve prop;
 	private RSyntaxTextArea textArea;
 	private de.febrildur.sieveeditor.ui.RuleNavigatorPanel ruleNavigator;
+	private de.febrildur.sieveeditor.ui.SearchPanel searchPanel;
 	private SieveScript script;
 
 	private AbstractAction actionConnect = new ActionConnect(this);
@@ -178,14 +179,23 @@ public class Application extends JFrame {
 		int gutterFontSize = UIScale.scale(15);
 		sp.getGutter().setLineNumberFont(new Font(Font.MONOSPACED, Font.PLAIN, gutterFontSize));
 
+		// Create search panel (docked above navigator)
+		searchPanel = new de.febrildur.sieveeditor.ui.SearchPanel();
+		searchPanel.setTargetEditor(textArea);
+
 		// Create rule navigator panel
 		ruleNavigator = new de.febrildur.sieveeditor.ui.RuleNavigatorPanel();
 		ruleNavigator.setJumpToLineCallback(this::jumpToLine);
 
-		// Create split pane with editor on left, navigator on right
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sp, ruleNavigator);
+		// Create vertical split for right side: search panel on top, navigator below
+		JSplitPane rightSidePane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, searchPanel, ruleNavigator);
+		rightSidePane.setResizeWeight(0.0); // Search panel gets fixed size, navigator gets extra space
+		rightSidePane.setDividerLocation(200); // Search+replace panel height
+
+		// Create main horizontal split: editor on left, right pane on right
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sp, rightSidePane);
 		splitPane.setResizeWeight(1.0); // Give all extra space to editor
-		splitPane.setDividerLocation(-200); // 200px for navigator (negative = from right)
+		splitPane.setDividerLocation(-200); // 200px for right side pane (negative = from right)
 
 		cp.add(splitPane);
 
@@ -339,6 +349,10 @@ public class Application extends JFrame {
 
 	public RSyntaxTextArea getScriptArea() {
 		return textArea;
+	}
+
+	public de.febrildur.sieveeditor.ui.SearchPanel getSearchPanel() {
+		return searchPanel;
 	}
 
 	public Object getScriptName() {

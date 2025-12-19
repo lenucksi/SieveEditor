@@ -18,7 +18,8 @@ public class RuleNavigatorPanel extends JPanel {
 
 	private final DefaultListModel<SieveRule> listModel;
 	private final JList<SieveRule> ruleList;
-	private final JLabel warningLabel;
+	private final DefaultListModel<String> warningListModel;
+	private final JList<String> warningList;
 	private Consumer<Integer> jumpToLineCallback;
 
 	public RuleNavigatorPanel() {
@@ -30,7 +31,7 @@ public class RuleNavigatorPanel extends JPanel {
 			TitledBorder.DEFAULT_POSITION
 		));
 
-		// Create list model and list
+		// Create list model and list for rules
 		listModel = new DefaultListModel<>();
 		ruleList = new JList<>(listModel);
 		ruleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -49,30 +50,55 @@ public class RuleNavigatorPanel extends JPanel {
 			}
 		});
 
-		// Add click listener
+		// Add click listener for rules
 		ruleList.addListSelectionListener(e -> {
 			if (!e.getValueIsAdjusting() && jumpToLineCallback != null) {
 				SieveRule selected = ruleList.getSelectedValue();
 				if (selected != null) {
+					warningList.clearSelection(); // Clear warning selection
 					jumpToLineCallback.accept(selected.getLineNumber());
 				}
 			}
 		});
 
-		// Scroll pane for list - reduced width to 200px, allow horizontal scroll
+		// Scroll pane for rules list
 		JScrollPane scrollPane = new JScrollPane(ruleList);
 		scrollPane.setPreferredSize(new Dimension(200, 200));
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		// Warning label for numbering issues - changed to bright red for errors
-		warningLabel = new JLabel();
-		warningLabel.setForeground(new Color(220, 20, 60)); // Crimson red - more visible than orange
-		warningLabel.setFont(warningLabel.getFont().deriveFont(Font.ITALIC));
-		warningLabel.setVisible(false);
+		// Create warnings list
+		warningListModel = new DefaultListModel<>();
+		warningList = new JList<>(warningListModel);
+		warningList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		warningList.setForeground(new Color(220, 20, 60)); // Crimson red
+		warningList.setFont(warningList.getFont().deriveFont(Font.ITALIC));
 
-		// Layout
+		// Add click listener for warnings - extract line number and jump
+		warningList.addListSelectionListener(e -> {
+			if (!e.getValueIsAdjusting() && jumpToLineCallback != null) {
+				String selected = warningList.getSelectedValue();
+				if (selected != null) {
+					ruleList.clearSelection(); // Clear rule selection
+					// Try to extract line number from warning message (format: "... at line XXX")
+					java.util.regex.Pattern linePattern = java.util.regex.Pattern.compile("at line (\\d+)");
+					java.util.regex.Matcher matcher = linePattern.matcher(selected);
+					if (matcher.find()) {
+						int lineNumber = Integer.parseInt(matcher.group(1));
+						jumpToLineCallback.accept(lineNumber);
+					}
+				}
+			}
+		});
+
+		// Scroll pane for warnings list - smaller, only shows when warnings exist
+		JScrollPane warningScrollPane = new JScrollPane(warningList);
+		warningScrollPane.setPreferredSize(new Dimension(200, 60));
+		warningScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		warningScrollPane.setVisible(false);
+
+		// Layout: rules at top, warnings at bottom
 		add(scrollPane, BorderLayout.CENTER);
-		add(warningLabel, BorderLayout.SOUTH);
+		add(warningScrollPane, BorderLayout.SOUTH);
 	}
 
 	/**
@@ -91,7 +117,11 @@ public class RuleNavigatorPanel extends JPanel {
 	 */
 	public void updateRules(String scriptText) {
 		listModel.clear();
-		warningLabel.setVisible(false);
+		warningListModel.clear();
+
+		// Get parent scroll pane for warnings
+		JScrollPane warningScrollPane = (JScrollPane) warningList.getParent().getParent();
+		warningScrollPane.setVisible(false);
 
 		if (scriptText == null || scriptText.trim().isEmpty()) {
 			return;
@@ -106,13 +136,10 @@ public class RuleNavigatorPanel extends JPanel {
 
 		// Show warnings if any
 		if (result.hasWarnings()) {
-			String warningText = String.join(", ", result.getWarnings());
-			if (warningText.length() > 50) {
-				warningText = warningText.substring(0, 47) + "...";
+			for (String warning : result.getWarnings()) {
+				warningListModel.addElement("⚠ " + warning);
 			}
-			warningLabel.setText("⚠ " + warningText);
-			warningLabel.setToolTipText(String.join("\n", result.getWarnings()));
-			warningLabel.setVisible(true);
+			warningScrollPane.setVisible(true);
 		}
 
 		// Show count in title
@@ -137,7 +164,9 @@ public class RuleNavigatorPanel extends JPanel {
 	 */
 	public void clear() {
 		listModel.clear();
-		warningLabel.setVisible(false);
+		warningListModel.clear();
+		JScrollPane warningScrollPane = (JScrollPane) warningList.getParent().getParent();
+		warningScrollPane.setVisible(false);
 		updateTitle(0);
 	}
 }

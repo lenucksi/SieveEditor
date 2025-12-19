@@ -68,6 +68,7 @@ public class Application extends JFrame {
 				server = null;
 				script = null;
 				textArea.setText("");
+				ruleNavigator.clear(); // Clear the navigator panel
 				setTitle("Sieve Editor");
 				updateStatus();
 			}

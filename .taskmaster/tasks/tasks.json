@@ -102,7 +102,7 @@
         "id": "6",
         "title": "Add pre-save validation with user confirmation",
         "description": "Before saving, trigger automatic 'Check Script', warn user on validation failure, and ask 'Script has errors. Save anyway?'",
-        "status": "pending",
+        "status": "done",
         "priority": "high",
         "tags": [
           "validation",
@@ -117,7 +117,8 @@
           "User is warned about errors",
           "User can override and save anyway if needed"
         ],
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2025-12-19T19:01:16.072Z"
       },
       {
         "id": "7",
@@ -199,9 +200,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-19T18:58:44.695Z",
+      "lastModified": "2025-12-19T19:01:16.073Z",
       "taskCount": 10,
-      "completedCount": 2,
+      "completedCount": 3,
       "tags": [
         "master"
       ]

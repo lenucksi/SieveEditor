@@ -339,6 +339,39 @@ public class Application extends JFrame {
 	}
 
 	/**
+	 * Jumps to a specific line in the script editor and highlights it.
+	 *
+	 * @param lineNumber the 1-based line number to jump to
+	 */
+	public void jumpToLine(int lineNumber) {
+		if (textArea == null || lineNumber < 1) {
+			return;
+		}
+
+		try {
+			// Convert 1-based line number to 0-based for RSyntaxTextArea
+			int zeroBasedLine = lineNumber - 1;
+
+			// Get the offset of the line start
+			int lineStartOffset = textArea.getLineStartOffset(zeroBasedLine);
+			int lineEndOffset = textArea.getLineEndOffset(zeroBasedLine);
+
+			// Move caret to the line
+			textArea.setCaretPosition(lineStartOffset);
+
+			// Select the entire line to highlight it
+			textArea.setSelectionStart(lineStartOffset);
+			textArea.setSelectionEnd(lineEndOffset - 1); // -1 to exclude newline
+
+			// Ensure the line is visible (scroll to it)
+			textArea.requestFocusInWindow();
+		} catch (javax.swing.text.BadLocationException e) {
+			// Line number is out of range - ignore silently
+			// This can happen if error message refers to a line that doesn't exist
+		}
+	}
+
+	/**
 	 * Sets the application name for Linux desktop integration.
 	 *
 	 * On X11, this sets the WM_CLASS property so that GNOME Shell, Unity, and other

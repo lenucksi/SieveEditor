@@ -355,6 +355,7 @@ public class Application extends JFrame {
 
 	/**
 	 * Jumps to a specific line in the script editor and highlights it.
+	 * Scrolls the editor so the line appears at the top of the viewport.
 	 *
 	 * @param lineNumber the 1-based line number to jump to
 	 */
@@ -378,7 +379,17 @@ public class Application extends JFrame {
 			textArea.setSelectionStart(lineStartOffset);
 			textArea.setSelectionEnd(lineEndOffset - 1); // -1 to exclude newline
 
-			// Ensure the line is visible (scroll to it)
+			// Scroll to show line at top of viewport
+			// Get the rectangle for this line
+			java.awt.Rectangle lineRect = textArea.modelToView(lineStartOffset);
+			if (lineRect != null) {
+				// Expand rectangle to viewport height so line appears at top
+				java.awt.Rectangle visibleRect = textArea.getVisibleRect();
+				lineRect.height = visibleRect.height;
+				textArea.scrollRectToVisible(lineRect);
+			}
+
+			// Ensure the text area has focus
 			textArea.requestFocusInWindow();
 		} catch (javax.swing.text.BadLocationException e) {
 			// Line number is out of range - ignore silently

@@ -182,7 +182,7 @@ public class Application extends JFrame {
 		// Create split pane with editor on left, navigator on right
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sp, ruleNavigator);
 		splitPane.setResizeWeight(1.0); // Give all extra space to editor
-		splitPane.setDividerLocation(-250); // 250px for navigator (negative = from right)
+		splitPane.setDividerLocation(-200); // 200px for navigator (negative = from right)
 
 		cp.add(splitPane);
 

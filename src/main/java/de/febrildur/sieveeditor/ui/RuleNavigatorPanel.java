@@ -59,13 +59,14 @@ public class RuleNavigatorPanel extends JPanel {
 			}
 		});
 
-		// Scroll pane for list
+		// Scroll pane for list - reduced width to 200px, allow horizontal scroll
 		JScrollPane scrollPane = new JScrollPane(ruleList);
-		scrollPane.setPreferredSize(new Dimension(250, 200));
+		scrollPane.setPreferredSize(new Dimension(200, 200));
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		// Warning label for numbering issues
+		// Warning label for numbering issues - changed to bright red for errors
 		warningLabel = new JLabel();
-		warningLabel.setForeground(Color.ORANGE);
+		warningLabel.setForeground(new Color(220, 20, 60)); // Crimson red - more visible than orange
 		warningLabel.setFont(warningLabel.getFont().deriveFont(Font.ITALIC));
 		warningLabel.setVisible(false);
 

@@ -197,13 +197,95 @@
           "No regressions in script loading workflow"
         ],
         "subtasks": []
+      },
+      {
+        "id": "11",
+        "title": "Move Script Rules navigator to right side",
+        "description": "Change split pane layout so navigator panel is on the right side instead of left. Editor should be on left, navigator on right.",
+        "status": "done",
+        "priority": "high",
+        "tags": [
+          "ui",
+          "navigation",
+          "layout",
+          "bugfix"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "Navigator panel on right side of split pane",
+          "Editor on left side",
+          "Layout feels natural for navigation panel"
+        ],
+        "subtasks": [],
+        "updatedAt": "2025-12-19T22:06:00.019Z"
+      },
+      {
+        "id": "12",
+        "title": "Scroll editor to show selected rule at top",
+        "description": "When clicking a rule in navigator, scroll the editor so the highlighted comment line appears at the top of the visible area, not somewhere in the middle or bottom.",
+        "status": "done",
+        "priority": "high",
+        "tags": [
+          "ui",
+          "navigation",
+          "scroll",
+          "bugfix"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "Selected rule comment appears at top of editor viewport",
+          "Line is highlighted",
+          "Scrolling is smooth and predictable"
+        ],
+        "subtasks": [],
+        "updatedAt": "2025-12-19T22:06:00.020Z"
+      },
+      {
+        "id": "13",
+        "title": "Clear navigator on disconnect",
+        "description": "When user disconnects (Disconnect action), clear the Script Rules navigator panel. Currently old content remains visible after disconnect.",
+        "status": "done",
+        "priority": "high",
+        "tags": [
+          "ui",
+          "navigation",
+          "bug"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "Navigator clears when Disconnect is triggered",
+          "No stale rules remain visible",
+          "Navigator shows empty state"
+        ],
+        "subtasks": [],
+        "updatedAt": "2025-12-19T22:06:00.029Z"
+      },
+      {
+        "id": "14",
+        "title": "Fix rule parser robustness",
+        "description": "Parser only finds some rules but not others. Investigate why certain rules are not detected and make parser more robust. Debug with sample scripts to identify pattern matching issues.",
+        "status": "done",
+        "priority": "high",
+        "tags": [
+          "parser",
+          "bug",
+          "navigation"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "All valid rule comments are detected",
+          "Parser handles edge cases (whitespace, formatting variations)",
+          "Clear logging/debugging for failed matches"
+        ],
+        "subtasks": [],
+        "updatedAt": "2025-12-19T22:06:00.031Z"
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-19T19:10:19.715Z",
-      "taskCount": 10,
-      "completedCount": 4,
+      "lastModified": "2025-12-19T22:06:00.032Z",
+      "taskCount": 14,
+      "completedCount": 8,
       "tags": [
         "master"
       ]

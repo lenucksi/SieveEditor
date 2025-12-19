@@ -31,6 +31,13 @@ public class RuleNavigatorPanel extends JPanel {
 			TitledBorder.DEFAULT_POSITION
 		));
 
+		// Create warnings list FIRST (needed by ruleList listener)
+		warningListModel = new DefaultListModel<>();
+		warningList = new JList<>(warningListModel);
+		warningList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		warningList.setForeground(new Color(220, 20, 60)); // Crimson red
+		warningList.setFont(warningList.getFont().deriveFont(Font.ITALIC));
+
 		// Create list model and list for rules
 		listModel = new DefaultListModel<>();
 		ruleList = new JList<>(listModel);
@@ -65,13 +72,6 @@ public class RuleNavigatorPanel extends JPanel {
 		JScrollPane scrollPane = new JScrollPane(ruleList);
 		scrollPane.setPreferredSize(new Dimension(200, 200));
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-		// Create warnings list
-		warningListModel = new DefaultListModel<>();
-		warningList = new JList<>(warningListModel);
-		warningList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		warningList.setForeground(new Color(220, 20, 60)); // Crimson red
-		warningList.setFont(warningList.getFont().deriveFont(Font.ITALIC));
 
 		// Add click listener for warnings - extract line number and jump
 		warningList.addListSelectionListener(e -> {

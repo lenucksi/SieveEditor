@@ -17,6 +17,7 @@ set -e  # Exit on error
 
 # Get the directory where the script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+echo "Running from $SCRIPT_DIR"
 
 # Define JAR file location
 JARFILE="$SCRIPT_DIR/../target/SieveEditor-jar-with-dependencies.jar"
@@ -38,7 +39,7 @@ if [ ! -f "$JARFILE" ]; then
     # Build the project
     echo "Running: mvn clean package -DskipTests"
     echo ""
-    cd "$SCRIPT_DIR"
+    #cd "$SCRIPT_DIR"
     mvn clean package -DskipTests
 
     # Verify JAR was created

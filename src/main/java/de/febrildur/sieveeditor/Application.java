@@ -75,7 +75,7 @@ public class Application extends JFrame {
 		}
 	};
 	private AbstractAction actionActivateDeactivateScript = new ActionActivateDeactivateScript(this);
-	private AbstractAction actionLoadScript = new ActionLoadScript(this);
+
 	private AbstractAction actionCheckScript = new ActionCheckScript(this);
 	private AbstractAction actionSaveScript = new ActionSaveScript(this);
 	private AbstractAction actionSaveScriptAs = new ActionSaveScriptAs(this);
@@ -139,8 +139,6 @@ public class Application extends JFrame {
 		sieve.add(new JMenuItem(actionDisconnect));
 		sieve.addSeparator();
 		sieve.add(new JMenuItem(actionActivateDeactivateScript));
-		sieve.add(new JMenuItem(actionLoadScript)).setAccelerator(
-				KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK));
 		sieve.add(new JMenuItem(actionCheckScript));
 		sieve.add(new JMenuItem(actionSaveScript)).setAccelerator(
 				KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
@@ -174,6 +172,11 @@ public class Application extends JFrame {
 		textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, scaledFontSize));
 
 		RTextScrollPane sp = new RTextScrollPane(textArea);
+
+		// Configure line number gutter font size
+		// Set line numbers to 15pt (slightly larger than editor font of 13pt for better readability)
+		int gutterFontSize = UIScale.scale(15);
+		sp.getGutter().setLineNumberFont(new Font(Font.MONOSPACED, Font.PLAIN, gutterFontSize));
 
 		// Create rule navigator panel
 		ruleNavigator = new de.febrildur.sieveeditor.ui.RuleNavigatorPanel();
@@ -346,7 +349,7 @@ public class Application extends JFrame {
 		actionConnect.setEnabled(true);
 		actionDisconnect.setEnabled(server != null);
 		actionActivateDeactivateScript.setEnabled(server != null);
-		actionLoadScript.setEnabled(server != null);
+
 		actionCheckScript.setEnabled(server != null);
 		actionSaveScript.setEnabled(server != null && script != null);
 		actionSaveScriptAs.setEnabled(server != null);

@@ -43,7 +43,7 @@
         "id": "3",
         "title": "Increase editor line number font size",
         "description": "Increase the font size of line numbers in the editor gutter for better readability.",
-        "status": "pending",
+        "status": "done",
         "priority": "low",
         "tags": [
           "ui",
@@ -55,7 +55,8 @@
           "Line numbers remain aligned with editor lines",
           "No layout issues introduced"
         ],
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2025-12-19T22:23:05.092Z"
       },
       {
         "id": "4",
@@ -183,7 +184,7 @@
         "id": "10",
         "title": "Remove redundant 'Load...' menu item",
         "description": "Remove 'Sieve → Load... (Ctrl+O)' menu item and ensure 'Manage Scripts...' provides the same functionality.",
-        "status": "pending",
+        "status": "done",
         "priority": "low",
         "tags": [
           "ui",
@@ -196,7 +197,8 @@
           "'Manage Scripts...' provides same functionality",
           "No regressions in script loading workflow"
         ],
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2025-12-19T22:23:05.096Z"
       },
       {
         "id": "11",
@@ -279,13 +281,55 @@
         ],
         "subtasks": [],
         "updatedAt": "2025-12-19T22:06:00.031Z"
+      },
+      {
+        "id": "15",
+        "title": "Make warning panel height resizable and auto-size on load",
+        "description": "Warning panel at bottom of navigator should be height-resizable by user. On loading a new file, panel height should automatically adjust to fit the number of warnings (sufficient height for content).",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "ui",
+          "navigation",
+          "warnings",
+          "resizable"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "Warning panel height can be resized by dragging",
+          "Initial height adapts to number of warnings on file load",
+          "Panel doesn't take excessive space when few warnings",
+          "Scrolling available when warnings exceed visible area"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "16",
+        "title": "Auto-size navigator width based on content",
+        "description": "After loading a Sieve file, navigator panel width should automatically adjust based on median rule text length. Add ~10px padding beyond required width for optimal display without excessive whitespace.",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "ui",
+          "navigation",
+          "auto-sizing",
+          "layout"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "Navigator width calculated from median rule text length",
+          "~10px padding added to calculated width",
+          "Width updates when new file is loaded",
+          "Horizontal scrolling still available if manually resized smaller"
+        ],
+        "subtasks": []
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-19T22:06:00.032Z",
-      "taskCount": 14,
-      "completedCount": 8,
+      "lastModified": "2025-12-19T22:23:05.096Z",
+      "taskCount": 16,
+      "completedCount": 10,
       "tags": [
         "master"
       ]

@@ -1,0 +1,232 @@
+# SieveEditor UI/UX Enhancement PRD
+
+## Overview
+This PRD covers a series of UI/UX improvements and feature enhancements for SieveEditor to improve the editing experience, script validation workflow, and connection stability.
+
+## Goals
+- Improve editor usability with better search/replace and find dialogs
+- Enhance script validation feedback and error navigation
+- Add structured navigation for Sieve script rules
+- Improve connection reliability and management
+- Streamline menu structure and add keyboard shortcuts
+
+## Target Users
+System administrators and power users who manage Sieve mail filter scripts via ManageSieve protocol.
+
+## Features
+
+### 1. Search & Replace Dialog Enhancement
+**Priority: Medium**
+
+#### Current State
+- Search & Replace dialog is modal (blocking)
+- Prevents parallel editing while searching
+
+#### Proposed Solution
+Make the Search & Replace dialog modeless (non-blocking) OR position it in the top-right corner (like VS Code/IntelliJ) to enable continuous search & replace during editing.
+
+**Acceptance Criteria:**
+- User can keep dialog open while editing
+- Dialog doesn't block main editor interaction
+- Search & replace operations work seamlessly with concurrent editing
+
+---
+
+### 2. Find Dialog Improvements
+**Priority: Medium**
+
+#### Current State
+- Cannot close Find dialog with ESC key
+- Search term is lost when dialog closes
+
+#### Proposed Solution
+- Allow ESC key to close Find dialog
+- Preserve last search term when dialog is closed with ESC
+- Enable "continued search" with simple ENTER press after reopening
+
+**Acceptance Criteria:**
+- ESC key closes Find dialog
+- Last search term persists after ESC close
+- ENTER in reopened dialog continues search from last position
+
+---
+
+### 3. Editor Line Numbers Enhancement
+**Priority: Low**
+
+#### Current State
+- Line numbers are too small to read comfortably
+
+#### Proposed Solution
+Increase the font size of line numbers in the editor gutter.
+
+**Acceptance Criteria:**
+- Line numbers are visibly larger
+- Line numbers remain aligned with editor lines
+- No layout issues introduced
+
+---
+
+### 4. Script Validation Error Navigation
+**Priority: High**
+
+#### Current State
+- "Check Script" shows errors in dialog
+- User must manually find error location in script
+
+#### Proposed Solution
+When "Check Script" reports an error:
+- Option 1: Editor automatically jumps to error line
+- Option 2: Error dialog offers "Jump to Error" button
+
+**Acceptance Criteria:**
+- User can navigate to error location with single click
+- Error line is highlighted or cursor positioned correctly
+- Works with server-side validation errors
+
+---
+
+### 5. Quick Check Feedback (Hotkey Variant)
+**Priority: Medium**
+
+#### Current State
+- Check requires dialog interaction
+
+#### Proposed Solution
+When triggered via hotkey, display a status bar (top or bottom) showing:
+- Green/Red indicator for pass/fail
+- Error details inline
+- Click to jump to error location
+
+**Acceptance Criteria:**
+- Non-intrusive visual feedback
+- Quick error identification
+- Jump-to-error functionality
+
+---
+
+### 6. Pre-Save Validation
+**Priority: High**
+
+#### Current State
+- Scripts can be saved without validation
+- Invalid scripts uploaded to server
+
+#### Proposed Solution
+Before saving:
+1. Trigger automatic "Check Script"
+2. On validation failure: Show warning dialog
+3. Ask user: "Script has errors. Save anyway?"
+
+**Acceptance Criteria:**
+- Validation runs before every save
+- User is warned about errors
+- User can override and save anyway if needed
+
+---
+
+### 7. Sieve Script Structure Navigator
+**Priority: High**
+
+#### Current State
+- No structured view of script rules
+- Manual navigation through text
+
+#### Proposed Solution
+Add IDE-like structured view showing:
+- List/tree of Sieve rules as navigable objects
+- Use comment lines above rules as labels
+- Detect rule numbering inconsistencies
+- Click to jump to rule in editor
+
+**Technical Notes:**
+- Parse comment-based rule labels (format: `# Rule 1: Description`)
+- Detect duplicate or inconsistent rule numbers
+- Note: Web UI has problems parsing these comments - ensure robust parsing
+
+**Acceptance Criteria:**
+- Sidebar or panel shows all rules
+- Comment labels used as rule names
+- Click to jump to rule
+- Warnings for numbering issues
+
+---
+
+### 8. Connection Keep-Alive / Auto-Reconnect
+**Priority: High**
+
+#### Current State
+- Connection times out after inactivity
+- "Can't write to pipe" errors during checks
+- Manual reconnection required
+
+#### Proposed Solution
+Implement one of:
+- Option 1: Keep-Alive mechanism to maintain connection
+- Option 2: Auto-reconnect on timeout with brief notification
+
+**Acceptance Criteria:**
+- No "pipe" errors during normal operation
+- Seamless reconnection if timeout occurs
+- User notification if reconnection happens
+
+---
+
+### 9. Comprehensive Keyboard Shortcuts
+**Priority: Medium**
+
+#### Current State
+- Limited hotkeys in Sieve menu
+- "Check Script" has no keyboard shortcut
+
+#### Proposed Solution
+Add keyboard shortcuts for all Sieve menu commands, especially:
+- "Check Script" (suggest: Ctrl+K or Ctrl+Shift+C)
+- Other frequently used commands
+
+**Acceptance Criteria:**
+- All Sieve menu items have hotkeys
+- Hotkeys are documented in menu
+- No conflicts with existing shortcuts
+
+---
+
+### 10. Menu Cleanup: Remove "Load..." Command
+**Priority: Low**
+
+#### Current State
+- "Sieve → Load... (Ctrl+O)" exists
+- Redundant with "Manage Scripts..." dialog
+
+#### Proposed Solution
+Remove "Load..." menu item entirely, replace functionality with "Manage Scripts..."
+
+**Acceptance Criteria:**
+- "Load..." removed from menu
+- "Manage Scripts..." provides same functionality
+- No regressions in script loading workflow
+
+---
+
+## Non-Goals
+- ManageSieve protocol extension for triggering rule application (not supported by protocol)
+
+## Technical Considerations
+- Use RSyntaxTextArea API for editor enhancements
+- ManageSieveJ library for connection management
+- Swing components for dialogs and UI elements
+- Maintain Java 21 compatibility
+
+## Success Metrics
+- Reduced time to locate validation errors
+- Improved user satisfaction with search/find UX
+- Fewer connection timeout complaints
+- Increased use of keyboard shortcuts
+
+## Timeline
+No specific timeline - prioritize based on impact and complexity.
+
+## Dependencies
+- RSyntaxTextArea library (existing)
+- ManageSieveJ library (existing)
+- Swing UI framework (existing)

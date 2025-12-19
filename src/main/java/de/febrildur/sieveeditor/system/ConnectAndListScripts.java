@@ -29,7 +29,18 @@ import com.fluffypeople.managesieve.SieveScript;
 public class ConnectAndListScripts {
 
 	private ManageSieveClient client;
+	private java.util.Timer keepAliveTimer;
+	private static final long KEEP_ALIVE_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+	private boolean keepAliveEnabled = true;
 	private Component parentComponent;
+
+	// Connection state tracking for auto-reconnect
+	private String lastServer;
+	private int lastPort;
+	private String lastUsername;
+	private String lastPassword;
+	private boolean allowInteractiveCertValidation = true;
+	private static final Logger LOGGER = Logger.getLogger(ConnectAndListScripts.class.getName());
 
 	/**
 	 * Sets the parent component for showing certificate dialogs.
@@ -61,6 +72,13 @@ public class ConnectAndListScripts {
 	 */
 	public void connect(String server, int port, String username, String password,
 			boolean allowInteractiveCertValidation) throws IOException, ParseException {
+		// Store connection parameters for auto-reconnect
+		this.lastServer = server;
+		this.lastPort = port;
+		this.lastUsername = username;
+		this.lastPassword = password;
+		this.allowInteractiveCertValidation = allowInteractiveCertValidation;
+
 		client = new ManageSieveClient();
 		ManageSieveResponse resp = client.connect(server, port);
 		if (!resp.isOk()) {
@@ -88,9 +106,16 @@ public class ConnectAndListScripts {
 			client = null;
 			throw new IOException("Could not authenticate: " + resp.getMessage());
 		}
+
+		LOGGER.log(Level.INFO, "Successfully connected to ManageSieve server: {0}:{1}",
+			new Object[]{server, port});
+
+		// Start keep-alive timer to prevent connection timeout
+		startKeepAlive();
 	}
 
 	public void putScript(String scriptName, String scriptBody) throws IOException, ParseException {
+		ensureConnection();
 		ManageSieveResponse resp = client.putscript(scriptName, scriptBody);
 		if (!resp.isOk()) {
 			throw new IOException("Can't upload script to server: " + resp.getMessage());
@@ -103,23 +128,31 @@ public class ConnectAndListScripts {
 	}
 
 	public List<SieveScript> getListScripts() throws IOException, ParseException {
-		List<SieveScript> scripts = new ArrayList<SieveScript>();
+		ensureConnection();
+		List<SieveScript> scripts = new ArrayList<>();
 		ManageSieveResponse resp = client.listscripts(scripts);
 		if (!resp.isOk()) {
-			throw new IOException("Could not get list of scripts: " + resp.getMessage());
+			throw new IOException("Can't get script list from server.");
 		}
 		return scripts;
 	}
 
 	public void logout() throws IOException, ParseException {
+		// Stop keep-alive timer before logout
+		stopKeepAlive();
+
 		ManageSieveResponse resp = client.logout();
 		if (!resp.isOk()) {
 			throw new IOException("Can't logout: " + resp.getMessage());
 		}
 		client = null;
+		// Clear connection state to prevent auto-reconnect after explicit logout
+		clearConnectionState();
+		LOGGER.log(Level.INFO, "Logged out from ManageSieve server");
 	}
 
 	public String getScript(SieveScript ss) throws IOException, ParseException {
+		ensureConnection();
 		ManageSieveResponse resp = client.getScript(ss);
 		if (!resp.isOk()) {
 			throw new IOException("Could not get body of script [" + ss.getName() + "]: " + resp.getMessage());
@@ -128,12 +161,138 @@ public class ConnectAndListScripts {
 	}
 
 	public String checkScript(String script) throws IOException, ParseException {
+		ensureConnection();
 		ManageSieveResponse resp = client.checkscript(script);
 		return resp.getMessage();
 	}
 
 	public boolean isLoggedIn() {
 		return client != null;
+	}
+
+	/**
+	 * Ensures the connection is alive and attempts auto-reconnect if needed.
+	 * This method checks if the client is connected and attempts to reconnect
+	 * using stored credentials if the connection was lost.
+	 *
+	 * @throws IOException if reconnection fails
+	 * @throws ParseException if protocol parsing fails during reconnect
+	 */
+	private void ensureConnection() throws IOException, ParseException {
+		// If client is null, we never connected - cannot auto-reconnect
+		if (client == null && lastServer == null) {
+			throw new IOException("Not connected to server. Please connect first.");
+		}
+
+		// If client exists, check if it's still connected
+		if (client != null && client.isConnected()) {
+			// Connection seems alive, no action needed
+			return;
+		}
+
+		// Connection lost - attempt auto-reconnect
+		if (lastServer != null && lastUsername != null && lastPassword != null) {
+			LOGGER.log(Level.WARNING, "Connection lost. Attempting auto-reconnect to {0}:{1}",
+				new Object[]{lastServer, lastPort});
+
+			try {
+				connect(lastServer, lastPort, lastUsername, lastPassword, allowInteractiveCertValidation);
+
+				// Notify user of successful reconnection
+				if (parentComponent != null) {
+					javax.swing.JOptionPane.showMessageDialog(
+						parentComponent,
+						"Connection was lost and has been automatically restored.",
+						"Reconnected",
+						javax.swing.JOptionPane.INFORMATION_MESSAGE
+					);
+				}
+
+				LOGGER.log(Level.INFO, "Auto-reconnect successful");
+			} catch (IOException | ParseException e) {
+				LOGGER.log(Level.SEVERE, "Auto-reconnect failed", e);
+				// Clear stored credentials to prevent repeated failed attempts
+				clearConnectionState();
+				throw new IOException("Connection lost and auto-reconnect failed: " + e.getMessage(), e);
+			}
+		} else {
+			throw new IOException("Connection lost and cannot auto-reconnect (no stored credentials)");
+		}
+	}
+
+	/**
+	 * Clears stored connection state. Used when auto-reconnect fails
+	 * or when explicitly disconnecting.
+	 */
+	private void clearConnectionState() {
+		lastServer = null;
+		lastPort = 0;
+		lastUsername = null;
+		lastPassword = null;
+	}
+
+	/**
+	 * Starts the keep-alive timer that periodically sends NOOP commands
+	 * to prevent connection timeout.
+	 */
+	private void startKeepAlive() {
+		if (!keepAliveEnabled) {
+			return;
+		}
+
+		stopKeepAlive(); // Stop any existing timer
+
+		keepAliveTimer = new java.util.Timer("ManageSieve-KeepAlive", true);
+		keepAliveTimer.scheduleAtFixedRate(new java.util.TimerTask() {
+			@Override
+			public void run() {
+				try {
+					if (client != null && client.isConnected()) {
+						client.noop("keep-alive");
+						LOGGER.log(Level.FINE, "Keep-alive NOOP sent successfully");
+					}
+				} catch (Exception e) {
+					LOGGER.log(Level.WARNING, "Keep-alive NOOP failed: {0}", e.getMessage());
+					// Don't stop timer - ensureConnection() will handle reconnect on next operation
+				}
+			}
+		}, KEEP_ALIVE_INTERVAL_MS, KEEP_ALIVE_INTERVAL_MS);
+
+		LOGGER.log(Level.INFO, "Keep-alive timer started (interval: {0}ms)", KEEP_ALIVE_INTERVAL_MS);
+	}
+
+	/**
+	 * Stops the keep-alive timer.
+	 */
+	private void stopKeepAlive() {
+		if (keepAliveTimer != null) {
+			keepAliveTimer.cancel();
+			keepAliveTimer = null;
+			LOGGER.log(Level.INFO, "Keep-alive timer stopped");
+		}
+	}
+
+	/**
+	 * Enables or disables the keep-alive mechanism.
+	 *
+	 * @param enabled true to enable keep-alive, false to disable
+	 */
+	public void setKeepAliveEnabled(boolean enabled) {
+		this.keepAliveEnabled = enabled;
+		if (!enabled) {
+			stopKeepAlive();
+		} else if (client != null && client.isConnected()) {
+			startKeepAlive();
+		}
+	}
+
+	/**
+	 * Checks if keep-alive is currently enabled.
+	 *
+	 * @return true if keep-alive is enabled
+	 */
+	public boolean isKeepAliveEnabled() {
+		return keepAliveEnabled;
 	}
 
 	/**
@@ -271,6 +430,7 @@ public class ConnectAndListScripts {
 	}
 
 	public void activateScript(String script) throws IOException, ParseException {
+		ensureConnection();
 		ManageSieveResponse resp = client.setactive(script);
 		if (!resp.isOk()) {
 			throw new IOException(resp.getMessage());
@@ -278,6 +438,7 @@ public class ConnectAndListScripts {
 	}
 
 	public void deactivateScript() throws IOException, ParseException {
+		ensureConnection();
 		ManageSieveResponse resp = client.setactive("");
 		if (!resp.isOk()) {
 			throw new IOException(resp.getMessage());
@@ -285,6 +446,7 @@ public class ConnectAndListScripts {
 	}
 
 	public void rename(String script, String newName) throws IOException, ParseException {
+		ensureConnection();
 		ManageSieveResponse resp = client.renamescript(script, newName);
 		if (!resp.isOk()) {
 			throw new IOException(resp.getMessage());
@@ -292,6 +454,7 @@ public class ConnectAndListScripts {
 	}
 
 	public void deleteScript(String scriptName) throws IOException, ParseException {
+		ensureConnection();
 		ManageSieveResponse resp = client.deletescript(scriptName);
 		if (!resp.isOk()) {
 			throw new IOException(resp.getMessage());

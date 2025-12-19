@@ -1,0 +1,209 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": "1",
+        "title": "Implement modeless Search & Replace dialog",
+        "description": "Make the Search & Replace dialog non-blocking (modeless) OR position it in the top-right corner like VS Code/IntelliJ to enable continuous search & replace during editing.",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "ui",
+          "dialog",
+          "search"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "User can keep dialog open while editing",
+          "Dialog doesn't block main editor interaction",
+          "Search & replace operations work seamlessly with concurrent editing"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "2",
+        "title": "Improve Find dialog with ESC key and search term persistence",
+        "description": "Allow ESC key to close Find dialog and preserve the last search term when dialog is closed with ESC to enable continued search with ENTER.",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "ui",
+          "dialog",
+          "search"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "ESC key closes Find dialog",
+          "Last search term persists after ESC close",
+          "ENTER in reopened dialog continues search from last position"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "3",
+        "title": "Increase editor line number font size",
+        "description": "Increase the font size of line numbers in the editor gutter for better readability.",
+        "status": "pending",
+        "priority": "low",
+        "tags": [
+          "ui",
+          "editor"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "Line numbers are visibly larger",
+          "Line numbers remain aligned with editor lines",
+          "No layout issues introduced"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "4",
+        "title": "Add error navigation for script validation",
+        "description": "When 'Check Script' reports an error, automatically jump to error line OR provide 'Jump to Error' button in error dialog.",
+        "status": "pending",
+        "priority": "high",
+        "tags": [
+          "validation",
+          "navigation",
+          "ux"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "User can navigate to error location with single click",
+          "Error line is highlighted or cursor positioned correctly",
+          "Works with server-side validation errors"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "5",
+        "title": "Implement quick check feedback with status bar",
+        "description": "When Check Script is triggered via hotkey, display a non-intrusive status bar (top or bottom) showing green/red indicator, error details, and click-to-jump functionality.",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "validation",
+          "ui",
+          "hotkey"
+        ],
+        "dependencies": [
+          "4"
+        ],
+        "acceptanceCriteria": [
+          "Non-intrusive visual feedback",
+          "Quick error identification",
+          "Jump-to-error functionality"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "6",
+        "title": "Add pre-save validation with user confirmation",
+        "description": "Before saving, trigger automatic 'Check Script', warn user on validation failure, and ask 'Script has errors. Save anyway?'",
+        "status": "pending",
+        "priority": "high",
+        "tags": [
+          "validation",
+          "save",
+          "ux"
+        ],
+        "dependencies": [
+          "4"
+        ],
+        "acceptanceCriteria": [
+          "Validation runs before every save",
+          "User is warned about errors",
+          "User can override and save anyway if needed"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "7",
+        "title": "Implement Sieve script structure navigator",
+        "description": "Add IDE-like structured view showing list/tree of Sieve rules as navigable objects, using comment lines above rules as labels, with detection of rule numbering inconsistencies.",
+        "status": "pending",
+        "priority": "high",
+        "tags": [
+          "ui",
+          "navigation",
+          "parser"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "Sidebar or panel shows all rules",
+          "Comment labels used as rule names (format: '# Rule N: Description')",
+          "Click to jump to rule in editor",
+          "Warnings for numbering issues (duplicates, gaps)"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "8",
+        "title": "Implement connection keep-alive or auto-reconnect",
+        "description": "Implement keep-alive mechanism OR auto-reconnect on timeout to prevent 'can't write to pipe' errors during inactivity. Show brief notification if reconnection occurs.",
+        "status": "done",
+        "priority": "high",
+        "tags": [
+          "connection",
+          "reliability"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "No 'pipe' errors during normal operation",
+          "Seamless reconnection if timeout occurs",
+          "User notification if reconnection happens"
+        ],
+        "updatedAt": "2025-12-19T18:43:30.229Z",
+        "subtasks": []
+      },
+      {
+        "id": "9",
+        "title": "Add comprehensive keyboard shortcuts for Sieve menu",
+        "description": "Add keyboard shortcuts for all Sieve menu commands, especially 'Check Script' (suggest: Ctrl+K or Ctrl+Shift+C).",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "ui",
+          "hotkey",
+          "menu"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "All Sieve menu items have hotkeys",
+          "Hotkeys are documented in menu",
+          "No conflicts with existing shortcuts"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "10",
+        "title": "Remove redundant 'Load...' menu item",
+        "description": "Remove 'Sieve → Load... (Ctrl+O)' menu item and ensure 'Manage Scripts...' provides the same functionality.",
+        "status": "pending",
+        "priority": "low",
+        "tags": [
+          "ui",
+          "menu",
+          "cleanup"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "'Load...' removed from menu",
+          "'Manage Scripts...' provides same functionality",
+          "No regressions in script loading workflow"
+        ],
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "version": "1.0.0",
+      "lastModified": "2025-12-19T18:43:30.230Z",
+      "taskCount": 10,
+      "completedCount": 1,
+      "tags": [
+        "master"
+      ]
+    }
+  }
+}

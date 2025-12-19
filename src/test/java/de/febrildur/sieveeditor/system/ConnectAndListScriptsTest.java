@@ -248,10 +248,11 @@ class ConnectAndListScriptsTest {
     void shouldThrowExceptionWhenDeleteScriptCalledWithoutConnection() {
         // Given - No connection established (client is null)
 
-        // When/Then - deleteScript should throw NullPointerException
-        // when attempting to call client.deletescript()
+        // When/Then - deleteScript should throw IOException with clear message
+        // from ensureConnection() instead of NullPointerException
         assertThatThrownBy(() -> connection.deleteScript("myscript"))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(IOException.class)
+                .hasMessageContaining("Not connected to server");
     }
 
     @Test
@@ -298,9 +299,11 @@ class ConnectAndListScriptsTest {
     void shouldThrowExceptionWhenOperationCalledWithoutConnection() {
         // Given - No connection established
 
-        // When/Then - Operations should fail gracefully
+        // When/Then - Operations should fail gracefully with clear message
+        // from ensureConnection() instead of NullPointerException
         assertThatThrownBy(() -> connection.getListScripts())
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(IOException.class)
+                .hasMessageContaining("Not connected to server");
     }
 
     // ===== Helper Methods =====
@@ -346,4 +349,54 @@ class ConnectAndListScriptsTest {
      *
      * See: TEST-COVERAGE-ANALYSIS.md, Section "Refactoring for Testability"
      */
+
+    // ===== Keep-Alive Tests =====
+
+    @Test
+    void shouldEnableKeepAliveByDefault() {
+        // When
+        boolean enabled = connection.isKeepAliveEnabled();
+
+        // Then
+        assertThat(enabled).isTrue();
+    }
+
+    @Test
+    void shouldAllowDisablingKeepAlive() {
+        // When
+        connection.setKeepAliveEnabled(false);
+
+        // Then
+        assertThat(connection.isKeepAliveEnabled()).isFalse();
+    }
+
+    @Test
+    void shouldAllowEnablingKeepAlive() {
+        // Given
+        connection.setKeepAliveEnabled(false);
+
+        // When
+        connection.setKeepAliveEnabled(true);
+
+        // Then
+        assertThat(connection.isKeepAliveEnabled()).isTrue();
+    }
+
+    @Test
+    void shouldNotFailWhenDisablingKeepAliveWithoutConnection() {
+        // When/Then - Should not throw
+        assertThatCode(() -> connection.setKeepAliveEnabled(false))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldHandleLoggedInStateCorrectly() {
+        // Given - No connection established
+
+        // When
+        boolean loggedIn = connection.isLoggedIn();
+
+        // Then
+        assertThat(loggedIn).isFalse();
+    }
 }

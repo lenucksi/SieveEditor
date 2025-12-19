@@ -178,10 +178,10 @@ public class Application extends JFrame {
 		ruleNavigator = new de.febrildur.sieveeditor.ui.RuleNavigatorPanel();
 		ruleNavigator.setJumpToLineCallback(this::jumpToLine);
 
-		// Create split pane with navigator on left, editor on right
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, ruleNavigator, sp);
-		splitPane.setDividerLocation(250); // 250px for navigator
-		splitPane.setResizeWeight(0.0); // Give all extra space to editor
+		// Create split pane with editor on left, navigator on right
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sp, ruleNavigator);
+		splitPane.setResizeWeight(1.0); // Give all extra space to editor
+		splitPane.setDividerLocation(-250); // 250px for navigator (negative = from right)
 
 		cp.add(splitPane);
 

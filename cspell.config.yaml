@@ -24,10 +24,13 @@ words:
   - managesieve
   - managesievej
   - metainfo
+  - myscript
   - openrewrite
   - rsyntaxtextarea
+  - Rulename
   - sieveeditor
   - sieveprofiles
+  - syscategory
   - temurin
   - wixtoolset
 ignoreWords: []

@@ -267,7 +267,7 @@
         "id": "14",
         "title": "Fix rule parser robustness",
         "description": "Parser only finds some rules but not others. Investigate why certain rules are not detected and make parser more robust. Debug with sample scripts to identify pattern matching issues.",
-        "status": "pending",
+        "status": "done",
         "priority": "high",
         "tags": [
           "parser",
@@ -281,7 +281,7 @@
           "Clear logging/debugging for failed matches"
         ],
         "subtasks": [],
-        "updatedAt": "2025-12-19T23:22:55.254Z"
+        "updatedAt": "2025-12-22T18:31:42.481Z"
       },
       {
         "id": "15",
@@ -377,13 +377,106 @@
           "May need MouseWheelListener or custom event handling"
         ],
         "subtasks": []
+      },
+      {
+        "id": "19",
+        "title": "Fix parser regex to handle OX Flag field with content",
+        "description": "Update SieveRuleParser regex to properly parse OX Sieve comment format where Flag field contains values like 'syscategory' or 'vacation'. Current regex assumes empty Flag field. Example: '## Flag: syscategory|UniqueId:1|Rulename: $purchases'",
+        "status": "in-progress",
+        "priority": "high",
+        "tags": [
+          "parser",
+          "bug",
+          "regex",
+          "ox-format"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "Regex matches Flag field with content (e.g., 'syscategory', 'vacation')",
+          "Regex still matches empty Flag field (backward compatibility)",
+          "All test cases pass with various Flag values",
+          "Parser extracts UniqueId and Rulename correctly regardless of Flag content"
+        ],
+        "technicalNotes": [
+          "OX format: '## Flag: [optional_content]|UniqueId:N|Rulename: Name'",
+          "Flag values seen: 'vacation', 'syscategory', '' (empty)",
+          "This is OX App Suite proprietary format, not RFC 5228 standard",
+          "No official spec found - format inferred from forum examples"
+        ],
+        "subtasks": [],
+        "updatedAt": "2025-12-22T18:33:02.607Z"
+      },
+      {
+        "id": "20",
+        "title": "Add auto-regeneration of navigator on comment edit",
+        "description": "When user edits rule comments in the editor, automatically reparse the script and regenerate the Script Rules and Warnings panels. Implement debounced document listener to avoid parsing on every keystroke.",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "ui",
+          "navigation",
+          "editor",
+          "auto-update",
+          "ux"
+        ],
+        "dependencies": [
+          "19"
+        ],
+        "acceptanceCriteria": [
+          "Document listener attached to RSyntaxTextArea",
+          "Parsing debounced (e.g., 500ms delay after last keystroke)",
+          "Navigator updates automatically after comment changes",
+          "Warnings panel updates with new parse results",
+          "No performance degradation on large scripts",
+          "Current selection/scroll position preserved when possible"
+        ],
+        "technicalNotes": [
+          "Use DocumentListener on RSyntaxTextArea",
+          "Implement debounce with Timer or ScheduledExecutorService",
+          "Trigger SieveRuleParser.parseRules() on debounced change",
+          "Update RuleNavigatorPanel.updateRules() with new results",
+          "Consider preserving selected rule after re-parse"
+        ],
+        "subtasks": []
+      },
+      {
+        "id": "21",
+        "title": "Research and design drag-and-drop rule reordering",
+        "description": "Research feasibility of drag-and-drop rule reordering in navigator panel. This requires full Sieve parser to identify rule boundaries and rewrite script while preserving formatting. Document findings and propose implementation approach or alternatives.",
+        "status": "pending",
+        "priority": "low",
+        "tags": [
+          "ui",
+          "navigation",
+          "research",
+          "enhancement",
+          "complex"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "Research JList TransferHandler for drag-and-drop",
+          "Analyze requirements for full Sieve parser (beyond comments)",
+          "Document complexity of multiline rule detection",
+          "Propose implementation approach or recommend deferral",
+          "If feasible: create subtasks for implementation phases",
+          "If not feasible: document limitations and alternatives"
+        ],
+        "technicalNotes": [
+          "Requires identifying complete rule blocks (not just comments)",
+          "Need to preserve formatting, whitespace, nested conditions",
+          "Sieve has complex multiline structures (if/elsif/else, nested blocks)",
+          "Consider using existing Sieve parser library vs custom implementation",
+          "Alternative: manual 'Move Up/Down' buttons instead of drag-and-drop",
+          "This is a 'hyperfancy' feature - high effort, nice-to-have benefit"
+        ],
+        "subtasks": []
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-19T23:22:55.255Z",
-      "taskCount": 18,
-      "completedCount": 11,
+      "lastModified": "2025-12-22T18:33:02.608Z",
+      "taskCount": 21,
+      "completedCount": 12,
       "tags": [
         "master"
       ]

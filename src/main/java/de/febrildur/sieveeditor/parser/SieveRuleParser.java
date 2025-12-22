@@ -21,16 +21,17 @@ import java.util.regex.Pattern;
 public class SieveRuleParser {
 
 	/**
-	 * Pattern to match rule comments: ## Flag: |UniqueId:N |Rulename: Description
+	 * Pattern to match rule comments: ## Flag: [content]|UniqueId:N|Rulename: Description
 	 * Captures: group 1 = unique ID number, group 2 = rule name
 	 *
 	 * Made robust to handle:
+	 * - Optional Flag field content (e.g., 'syscategory', 'vacation', or empty)
 	 * - Variable whitespace between components
 	 * - Optional trailing whitespace
 	 * - Windows and Unix line endings
 	 */
 	private static final Pattern RULE_PATTERN = Pattern.compile(
-		"^\\s*##\\s*Flag:\\s*\\|\\s*UniqueId:\\s*(\\d+)\\s*\\|\\s*Rulename:\\s*(.*)$",
+		"^\\s*##\\s*Flag:\\s*[^|]*\\|\\s*UniqueId:\\s*(\\d+)\\s*\\|\\s*Rulename:\\s*(.*)$",
 		Pattern.CASE_INSENSITIVE
 	);
 

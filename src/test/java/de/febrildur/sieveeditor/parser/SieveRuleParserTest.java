@@ -338,4 +338,96 @@ class SieveRuleParserTest {
 		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Test");
 		assertThat(result.getRules().get(1).getLabel()).isEqualTo("Another");
 	}
+
+
+	@Test
+	void shouldHandleOxFlagWithEmptyContent() {
+		// Given - OX format with empty Flag field (backward compatibility)
+		String script = "## Flag: |UniqueId:1|Rulename: Empty Flag Test";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(1);
+		assertThat(result.getRules().get(0).getRuleNumber()).isEqualTo(1);
+		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Empty Flag Test");
+	}
+
+	@Test
+	void shouldHandleOxFlagWithVacationContent() {
+		// Given - OX format with 'vacation' in Flag field
+		String script = "## Flag: vacation|UniqueId:1|Rulename: Out of Office";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(1);
+		assertThat(result.getRules().get(0).getRuleNumber()).isEqualTo(1);
+		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Out of Office");
+	}
+
+	@Test
+	void shouldHandleOxFlagWithSyscategoryContent() {
+		// Given - OX format with 'syscategory' in Flag field (real-world example)
+		String script = "## Flag: syscategory|UniqueId:1|Rulename: $purchases";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(1);
+		assertThat(result.getRules().get(0).getRuleNumber()).isEqualTo(1);
+		assertThat(result.getRules().get(0).getLabel()).isEqualTo("$purchases");
+	}
+
+	@Test
+	void shouldHandleMixedFlagContentInMultipleRules() {
+		// Given - Mix of empty, vacation, and syscategory flags
+		String script = """
+			## Flag: |UniqueId:1|Rulename: Normal Rule
+			## Flag: vacation|UniqueId:2|Rulename: Vacation Response
+			## Flag: syscategory|UniqueId:3|Rulename: System Filter
+			## Flag: custom_value|UniqueId:4|Rulename: Custom Rule
+			""";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(4);
+		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Normal Rule");
+		assertThat(result.getRules().get(1).getLabel()).isEqualTo("Vacation Response");
+		assertThat(result.getRules().get(2).getLabel()).isEqualTo("System Filter");
+		assertThat(result.getRules().get(3).getLabel()).isEqualTo("Custom Rule");
+	}
+
+	@Test
+	void shouldHandleOxFlagWithSpacesInContent() {
+		// Given - Flag field with spaces (edge case)
+		String script = "## Flag: some value with spaces|UniqueId:1|Rulename: Spaced Flag";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(1);
+		assertThat(result.getRules().get(0).getRuleNumber()).isEqualTo(1);
+		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Spaced Flag");
+	}
+
+	@Test
+	void shouldHandleOxFlagWithSpecialCharacters() {
+		// Given - Flag field with special characters (edge case)
+		String script = "## Flag: sys:category-type_v2|UniqueId:42|Rulename: Special Chars";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(1);
+		assertThat(result.getRules().get(0).getRuleNumber()).isEqualTo(42);
+		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Special Chars");
+	}
 }

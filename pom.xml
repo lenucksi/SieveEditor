@@ -3,7 +3,7 @@
 
 	<groupId>de.febrildur</groupId>
 	<artifactId>SieveEditor</artifactId>
-	<version>1.0.3-SNAPSHOT</version>
+	<version>1.0.4</version>
 	<packaging>jar</packaging>
 
 	<name>SieveEditor</name>

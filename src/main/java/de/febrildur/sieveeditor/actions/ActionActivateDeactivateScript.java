@@ -154,6 +154,12 @@ public class ActionActivateDeactivateScript extends AbstractAction {
 			table.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
+					// Filter out horizontal scroll buttons (4/5) to prevent IllegalArgumentException
+					// Only process standard mouse buttons (1=left, 2=middle, 3=right)
+					if (e.getButton() > 3) {
+						return; // Ignore horizontal scroll wheel events
+					}
+
 					if (e.getClickCount() == 2) {
 						int row = table.getSelectedRow();
 						if (row >= 0) {

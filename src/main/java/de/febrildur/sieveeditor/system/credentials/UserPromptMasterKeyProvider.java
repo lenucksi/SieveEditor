@@ -46,6 +46,9 @@ public class UserPromptMasterKeyProvider implements MasterKeyProvider {
 		panel.add(new JLabel(" "));
 		panel.add(passwordField);
 
+		// Request focus on password field after dialog is shown
+		SwingUtilities.invokeLater(() -> passwordField.requestFocusInWindow());
+
 		int result = JOptionPane.showConfirmDialog(
 			null,
 			panel,

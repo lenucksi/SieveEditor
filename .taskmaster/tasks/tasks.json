@@ -382,7 +382,7 @@
         "id": "19",
         "title": "Fix parser regex to handle OX Flag field with content",
         "description": "Update SieveRuleParser regex to properly parse OX Sieve comment format where Flag field contains values like 'syscategory' or 'vacation'. Current regex assumes empty Flag field. Example: '## Flag: syscategory|UniqueId:1|Rulename: $purchases'",
-        "status": "in-progress",
+        "status": "done",
         "priority": "high",
         "tags": [
           "parser",
@@ -404,13 +404,13 @@
           "No official spec found - format inferred from forum examples"
         ],
         "subtasks": [],
-        "updatedAt": "2025-12-22T18:33:02.607Z"
+        "updatedAt": "2025-12-22T18:34:42.850Z"
       },
       {
         "id": "20",
         "title": "Add auto-regeneration of navigator on comment edit",
         "description": "When user edits rule comments in the editor, automatically reparse the script and regenerate the Script Rules and Warnings panels. Implement debounced document listener to avoid parsing on every keystroke.",
-        "status": "pending",
+        "status": "in-progress",
         "priority": "medium",
         "tags": [
           "ui",
@@ -437,7 +437,8 @@
           "Update RuleNavigatorPanel.updateRules() with new results",
           "Consider preserving selected rule after re-parse"
         ],
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2025-12-22T18:34:42.876Z"
       },
       {
         "id": "21",
@@ -474,9 +475,9 @@
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-22T18:33:02.608Z",
+      "lastModified": "2025-12-22T18:34:42.876Z",
       "taskCount": 21,
-      "completedCount": 12,
+      "completedCount": 13,
       "tags": [
         "master"
       ]

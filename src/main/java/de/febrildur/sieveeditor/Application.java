@@ -53,6 +53,7 @@ public class Application extends JFrame {
 	private PropertiesSieve prop;
 	private RSyntaxTextArea textArea;
 	private de.febrildur.sieveeditor.ui.RuleNavigatorPanel ruleNavigator;
+	private javax.swing.Timer parserDebounceTimer;
 	private de.febrildur.sieveeditor.ui.SearchPanel searchPanel;
 	private SieveScript script;
 
@@ -186,6 +187,9 @@ public class Application extends JFrame {
 		// Create rule navigator panel
 		ruleNavigator = new de.febrildur.sieveeditor.ui.RuleNavigatorPanel();
 		ruleNavigator.setJumpToLineCallback(this::jumpToLine);
+
+		// Setup auto-regeneration of navigator on text changes (debounced)
+		setupNavigatorAutoUpdate();
 
 		// Create vertical split for right side: search panel on top, navigator below
 		JSplitPane rightSidePane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, searchPanel, ruleNavigator);
@@ -421,6 +425,47 @@ public class Application extends JFrame {
 		if (ruleNavigator != null) {
 			ruleNavigator.updateRules(getScriptText());
 		}
+	}
+
+
+	/**
+	 * Sets up debounced auto-update of the rule navigator when text changes.
+	 * Uses a 500ms delay to avoid parsing on every keystroke.
+	 */
+	private void setupNavigatorAutoUpdate() {
+		// Create debounce timer (500ms delay)
+		parserDebounceTimer = new javax.swing.Timer(500, e -> {
+			// Update navigator with current text
+			updateRuleNavigator();
+		});
+		parserDebounceTimer.setRepeats(false); // Only fire once after delay
+
+		// Add document listener to textArea
+		textArea.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+			@Override
+			public void insertUpdate(javax.swing.event.DocumentEvent e) {
+				scheduleNavigatorUpdate();
+			}
+
+			@Override
+			public void removeUpdate(javax.swing.event.DocumentEvent e) {
+				scheduleNavigatorUpdate();
+			}
+
+			@Override
+			public void changedUpdate(javax.swing.event.DocumentEvent e) {
+				scheduleNavigatorUpdate();
+			}
+
+			private void scheduleNavigatorUpdate() {
+				// Restart the timer on each change (debounce)
+				if (parserDebounceTimer.isRunning()) {
+					parserDebounceTimer.restart();
+				} else {
+					parserDebounceTimer.start();
+				}
+			}
+		});
 	}
 
 	/**

@@ -7,20 +7,14 @@ import org.fife.ui.rtextarea.SearchEngine;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 /**
- * Integrated search and replace panel for finding/replacing text in the editor.
+ * Integrated search and replace panel for the Sieve editor.
  *
- * <p>Designed to be docked above the RuleNavigatorPanel as part of the right-side UI.
- * Provides a compact, always-available search and replace interface without blocking the editor.
- *
- * <p>Keyboard shortcuts:
- * <ul>
- *   <li>F3 - Find Next</li>
- *   <li>Shift+F3 - Find Previous</li>
- *   <li>Ctrl+F - Focus search field</li>
- * </ul>
+ * <p>This panel provides search and replace functionality with regex support,
+ * match case options, and keyboard shortcuts. It is docked above the navigator panel.
  */
 public class SearchPanel extends JPanel {
 
@@ -48,8 +42,19 @@ public class SearchPanel extends JPanel {
 		JPanel searchRow = new JPanel(new BorderLayout(4, 0));
 		searchRow.add(new JLabel("Find:"), BorderLayout.WEST);
 		searchField = new JTextField();
-		searchField.setToolTipText("Text to search for (Ctrl+F to focus, Enter to find next)");
+		searchField.setToolTipText("Text to search for (Ctrl+F to focus, Enter to find next, ESC to return to editor)");
 		searchField.addActionListener(e -> performSearch(true));
+
+		// Add ESC key handling to search field
+		searchField.getInputMap(JComponent.WHEN_FOCUSED).put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "returnToEditor");
+		searchField.getActionMap().put("returnToEditor", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				returnFocusToEditor();
+			}
+		});
+
 		searchRow.add(searchField, BorderLayout.CENTER);
 		searchRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, searchField.getPreferredSize().height));
 		contentPanel.add(searchRow);
@@ -59,8 +64,19 @@ public class SearchPanel extends JPanel {
 		JPanel replaceRow = new JPanel(new BorderLayout(4, 0));
 		replaceRow.add(new JLabel("With:"), BorderLayout.WEST);
 		replaceField = new JTextField();
-		replaceField.setToolTipText("Replacement text (Enter to replace current match)");
+		replaceField.setToolTipText("Replacement text (Enter to replace current match, ESC to return to editor)");
 		replaceField.addActionListener(e -> performReplace());
+
+		// Add ESC key handling to replace field
+		replaceField.getInputMap(JComponent.WHEN_FOCUSED).put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "returnToEditor");
+		replaceField.getActionMap().put("returnToEditor", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				returnFocusToEditor();
+			}
+		});
+
 		replaceRow.add(replaceField, BorderLayout.CENTER);
 		replaceRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, replaceField.getPreferredSize().height));
 		contentPanel.add(replaceRow);
@@ -143,6 +159,16 @@ public class SearchPanel extends JPanel {
 	public void focusSearchField() {
 		searchField.requestFocusInWindow();
 		searchField.selectAll(); // Select existing text for easy replacement
+	}
+
+	/**
+	 * Returns focus to the target editor, preserving the search term.
+	 * Called when ESC is pressed in search or replace fields.
+	 */
+	private void returnFocusToEditor() {
+		if (targetEditor != null) {
+			targetEditor.requestFocusInWindow();
+		}
 	}
 
 	/**
@@ -246,8 +272,7 @@ public class SearchPanel extends JPanel {
 
 		int count = SearchEngine.replaceAll(targetEditor, context).getCount();
 		JOptionPane.showMessageDialog(this,
-			"Replaced " + count + " occurrence" + (count == 1 ? "" : "s"));
-
-		targetEditor.requestFocusInWindow();
+			"Replaced " + count + " occurrence(s)",
+			"Replace All", JOptionPane.INFORMATION_MESSAGE);
 	}
 }

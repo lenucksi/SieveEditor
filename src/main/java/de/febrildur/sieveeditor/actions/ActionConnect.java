@@ -216,6 +216,19 @@ public class ActionConnect extends AbstractAction {
 
 				parentFrame.updateStatus();
 				frame.setVisible(false);
+
+				// Auto-load script if there's only one available
+				try {
+					java.util.List<com.fluffypeople.managesieve.SieveScript> scripts =
+						parentFrame.getServer().getListScripts();
+					if (scripts != null && scripts.size() == 1) {
+						parentFrame.setScript(scripts.get(0));
+						parentFrame.updateStatus();
+					}
+				} catch (Exception autoLoadEx) {
+					// Silently ignore auto-load failures - user can manually load
+					System.err.println("Auto-load failed: " + autoLoadEx.getMessage());
+				}
 			} catch (NumberFormatException | IOException | ParseException e1) {
 				JOptionPane.showMessageDialog(frame, e1.getClass().getName() + ": " + e1.getMessage());
 			}

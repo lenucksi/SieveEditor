@@ -2,6 +2,7 @@ package de.febrildur.sieveeditor.ui;
 
 import de.febrildur.sieveeditor.parser.SieveRule;
 import de.febrildur.sieveeditor.parser.SieveRuleParser;
+import de.febrildur.sieveeditor.parser.SieveWarning;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -18,9 +19,10 @@ public class RuleNavigatorPanel extends JPanel {
 
 	private final DefaultListModel<SieveRule> listModel;
 	private final JList<SieveRule> ruleList;
-	private final DefaultListModel<String> warningListModel;
-	private final JList<String> warningList;
+	private final DefaultListModel<SieveWarning> warningListModel;
+	private final JList<SieveWarning> warningList;
 	private Consumer<Integer> jumpToLineCallback;
+	private SieveWarning lastClickedWarning = null;
 
 	public RuleNavigatorPanel() {
 		setLayout(new BorderLayout());
@@ -35,8 +37,32 @@ public class RuleNavigatorPanel extends JPanel {
 		warningListModel = new DefaultListModel<>();
 		warningList = new JList<>(warningListModel);
 		warningList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		warningList.setForeground(new Color(220, 20, 60)); // Crimson red
 		warningList.setFont(warningList.getFont().deriveFont(Font.ITALIC));
+
+		// Custom cell renderer for color-coded warnings
+		warningList.setCellRenderer(new DefaultListCellRenderer() {
+			@Override
+			public Component getListCellRendererComponent(JList<?> list, Object value,
+														  int index, boolean isSelected, boolean cellHasFocus) {
+				super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				if (value instanceof SieveWarning warning) {
+					setText(warning.getDisplayText());
+
+					// Color-code by severity (only when not selected)
+					if (!isSelected) {
+						if (warning.getSeverity() == SieveWarning.Severity.ERROR) {
+							setForeground(new Color(139, 0, 0)); // Dark red
+						} else {
+							setForeground(new Color(255, 140, 0)); // Dark orange
+						}
+					}
+
+					// Tooltip shows full message
+					setToolTipText(warning.getMessage());
+				}
+				return this;
+			}
+		});
 
 		// Create list model and list for rules
 		listModel = new DefaultListModel<>();
@@ -73,17 +99,28 @@ public class RuleNavigatorPanel extends JPanel {
 		scrollPane.setPreferredSize(new Dimension(200, 200));
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		// Add click listener for warnings - extract line number and jump
+		// Add click listener for warnings - supports cycling through duplicates
 		warningList.addListSelectionListener(e -> {
 			if (!e.getValueIsAdjusting() && jumpToLineCallback != null) {
-				String selected = warningList.getSelectedValue();
+				SieveWarning selected = warningList.getSelectedValue();
 				if (selected != null) {
 					ruleList.clearSelection(); // Clear rule selection
-					// Try to extract line number from warning message (format: "... at line XXX")
-					java.util.regex.Pattern linePattern = java.util.regex.Pattern.compile("at line (\\d+)");
-					java.util.regex.Matcher matcher = linePattern.matcher(selected);
-					if (matcher.find()) {
-						int lineNumber = Integer.parseInt(matcher.group(1));
+
+					// Check if this is a repeated click on the same warning
+					if (selected == lastClickedWarning && selected.hasLineNumbers()) {
+						// Cycle to next occurrence
+						selected.cycleToNextLine();
+					} else {
+						// First click or different warning - reset cycle
+						if (lastClickedWarning != null) {
+							lastClickedWarning.resetCycle();
+						}
+						lastClickedWarning = selected;
+					}
+
+					// Jump to the current line number
+					Integer lineNumber = selected.getCurrentLineNumber();
+					if (lineNumber != null) {
 						jumpToLineCallback.accept(lineNumber);
 					}
 				}
@@ -136,8 +173,8 @@ public class RuleNavigatorPanel extends JPanel {
 
 		// Show warnings if any
 		if (result.hasWarnings()) {
-			for (String warning : result.getWarnings()) {
-				warningListModel.addElement("⚠ " + warning);
+			for (SieveWarning warning : result.getWarnings()) {
+				warningListModel.addElement(warning);
 			}
 			warningScrollPane.setVisible(true);
 		}

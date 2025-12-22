@@ -39,9 +39,9 @@ public class SieveRuleParser {
 	 */
 	public static class ParseResult {
 		private final List<SieveRule> rules;
-		private final List<String> warnings;
+		private final List<SieveWarning> warnings;
 
-		public ParseResult(List<SieveRule> rules, List<String> warnings) {
+		public ParseResult(List<SieveRule> rules, List<SieveWarning> warnings) {
 			this.rules = rules;
 			this.warnings = warnings;
 		}
@@ -50,7 +50,7 @@ public class SieveRuleParser {
 			return rules;
 		}
 
-		public List<String> getWarnings() {
+		public List<SieveWarning> getWarnings() {
 			return warnings;
 		}
 
@@ -67,8 +67,8 @@ public class SieveRuleParser {
 	 */
 	public static ParseResult parseRules(String scriptText) {
 		List<SieveRule> rules = new ArrayList<>();
-		List<String> warnings = new ArrayList<>();
-		Set<Integer> seenNumbers = new HashSet<>();
+		List<SieveWarning> warnings = new ArrayList<>();
+		java.util.Map<Integer, List<Integer>> ruleNumberToLines = new java.util.HashMap<>();
 
 		if (scriptText == null || scriptText.isEmpty()) {
 			return new ParseResult(rules, warnings);
@@ -86,21 +86,35 @@ public class SieveRuleParser {
 					int ruleNumber = Integer.parseInt(matcher.group(1));
 					String ruleName = matcher.group(2).trim();
 
-					// Check for duplicate rule numbers
-					if (seenNumbers.contains(ruleNumber)) {
-						warnings.add("Duplicate UniqueId " + ruleNumber + " at line " + lineNumber);
-					}
-					seenNumbers.add(ruleNumber);
+					// Track all line numbers for each rule number
+					ruleNumberToLines.computeIfAbsent(ruleNumber, k -> new ArrayList<>()).add(lineNumber);
 
 					rules.add(new SieveRule(ruleNumber, ruleName, lineNumber, line.trim()));
 				} catch (NumberFormatException e) {
 					// Shouldn't happen due to regex, but be defensive
-					warnings.add("Invalid UniqueId at line " + lineNumber);
+					warnings.add(new SieveWarning(
+						SieveWarning.Severity.ERROR,
+						"Invalid UniqueId",
+						lineNumber
+					));
 				}
 			}
 		}
 
-		// Check for gaps in numbering
+		// Check for duplicate rule numbers (ERROR severity)
+		for (java.util.Map.Entry<Integer, List<Integer>> entry : ruleNumberToLines.entrySet()) {
+			int ruleNumber = entry.getKey();
+			List<Integer> linesList = entry.getValue();
+			if (linesList.size() > 1) {
+				warnings.add(new SieveWarning(
+					SieveWarning.Severity.ERROR,
+					"Duplicate UniqueId " + ruleNumber,
+					linesList
+				));
+			}
+		}
+
+		// Check for gaps in numbering (WARNING severity)
 		if (!rules.isEmpty()) {
 			detectNumberingGaps(rules, warnings);
 		}
@@ -111,7 +125,7 @@ public class SieveRuleParser {
 	/**
 	 * Detects gaps in rule numbering sequence.
 	 */
-	private static void detectNumberingGaps(List<SieveRule> rules, List<String> warnings) {
+	private static void detectNumberingGaps(List<SieveRule> rules, List<SieveWarning> warnings) {
 		// Sort by rule number to check sequence
 		List<Integer> numbers = rules.stream()
 			.map(SieveRule::getRuleNumber)
@@ -126,12 +140,14 @@ public class SieveRuleParser {
 		int expectedNext = 1;
 		for (int number : numbers) {
 			if (number > expectedNext) {
-				// Gap detected
+				// Gap detected - this is a quality WARNING, not an ERROR
+				String message;
 				if (number - expectedNext == 1) {
-					warnings.add("Missing UniqueId " + expectedNext);
+					message = "Missing UniqueId " + expectedNext;
 				} else {
-					warnings.add("Missing UniqueIds " + expectedNext + " to " + (number - 1));
+					message = "Missing UniqueIds " + expectedNext + " to " + (number - 1);
 				}
+				warnings.add(new SieveWarning(SieveWarning.Severity.WARNING, message));
 			}
 			expectedNext = number + 1;
 		}

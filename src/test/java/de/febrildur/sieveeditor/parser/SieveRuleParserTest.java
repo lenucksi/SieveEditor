@@ -86,7 +86,7 @@ class SieveRuleParserTest {
 		assertThat(result.getRules()).hasSize(3);
 		assertThat(result.hasWarnings()).isTrue();
 		assertThat(result.getWarnings())
-			.anyMatch(w -> w.contains("Duplicate UniqueId 1"));
+			.anyMatch(w -> w.getMessage().contains("Duplicate UniqueId 1"));
 	}
 
 	@Test
@@ -105,8 +105,8 @@ class SieveRuleParserTest {
 		assertThat(result.getRules()).hasSize(3);
 		assertThat(result.hasWarnings()).isTrue();
 		assertThat(result.getWarnings())
-			.anyMatch(w -> w.contains("Missing UniqueId 2"))
-			.anyMatch(w -> w.contains("Missing UniqueId 4"));
+			.anyMatch(w -> w.getMessage().contains("Missing UniqueId 2"))
+			.anyMatch(w -> w.getMessage().contains("Missing UniqueId 4"));
 	}
 
 	@Test
@@ -123,7 +123,7 @@ class SieveRuleParserTest {
 		// Then
 		assertThat(result.hasWarnings()).isTrue();
 		assertThat(result.getWarnings())
-			.anyMatch(w -> w.contains("Missing UniqueIds 2 to 4"));
+			.anyMatch(w -> w.getMessage().contains("Missing UniqueIds 2 to 4"));
 	}
 
 	@Test

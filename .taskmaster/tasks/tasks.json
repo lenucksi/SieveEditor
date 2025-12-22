@@ -5,7 +5,7 @@
         "id": "1",
         "title": "Implement modeless Search & Replace dialog",
         "description": "Make the Search & Replace dialog non-blocking (modeless) OR position it in the top-right corner like VS Code/IntelliJ to enable continuous search & replace during editing.",
-        "status": "pending",
+        "status": "done",
         "priority": "medium",
         "tags": [
           "ui",
@@ -18,7 +18,8 @@
           "Dialog doesn't block main editor interaction",
           "Search & replace operations work seamlessly with concurrent editing"
         ],
-        "subtasks": []
+        "subtasks": [],
+        "updatedAt": "2025-12-19T22:52:18.050Z"
       },
       {
         "id": "2",
@@ -266,7 +267,7 @@
         "id": "14",
         "title": "Fix rule parser robustness",
         "description": "Parser only finds some rules but not others. Investigate why certain rules are not detected and make parser more robust. Debug with sample scripts to identify pattern matching issues.",
-        "status": "done",
+        "status": "pending",
         "priority": "high",
         "tags": [
           "parser",
@@ -280,7 +281,7 @@
           "Clear logging/debugging for failed matches"
         ],
         "subtasks": [],
-        "updatedAt": "2025-12-19T22:06:00.031Z"
+        "updatedAt": "2025-12-19T23:22:55.254Z"
       },
       {
         "id": "15",
@@ -323,13 +324,66 @@
           "Horizontal scrolling still available if manually resized smaller"
         ],
         "subtasks": []
+      },
+      {
+        "id": "17",
+        "title": "Add color-coded severity levels and enhanced duplicate ID navigation to warning panel",
+        "description": "Implement color-coded warnings: quality warnings (e.g., 'Missing Unique-ID') in dark orange, errors (e.g., 'duplicate UniqueID') in dark red. For duplicate ID errors, list all occurrences in error message and enable cycling through duplicates with repeated clicks.",
+        "status": "done",
+        "priority": "high",
+        "tags": [
+          "ui",
+          "navigation",
+          "warnings",
+          "validation",
+          "ux"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "Quality warnings displayed in dark orange color",
+          "Errors displayed in dark red color",
+          "Duplicate ID error message lists all occurrence line numbers",
+          "Clicking duplicate error cycles through all occurrences in editor",
+          "Clear visual distinction between warning severities"
+        ],
+        "subtasks": [],
+        "updatedAt": "2025-12-19T22:42:38.082Z"
+      },
+      {
+        "id": "18",
+        "title": "Fix horizontal scroll mouse button exceptions (buttons 4/5)",
+        "description": "Investigate and fix IllegalArgumentException for 'Nonexistent button 4/5' when using horizontal scroll wheel. Mouse with horizontal scroll button throws exceptions instead of scrolling. First determine if this is a JDK bug or application-level fixable issue, then implement fix if possible.",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "bug",
+          "ui",
+          "mouse",
+          "input",
+          "investigation"
+        ],
+        "dependencies": [],
+        "acceptanceCriteria": [
+          "Research JDK 21 X11 toolkit button 4/5 handling",
+          "Determine if fixable at application level or requires JDK patch",
+          "If fixable: horizontal scroll works without exceptions",
+          "If JDK bug: document workaround or upstream bug report",
+          "No more IllegalArgumentException warnings in logs"
+        ],
+        "technicalNotes": [
+          "Error: java.lang.IllegalArgumentException: Nonexistent button 4/5",
+          "Occurs in sun.awt.X11.XWindow.handleButtonPressRelease",
+          "Buttons 4/5 typically map to horizontal scroll on Linux/X11",
+          "May need MouseWheelListener or custom event handling"
+        ],
+        "subtasks": []
       }
     ],
     "metadata": {
       "version": "1.0.0",
-      "lastModified": "2025-12-19T22:23:05.096Z",
-      "taskCount": 16,
-      "completedCount": 10,
+      "lastModified": "2025-12-19T23:22:55.255Z",
+      "taskCount": 18,
+      "completedCount": 11,
       "tags": [
         "master"
       ]

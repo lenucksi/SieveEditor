@@ -34,7 +34,6 @@ import com.fluffypeople.managesieve.SieveScript;
 import de.febrildur.sieveeditor.actions.ActionActivateDeactivateScript;
 import de.febrildur.sieveeditor.actions.ActionCheckScript;
 import de.febrildur.sieveeditor.actions.ActionConnect;
-import de.febrildur.sieveeditor.actions.ActionLoadScript;
 import de.febrildur.sieveeditor.actions.ActionOpenLocalScript;
 import de.febrildur.sieveeditor.actions.ActionReplace;
 import de.febrildur.sieveeditor.actions.ActionSaveLocalScript;
@@ -55,6 +54,7 @@ public class Application extends JFrame {
 	private de.febrildur.sieveeditor.ui.RuleNavigatorPanel ruleNavigator;
 	private javax.swing.Timer parserDebounceTimer;
 	private de.febrildur.sieveeditor.ui.SearchPanel searchPanel;
+	private JSplitPane mainSplitPane; // Horizontal split between editor and navigator
 	private SieveScript script;
 
 	private AbstractAction actionConnect = new ActionConnect(this);
@@ -197,11 +197,11 @@ public class Application extends JFrame {
 		rightSidePane.setDividerLocation(200); // Search+replace panel height
 
 		// Create main horizontal split: editor on left, right pane on right
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sp, rightSidePane);
-		splitPane.setResizeWeight(1.0); // Give all extra space to editor
-		splitPane.setDividerLocation(-200); // 200px for right side pane (negative = from right)
+		mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sp, rightSidePane);
+		mainSplitPane.setResizeWeight(1.0); // Give all extra space to editor
+		mainSplitPane.setDividerLocation(-200); // 200px for right side pane (negative = from right)
 
-		cp.add(splitPane);
+		cp.add(mainSplitPane);
 
 		setContentPane(cp);
 		setTitle("Sieve Editor");
@@ -210,6 +210,18 @@ public class Application extends JFrame {
 		// Set a reasonable minimum window size
 		setMinimumSize(new java.awt.Dimension(UIScale.scale(600), UIScale.scale(400)));
 		setLocationRelativeTo(null);
+
+		// Add window resize listener to re-adjust warning panel sizing
+		addComponentListener(new java.awt.event.ComponentAdapter() {
+			@Override
+			public void componentResized(java.awt.event.ComponentEvent e) {
+				// Re-run warning panel auto-sizing on window resize
+				if (ruleNavigator != null) {
+					ruleNavigator.reapplyWarningPanelSize();
+				}
+			}
+		});
+
 		updateStatus();
 	}
 
@@ -420,10 +432,24 @@ public class Application extends JFrame {
 
 	/**
 	 * Updates the rule navigator with the current script content.
+	 * Auto-sizes the navigator width on first load only.
 	 */
 	public void updateRuleNavigator() {
 		if (ruleNavigator != null) {
 			ruleNavigator.updateRules(getScriptText());
+
+			// Auto-size navigator width based on content (only on first load)
+			if (!ruleNavigator.isWidthAutoSized()) {
+				// Use SwingUtilities.invokeLater to ensure layout is complete
+				SwingUtilities.invokeLater(() -> {
+					if (mainSplitPane != null && mainSplitPane.getWidth() > 0) {
+						int recommendedWidth = ruleNavigator.getRecommendedWidth();
+						// Set divider location from right edge
+						mainSplitPane.setDividerLocation(mainSplitPane.getWidth() - recommendedWidth - mainSplitPane.getDividerSize());
+						ruleNavigator.markWidthAutoSized();
+					}
+				});
+			}
 		}
 	}
 

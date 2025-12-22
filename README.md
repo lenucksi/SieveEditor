@@ -91,6 +91,30 @@ java -jar target/SieveEditor-jar-with-dependencies.jar
 - [README-TESTS.md](README-TESTS.md) - Test infrastructure and coverage
 - [SECURITY.md](SECURITY.md) - Security policy and vulnerability reporting
 
+## Known Issues
+
+### Mouse Button 4/5 Exceptions on Linux (X11)
+
+**Issue:** When using horizontal scroll wheel (tilt wheel), you may see warnings in the console:
+
+```text
+java.lang.IllegalArgumentException: Nonexistent button 4/5
+    at java.desktop/java.awt.event.MouseEvent.<init>(MouseEvent.java:774)
+    at java.desktop/sun.awt.X11.XWindow.handleButtonPressRelease(XWindow.java:749)
+```
+
+**Cause:** This is a known JDK bug in the X11 AWT backend ([JDK-8372756](https://bugs.openjdk.org/browse/JDK-8372756), [JDK-8033000](https://bugs.openjdk.org/browse/JDK-8033000), [JDK-6440198](https://bugs.openjdk.org/browse/JDK-6440198)). X11 reports mouse buttons 4-7 for scroll wheel events, but Java's MouseEvent only accepts buttons 0-3. The exception occurs in native code before Java can intercept it.
+
+**Impact:** These are harmless warnings that don't affect functionality. You can safely ignore them.
+
+**Workaround:** To suppress the warnings (note: this doesn't enable horizontal scrolling), add this JVM parameter when running:
+
+```bash
+java -Dsun.awt.xembedserver=true -jar target/SieveEditor-jar-with-dependencies.jar
+```
+
+**Status:** This cannot be fixed at the application level - it requires a JDK patch. The issue has been reported to OpenJDK but remains unfixed as of Java 21.
+
 ## Important
 
 No support or guarantees for function, safety or security of any sorts.

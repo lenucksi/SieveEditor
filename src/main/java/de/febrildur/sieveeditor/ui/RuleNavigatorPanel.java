@@ -80,7 +80,32 @@ public class RuleNavigatorPanel extends JPanel {
 				super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 				if (value instanceof SieveRule rule) {
 					setText(rule.getDisplayText());
-					setToolTipText("Line " + rule.getLineNumber() + ": " + rule.getComment());
+
+					// Build structured multiline tooltip for all rules
+					StringBuilder tooltip = new StringBuilder("<html>");
+
+					// First line: Full comment
+					tooltip.append(rule.getComment()).append("<br><br>");
+
+					// Parsed fields
+					tooltip.append("<b>UniqueId:</b> ").append(rule.getRuleNumber()).append("<br>");
+					tooltip.append("<b>Rulename:</b> ").append(rule.getLabel().isEmpty() ? "(empty)" : rule.getLabel()).append("<br>");
+
+					// Flag (if present and not empty)
+					if (rule.getFlag() != null && !rule.getFlag().trim().isEmpty()) {
+						tooltip.append("<b>Flag:</b> ").append(rule.getFlag()).append("<br>");
+					}
+
+					// Vacation metadata (if present)
+					if (rule.getLastModified() != null) {
+						tooltip.append("<b>Last Modified:</b> ").append(rule.getLastModified()).append("<br>");
+					}
+					if (rule.getModifiedBy() != null) {
+						tooltip.append("<b>Modified By:</b> ").append(rule.getModifiedBy());
+					}
+
+					tooltip.append("</html>");
+					setToolTipText(tooltip.toString());
 				}
 				return this;
 			}

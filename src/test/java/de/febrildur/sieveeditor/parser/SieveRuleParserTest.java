@@ -430,4 +430,144 @@ class SieveRuleParserTest {
 		assertThat(result.getRules().get(0).getRuleNumber()).isEqualTo(42);
 		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Special Chars");
 	}
+
+	@Test
+	void shouldHandleVacationRuleWithLastModifiedAndModifiedBy() {
+		// Given - Real-world vacation format with metadata fields
+		String script = "## Flag: vacation|UniqueId:2|Rulename: Abwesenheitsbenachrichtigung|LastModified: 2025-12-18T13:54:27Z|ModifiedBy: 111.111.111.111";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(1);
+		SieveRule rule = result.getRules().get(0);
+		assertThat(rule.getRuleNumber()).isEqualTo(2);
+		assertThat(rule.getLabel()).isEqualTo("Abwesenheitsbenachrichtigung");
+		assertThat(rule.getDisplayText()).isEqualTo("Rule 2: Abwesenheitsbenachrichtigung");
+
+		// Verify metadata was extracted
+		assertThat(rule.hasMetadata()).isTrue();
+		assertThat(rule.getLastModified()).isEqualTo("2025-12-18T13:54:27Z");
+		assertThat(rule.getModifiedBy()).isEqualTo("111.111.111.111");
+	}
+
+	@Test
+	void shouldHandleVacationRuleWithOnlyLastModified() {
+		// Given - Vacation format with only LastModified (edge case)
+		String script = "## Flag: vacation|UniqueId:3|Rulename: Out of Office|LastModified: 2025-12-20T10:00:00Z";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(1);
+		SieveRule rule = result.getRules().get(0);
+		assertThat(rule.getRuleNumber()).isEqualTo(3);
+		assertThat(rule.getLabel()).isEqualTo("Out of Office");
+
+		// Verify only LastModified is present
+		assertThat(rule.hasMetadata()).isTrue();
+		assertThat(rule.getLastModified()).isEqualTo("2025-12-20T10:00:00Z");
+		assertThat(rule.getModifiedBy()).isNull();
+	}
+
+	@Test
+	void shouldHandleVacationRuleWithoutMetadata() {
+		// Given - Vacation format without metadata (backward compatibility)
+		String script = "## Flag: vacation|UniqueId:1|Rulename: Simple Vacation";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(1);
+		SieveRule rule = result.getRules().get(0);
+		assertThat(rule.getRuleNumber()).isEqualTo(1);
+		assertThat(rule.getLabel()).isEqualTo("Simple Vacation");
+
+		// Verify no metadata present (backward compatibility)
+		assertThat(rule.hasMetadata()).isFalse();
+		assertThat(rule.getLastModified()).isNull();
+		assertThat(rule.getModifiedBy()).isNull();
+	}
+
+	@Test
+	void shouldHandleMixedRulesWithAndWithoutMetadata() {
+		// Given - Mix of rules with and without metadata
+		String script = """
+			## Flag: |UniqueId:1|Rulename: Normal Rule
+			## Flag: vacation|UniqueId:2|Rulename: Vacation With Metadata|LastModified: 2025-12-18T13:54:27Z|ModifiedBy: 192.168.1.1
+			## Flag: syscategory|UniqueId:3|Rulename: System Rule
+			## Flag: vacation|UniqueId:4|Rulename: Vacation Without Metadata
+			""";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(4);
+		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Normal Rule");
+		assertThat(result.getRules().get(1).getLabel()).isEqualTo("Vacation With Metadata");
+		assertThat(result.getRules().get(2).getLabel()).isEqualTo("System Rule");
+		assertThat(result.getRules().get(3).getLabel()).isEqualTo("Vacation Without Metadata");
+	}
+
+	@Test
+	void shouldHandleVacationRuleWithComplexTimestamp() {
+		// Given - Vacation with timezone offset in timestamp
+		String script = "## Flag: vacation|UniqueId:5|Rulename: Urlaub|LastModified: 2025-12-25T14:30:00+01:00|ModifiedBy: 10.0.0.1";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(1);
+		assertThat(result.getRules().get(0).getRuleNumber()).isEqualTo(5);
+		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Urlaub");
+	}
+
+	@Test
+	void shouldHandleVacationRuleWithIPv6Address() {
+		// Given - Vacation with IPv6 address in ModifiedBy
+		String script = "## Flag: vacation|UniqueId:6|Rulename: Holiday|LastModified: 2025-12-26T08:00:00Z|ModifiedBy: 2001:0db8:85a3:0000:0000:8a2e:0370:7334";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(1);
+		assertThat(result.getRules().get(0).getRuleNumber()).isEqualTo(6);
+		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Holiday");
+	}
+
+	@Test
+	void shouldHandleVacationRuleWithWhitespaceInRulename() {
+		// Given - Rule name with trailing/leading spaces before metadata
+		String script = "## Flag: vacation|UniqueId:7|Rulename:  Spaced Rule Name  |LastModified: 2025-12-27T12:00:00Z|ModifiedBy: 172.16.0.1";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(1);
+		assertThat(result.getRules().get(0).getRuleNumber()).isEqualTo(7);
+		// trim() should handle leading/trailing spaces
+		assertThat(result.getRules().get(0).getLabel()).isEqualTo("Spaced Rule Name");
+	}
+
+	@Test
+	void shouldHandleEmptyRulenameWithMetadata() {
+		// Given - Empty rule name but with metadata (edge case)
+		String script = "## Flag: vacation|UniqueId:8|Rulename:|LastModified: 2025-12-28T00:00:00Z|ModifiedBy: 127.0.0.1";
+
+		// When
+		var result = SieveRuleParser.parseRules(script);
+
+		// Then
+		assertThat(result.getRules()).hasSize(1);
+		assertThat(result.getRules().get(0).getRuleNumber()).isEqualTo(8);
+		assertThat(result.getRules().get(0).getLabel()).isEmpty();
+		assertThat(result.getRules().get(0).getDisplayText()).isEqualTo("Rule 8");
+	}
 }

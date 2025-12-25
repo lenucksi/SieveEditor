@@ -63,4 +63,5 @@ exec java \
     -Dsun.java2d.vulkan=True \
     -Dawt.useSystemAAFontSettings=lcd \
     -Dswing.aatext=true \
+    -Dawt.robot.screenshotMethod=x11 \
     -jar "$JARFILE" "$@"

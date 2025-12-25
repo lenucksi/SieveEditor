@@ -361,6 +361,64 @@ public class PropertiesSieve {
 	}
 
 	/**
+	 * Renames a profile from oldName to newName.
+	 *
+	 * @param oldName the current name of the profile
+	 * @param newName the new name for the profile
+	 * @return true if the profile was renamed successfully, false otherwise
+	 */
+	public static boolean renameProfile(String oldName, String newName) {
+		// Validate inputs
+		if (oldName == null || oldName.trim().isEmpty()) {
+			LOGGER.log(Level.WARNING, "Cannot rename profile: old name is null or empty");
+			return false;
+		}
+		if (newName == null || newName.trim().isEmpty()) {
+			LOGGER.log(Level.WARNING, "Cannot rename profile: new name is null or empty");
+			return false;
+		}
+
+		// Don't allow renaming to the same name
+		if (oldName.equals(newName)) {
+			LOGGER.log(Level.FINE, "Profile names are identical, no rename needed");
+			return true; // Not an error, just a no-op
+		}
+
+		Path oldProfileFile = AppDirectoryService.getProfilesDir().resolve(oldName + ".properties");
+		Path newProfileFile = AppDirectoryService.getProfilesDir().resolve(newName + ".properties");
+
+		// Check if old profile exists
+		if (!Files.exists(oldProfileFile)) {
+			LOGGER.log(Level.WARNING, "Cannot rename profile: source profile does not exist: {0}", oldName);
+			return false;
+		}
+
+		// Check if new profile name already exists
+		if (Files.exists(newProfileFile)) {
+			LOGGER.log(Level.WARNING, "Cannot rename profile: target profile already exists: {0}", newName);
+			return false;
+		}
+
+		try {
+			// Rename the profile file
+			Files.move(oldProfileFile, newProfileFile);
+			LOGGER.log(Level.INFO, "Renamed profile from {0} to {1}", new Object[]{oldName, newName});
+
+			// Update last used profile reference if needed
+			String lastUsed = getLastUsedProfile();
+			if (oldName.equals(lastUsed)) {
+				saveLastUsedProfile(newName);
+				LOGGER.log(Level.INFO, "Updated last used profile to {0}", newName);
+			}
+
+			return true;
+		} catch (IOException e) {
+			LOGGER.log(Level.SEVERE, "Failed to rename profile from " + oldName + " to " + newName, e);
+			return false;
+		}
+	}
+
+	/**
 	 * Migrates profiles from old ~/.sieveprofiles to new platform-specific
 	 * locations.
 	 */

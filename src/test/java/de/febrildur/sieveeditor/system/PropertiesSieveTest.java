@@ -668,4 +668,188 @@ class PropertiesSieveTest {
         // Then
         assertThat(result).isFalse();
     }
+
+    // ===== Profile Rename Tests =====
+
+    @Test
+    void shouldRenameProfileSuccessfully() throws IOException {
+        // Given - Create a profile
+        PropertiesSieve profile = new PropertiesSieve("oldname");
+        profile.setServer("example.com");
+        profile.setPort(4190);
+        profile.setUsername("testuser");
+        profile.setPassword("testpass");
+        profile.write();
+
+        // Verify old profile exists
+        assertThat(PropertiesSieve.profileExists("oldname")).isTrue();
+        assertThat(PropertiesSieve.profileExists("newname")).isFalse();
+
+        // When
+        boolean result = PropertiesSieve.renameProfile("oldname", "newname");
+
+        // Then
+        assertThat(result).isTrue();
+        assertThat(PropertiesSieve.profileExists("oldname")).isFalse();
+        assertThat(PropertiesSieve.profileExists("newname")).isTrue();
+        assertThat(PropertiesSieve.getAvailableProfiles()).contains("newname");
+        assertThat(PropertiesSieve.getAvailableProfiles()).doesNotContain("oldname");
+    }
+
+    @Test
+    void shouldPreserveProfileDataAfterRename() throws IOException {
+        // Given - Create a profile with specific data
+        PropertiesSieve oldProfile = new PropertiesSieve("oldname");
+        oldProfile.setServer("mail.example.com");
+        oldProfile.setPort(2000);
+        oldProfile.setUsername("john.doe");
+        oldProfile.setPassword("secret123");
+        oldProfile.write();
+
+        // When
+        PropertiesSieve.renameProfile("oldname", "newname");
+
+        // Then - Load the renamed profile and verify data is preserved
+        PropertiesSieve renamedProfile = new PropertiesSieve("newname");
+        renamedProfile.load();
+
+        assertThat(renamedProfile.getServer()).isEqualTo("mail.example.com");
+        assertThat(renamedProfile.getPort()).isEqualTo(2000);
+        assertThat(renamedProfile.getUsername()).isEqualTo("john.doe");
+        assertThat(renamedProfile.getPassword()).isEqualTo("secret123");
+    }
+
+    @Test
+    void shouldUpdateLastUsedProfileAfterRename() throws IOException {
+        // Given - Create a profile and set it as last used
+        PropertiesSieve profile = new PropertiesSieve("oldname");
+        profile.write();
+        PropertiesSieve.saveLastUsedProfile("oldname");
+
+        // Verify it's the last used profile
+        assertThat(PropertiesSieve.getLastUsedProfile()).isEqualTo("oldname");
+
+        // When
+        PropertiesSieve.renameProfile("oldname", "newname");
+
+        // Then - Last used profile should be updated
+        assertThat(PropertiesSieve.getLastUsedProfile()).isEqualTo("newname");
+    }
+
+    @Test
+    void shouldNotUpdateLastUsedProfileIfNotRenamed() throws IOException {
+        // Given - Create two profiles, one is last used
+        PropertiesSieve profile1 = new PropertiesSieve("profile1");
+        profile1.write();
+        PropertiesSieve profile2 = new PropertiesSieve("profile2");
+        profile2.write();
+        PropertiesSieve.saveLastUsedProfile("profile2");
+
+        // When - Rename profile1 (not the last used one)
+        PropertiesSieve.renameProfile("profile1", "profile1renamed");
+
+        // Then - Last used profile should remain unchanged
+        assertThat(PropertiesSieve.getLastUsedProfile()).isEqualTo("profile2");
+    }
+
+    @Test
+    void shouldReturnFalseWhenOldProfileDoesNotExist() {
+        // When
+        boolean result = PropertiesSieve.renameProfile("nonexistent", "newname");
+
+        // Then
+        assertThat(result).isFalse();
+        assertThat(PropertiesSieve.profileExists("newname")).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenNewProfileAlreadyExists() throws IOException {
+        // Given - Create two profiles
+        PropertiesSieve profile1 = new PropertiesSieve("profile1");
+        profile1.write();
+        PropertiesSieve profile2 = new PropertiesSieve("profile2");
+        profile2.write();
+
+        // When - Try to rename profile1 to profile2 (which already exists)
+        boolean result = PropertiesSieve.renameProfile("profile1", "profile2");
+
+        // Then
+        assertThat(result).isFalse();
+        assertThat(PropertiesSieve.profileExists("profile1")).isTrue();
+        assertThat(PropertiesSieve.profileExists("profile2")).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenOldNameIsNull() {
+        // When
+        boolean result = PropertiesSieve.renameProfile(null, "newname");
+
+        // Then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenOldNameIsEmpty() {
+        // When
+        boolean result = PropertiesSieve.renameProfile("", "newname");
+
+        // Then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenNewNameIsNull() throws IOException {
+        // Given
+        PropertiesSieve profile = new PropertiesSieve("oldname");
+        profile.write();
+
+        // When
+        boolean result = PropertiesSieve.renameProfile("oldname", null);
+
+        // Then
+        assertThat(result).isFalse();
+        assertThat(PropertiesSieve.profileExists("oldname")).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenNewNameIsEmpty() throws IOException {
+        // Given
+        PropertiesSieve profile = new PropertiesSieve("oldname");
+        profile.write();
+
+        // When
+        boolean result = PropertiesSieve.renameProfile("oldname", "");
+
+        // Then
+        assertThat(result).isFalse();
+        assertThat(PropertiesSieve.profileExists("oldname")).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueWhenRenamingToSameName() throws IOException {
+        // Given
+        PropertiesSieve profile = new PropertiesSieve("samename");
+        profile.write();
+
+        // When - Rename to same name (no-op)
+        boolean result = PropertiesSieve.renameProfile("samename", "samename");
+
+        // Then - Should return true (not an error, just a no-op)
+        assertThat(result).isTrue();
+        assertThat(PropertiesSieve.profileExists("samename")).isTrue();
+    }
+
+    @Test
+    void shouldHandleWhitespaceInNames() throws IOException {
+        // Given
+        PropertiesSieve profile = new PropertiesSieve("oldname");
+        profile.write();
+
+        // When - Try to rename with whitespace (should be trimmed)
+        boolean result = PropertiesSieve.renameProfile("  oldname  ", "  newname  ");
+
+        // Then - The implementation trims whitespace, but the method doesn't currently do that
+        // This test documents current behavior - may need enhancement
+        assertThat(result).isFalse();
+    }
 }

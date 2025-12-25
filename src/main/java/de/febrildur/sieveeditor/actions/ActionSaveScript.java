@@ -12,9 +12,11 @@ public class ActionSaveScript extends AbstractAction {
 	private Application parentFrame;
 
 	public ActionSaveScript(Application parentFrame) {
-		putValue("Name", "Save");
-		this.parentFrame = parentFrame;
-	}
+	putValue(NAME, "Save");
+	putValue(ACCELERATOR_KEY, javax.swing.KeyStroke.getKeyStroke(
+		java.awt.event.KeyEvent.VK_S, java.awt.event.KeyEvent.CTRL_DOWN_MASK));
+	this.parentFrame = parentFrame;
+}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

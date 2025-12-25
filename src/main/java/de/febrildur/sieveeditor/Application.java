@@ -55,10 +55,15 @@ public class Application extends JFrame {
 	private javax.swing.Timer parserDebounceTimer;
 	private de.febrildur.sieveeditor.ui.SearchPanel searchPanel;
 	private JSplitPane mainSplitPane; // Horizontal split between editor and navigator
+	private boolean userHasManuallyResizedDivider = false; // Track if user manually resized
+	private boolean isAdjustingDividerProgrammatically = false; // Flag to prevent false positives
 	private SieveScript script;
 
 	private AbstractAction actionConnect = new ActionConnect(this);
 	private AbstractAction actionDisconnect = new AbstractAction("Disconnect") {
+		{
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_DOWN_MASK));
+		}
 		@Override
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (server != null) {
@@ -85,6 +90,9 @@ public class Application extends JFrame {
 	private AbstractAction actionOpenLocal = new ActionOpenLocalScript(this);
 	private AbstractAction actionSaveLocal = new ActionSaveLocalScript(this);
 	private AbstractAction actionQuit = new AbstractAction("Quit") {
+		{
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
+		}
 		@Override
 		public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (server != null) {
@@ -124,34 +132,28 @@ public class Application extends JFrame {
 		JMenu file = new JMenu("File");
 		menu.add(file);
 
-		file.add(new JMenuItem(actionOpenLocal)).setAccelerator(
-				KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK));
-		file.add(new JMenuItem(actionSaveLocal)).setAccelerator(
-				KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
+		file.add(new JMenuItem(actionOpenLocal));
+		file.add(new JMenuItem(actionSaveLocal));
 		file.addSeparator();
-		file.add(new JMenuItem(actionQuit)).setAccelerator(
-				KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
+		file.add(new JMenuItem(actionQuit));
 
 		// Sieve menu - server operations
 		JMenu sieve = new JMenu("Sieve");
 		menu.add(sieve);
 
-		sieve.add(new JMenuItem(actionConnect)).setAccelerator(
-				KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK));
+		sieve.add(new JMenuItem(actionConnect));
 		sieve.add(new JMenuItem(actionDisconnect));
 		sieve.addSeparator();
 		sieve.add(new JMenuItem(actionActivateDeactivateScript));
 		sieve.add(new JMenuItem(actionCheckScript));
-		sieve.add(new JMenuItem(actionSaveScript)).setAccelerator(
-				KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK));
+		sieve.add(new JMenuItem(actionSaveScript));
 		sieve.add(new JMenuItem(actionSaveScriptAs));
 
 		// Edit menu
 		JMenu edit = new JMenu("Edit");
 		menu.add(edit);
 
-		edit.add(new JMenuItem(actionReplace)).setAccelerator(
-				KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK));
+		edit.add(new JMenuItem(actionReplace));
 
 		// Insert menu - templates
 		InsertMenuBuilder insertMenuBuilder = new InsertMenuBuilder(this);
@@ -180,6 +182,19 @@ public class Application extends JFrame {
 		int gutterFontSize = UIScale.scale(15);
 		sp.getGutter().setLineNumberFont(new Font(Font.MONOSPACED, Font.PLAIN, gutterFontSize));
 
+		// Register global keyboard shortcuts using WHEN_IN_FOCUSED_WINDOW scope
+		// This ensures keystrokes work even when focus is in the text editor
+		registerGlobalKeystroke(actionOpenLocal);
+		registerGlobalKeystroke(actionSaveLocal);
+		registerGlobalKeystroke(actionQuit);
+		registerGlobalKeystroke(actionConnect);
+		registerGlobalKeystroke(actionDisconnect);
+		registerGlobalKeystroke(actionActivateDeactivateScript);
+		registerGlobalKeystroke(actionCheckScript);
+		registerGlobalKeystroke(actionSaveScript);
+		registerGlobalKeystroke(actionSaveScriptAs);
+		registerGlobalKeystroke(actionReplace);
+
 		// Create search panel (docked above navigator)
 		searchPanel = new de.febrildur.sieveeditor.ui.SearchPanel();
 		searchPanel.setTargetEditor(textArea);
@@ -201,6 +216,15 @@ public class Application extends JFrame {
 		mainSplitPane.setResizeWeight(1.0); // Give all extra space to editor
 		mainSplitPane.setDividerLocation(-200); // 200px for right side pane (negative = from right)
 
+		// Track manual divider resizing by user
+		mainSplitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, evt -> {
+			// Only mark as manually resized if this is a user action (not programmatic)
+			if (!isAdjustingDividerProgrammatically && mainSplitPane.isVisible()) {
+				// User manually moved the divider
+				userHasManuallyResizedDivider = true;
+			}
+		});
+
 		cp.add(mainSplitPane);
 
 		setContentPane(cp);
@@ -211,18 +235,53 @@ public class Application extends JFrame {
 		setMinimumSize(new java.awt.Dimension(UIScale.scale(600), UIScale.scale(400)));
 		setLocationRelativeTo(null);
 
-		// Add window resize listener to re-adjust warning panel sizing
+		// Add window resize listener to re-adjust warning panel sizing and navigator width
 		addComponentListener(new java.awt.event.ComponentAdapter() {
 			@Override
 			public void componentResized(java.awt.event.ComponentEvent e) {
 				// Re-run warning panel auto-sizing on window resize
 				if (ruleNavigator != null) {
 					ruleNavigator.reapplyWarningPanelSize();
+
+					// Auto-resize navigator width on window resize (only if user hasn't manually resized)
+					// and only if a script is loaded
+					if (!userHasManuallyResizedDivider && ruleNavigator.isWidthAutoSized()
+							&& mainSplitPane != null && mainSplitPane.getWidth() > 0) {
+						SwingUtilities.invokeLater(() -> {
+							int recommendedWidth = ruleNavigator.getRecommendedWidth();
+							// Set divider location from right edge
+							isAdjustingDividerProgrammatically = true;
+							try {
+								mainSplitPane.setDividerLocation(
+									mainSplitPane.getWidth() - recommendedWidth - mainSplitPane.getDividerSize()
+								);
+							} finally {
+								isAdjustingDividerProgrammatically = false;
+							}
+						});
+					}
 				}
 			}
 		});
 
 		updateStatus();
+	}
+
+	/**
+	 * Registers a global keyboard shortcut for the given action.
+	 * Uses WHEN_IN_FOCUSED_WINDOW scope to ensure keystrokes work even when
+	 * focus is in the text editor (RSyntaxTextArea).
+	 *
+	 * @param action the action to register (must have ACCELERATOR_KEY set)
+	 */
+	private void registerGlobalKeystroke(AbstractAction action) {
+		KeyStroke keyStroke = (KeyStroke) action.getValue(AbstractAction.ACCELERATOR_KEY);
+		if (keyStroke != null) {
+			String actionKey = action.getValue(AbstractAction.NAME) + "_global";
+			textArea.getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
+				.put(keyStroke, actionKey);
+			textArea.getActionMap().put(actionKey, action);
+		}
 	}
 
 	public PropertiesSieve getProp() {
@@ -445,8 +504,13 @@ public class Application extends JFrame {
 					if (mainSplitPane != null && mainSplitPane.getWidth() > 0) {
 						int recommendedWidth = ruleNavigator.getRecommendedWidth();
 						// Set divider location from right edge
-						mainSplitPane.setDividerLocation(mainSplitPane.getWidth() - recommendedWidth - mainSplitPane.getDividerSize());
-						ruleNavigator.markWidthAutoSized();
+						isAdjustingDividerProgrammatically = true;
+						try {
+							mainSplitPane.setDividerLocation(mainSplitPane.getWidth() - recommendedWidth - mainSplitPane.getDividerSize());
+							ruleNavigator.markWidthAutoSized();
+						} finally {
+							isAdjustingDividerProgrammatically = false;
+						}
 					}
 				});
 			}

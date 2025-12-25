@@ -15,9 +15,11 @@ public class ActionCheckScript extends AbstractAction {
 	private Application parentFrame;
 
 	public ActionCheckScript(Application parentFrame) {
-		putValue("Name", "Check Script");
-		this.parentFrame = parentFrame;
-	}
+	putValue(NAME, "Check Script");
+	putValue(ACCELERATOR_KEY, javax.swing.KeyStroke.getKeyStroke(
+		java.awt.event.KeyEvent.VK_K, java.awt.event.KeyEvent.CTRL_DOWN_MASK));
+	this.parentFrame = parentFrame;
+}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

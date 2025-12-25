@@ -28,9 +28,11 @@ public class ActionActivateDeactivateScript extends AbstractAction {
 	private Application parentFrame;
 
 	public ActionActivateDeactivateScript(Application parentFrame) {
-		putValue("Name", "Manage Scripts...");
-		this.parentFrame = parentFrame;
-	}
+	putValue(NAME, "Manage Scripts...");
+	putValue(ACCELERATOR_KEY, javax.swing.KeyStroke.getKeyStroke(
+		java.awt.event.KeyEvent.VK_T, java.awt.event.KeyEvent.CTRL_DOWN_MASK));
+	this.parentFrame = parentFrame;
+}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

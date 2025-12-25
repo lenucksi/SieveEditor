@@ -26,10 +26,13 @@ public class ActionSaveLocalScript extends AbstractAction {
     private File lastDirectory;
 
     public ActionSaveLocalScript(Application parentFrame) {
-        putValue("Name", "Save Local Script...");
-        this.parentFrame = parentFrame;
-        this.lastDirectory = new File(System.getProperty("user.home"));
-    }
+	putValue(NAME, "Save Local Script...");
+	putValue(ACCELERATOR_KEY, javax.swing.KeyStroke.getKeyStroke(
+		java.awt.event.KeyEvent.VK_S,
+		java.awt.event.KeyEvent.CTRL_DOWN_MASK | java.awt.event.KeyEvent.SHIFT_DOWN_MASK));
+	this.parentFrame = parentFrame;
+	this.lastDirectory = new File(System.getProperty("user.home"));
+}
 
     @Override
     public void actionPerformed(ActionEvent e) {

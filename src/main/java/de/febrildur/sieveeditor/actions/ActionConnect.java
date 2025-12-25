@@ -28,9 +28,12 @@ public class ActionConnect extends AbstractAction {
 	private Application parentFrame;
 
 	public ActionConnect(Application parentFrame) {
-		putValue("Name", "Connect...");
-		this.parentFrame = parentFrame;
-	}
+	putValue(NAME, "Connect...");
+	putValue(ACCELERATOR_KEY, javax.swing.KeyStroke.getKeyStroke(
+		java.awt.event.KeyEvent.VK_C,
+		java.awt.event.KeyEvent.CTRL_DOWN_MASK | java.awt.event.KeyEvent.SHIFT_DOWN_MASK));
+	this.parentFrame = parentFrame;
+}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -75,8 +78,12 @@ public class ActionConnect extends AbstractAction {
 		JButton deleteProfileButton = new JButton("-");
 		deleteProfileButton.setToolTipText("Delete profile");
 
-		JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 3, 0));
+		JButton renameProfileButton = new JButton("✎");
+		renameProfileButton.setToolTipText("Rename profile");
+
+		JPanel buttonPanel = new JPanel(new GridLayout(1, 3, 3, 0));
 		buttonPanel.add(newProfileButton);
+		buttonPanel.add(renameProfileButton);
 		buttonPanel.add(deleteProfileButton);
 		profilePanel.add(buttonPanel, BorderLayout.EAST);
 		panel.add(profilePanel);
@@ -148,6 +155,69 @@ public class ActionConnect extends AbstractAction {
 					JOptionPane.showMessageDialog(frame,
 						"Failed to delete profile: " + selectedProfile,
 						"Delete Error",
+						JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+
+		// Add rename button action listener
+		renameProfileButton.addActionListener(ev -> {
+			String selectedProfile = (String) profileCombo.getSelectedItem();
+			if (selectedProfile == null) {
+				return;
+			}
+
+			String newName = JOptionPane.showInputDialog(frame,
+				"Enter new name for profile '" + selectedProfile + "':",
+				"Rename Profile",
+				JOptionPane.PLAIN_MESSAGE);
+
+			if (newName != null && !newName.trim().isEmpty()) {
+				// Sanitize the new name (same as new profile creation)
+				newName = newName.trim().replaceAll("[^a-zA-Z0-9_-]", "");
+
+				if (newName.isEmpty()) {
+					JOptionPane.showMessageDialog(frame,
+						"Profile name cannot be empty after removing invalid characters.",
+						"Invalid Name",
+						JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+
+				// Check if trying to rename to the same name
+				if (newName.equals(selectedProfile)) {
+					return; // No-op, just close the dialog
+				}
+
+				// Check if new name already exists
+				if (PropertiesSieve.profileExists(newName)) {
+					JOptionPane.showMessageDialog(frame,
+						"A profile with the name '" + newName + "' already exists!",
+						"Duplicate Name",
+						JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+
+				// Perform the rename
+				boolean renamed = PropertiesSieve.renameProfile(selectedProfile, newName);
+				if (renamed) {
+					// Update the combo box
+					int selectedIndex = profileCombo.getSelectedIndex();
+					profileCombo.removeItem(selectedProfile);
+					profileCombo.insertItemAt(newName, selectedIndex);
+					profileCombo.setSelectedItem(newName);
+
+					// Update the tracking variable
+					currentDisplayedProfile[0] = newName;
+
+					JOptionPane.showMessageDialog(frame,
+						"Profile renamed successfully from '" + selectedProfile + "' to '" + newName + "'.",
+						"Rename Successful",
+						JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(frame,
+						"Failed to rename profile. See logs for details.",
+						"Rename Error",
 						JOptionPane.ERROR_MESSAGE);
 				}
 			}

@@ -124,7 +124,7 @@
 		<dependency>
 			<groupId>com.fifesoft</groupId>
 			<artifactId>rsyntaxtextarea</artifactId>
-			<version>3.6.0</version>
+			<version>3.6.1</version>
 		</dependency>
 		<!-- FlatLaf: Modern look-and-feel with automatic HiDPI scaling
 		     Benefits: Native 4K support without launcher script, dark mode, modern UI

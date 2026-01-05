@@ -7,13 +7,13 @@
   url: https://repo.maven.apache.org/maven2/at/favre/lib/hkdf/1.1.0/hkdf-1.1.0.pom
   sha256: 1c2457dfcd50cd195711d3b7f2c77b60b15ffbc62e92b3afc53ba3cca6b07c78
 - type: file
-  dest: .m2/repository/com/fifesoft/rsyntaxtextarea/3.6.0
-  url: https://repo.maven.apache.org/maven2/com/fifesoft/rsyntaxtextarea/3.6.0/rsyntaxtextarea-3.6.0.jar
-  sha256: bf00ec1015798edd433c3dfadf0c34a12a395b8c010f8f9fd8ec6ff4f44eb94c
+  dest: .m2/repository/com/fifesoft/rsyntaxtextarea/3.6.1
+  url: https://repo.maven.apache.org/maven2/com/fifesoft/rsyntaxtextarea/3.6.1/rsyntaxtextarea-3.6.1.jar
+  sha256: aaef5bbfc72ed1a6a04a03b8fb37d8d0ba041a5703965d000d540e220d9f1bb5
 - type: file
-  dest: .m2/repository/com/fifesoft/rsyntaxtextarea/3.6.0
-  url: https://repo.maven.apache.org/maven2/com/fifesoft/rsyntaxtextarea/3.6.0/rsyntaxtextarea-3.6.0.pom
-  sha256: 32a7e3d57317ecd391e820f0a2124b4f98ce1ce35f32755192ec433c3507ddb0
+  dest: .m2/repository/com/fifesoft/rsyntaxtextarea/3.6.1
+  url: https://repo.maven.apache.org/maven2/com/fifesoft/rsyntaxtextarea/3.6.1/rsyntaxtextarea-3.6.1.pom
+  sha256: 6eb0779f198b99dfc6096953e1e454c133ea71be6906fe60b84d1a3a9f1eb83a
 - type: file
   dest: .m2/repository/com/formdev/flatlaf/3.7
   url: https://repo.maven.apache.org/maven2/com/formdev/flatlaf/3.7/flatlaf-3.7.jar

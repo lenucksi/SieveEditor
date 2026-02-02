@@ -115,13 +115,13 @@
   url: https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.19.0/commons-codec-1.19.0.pom
   sha256: e0f3269fa23de0c83130c5659f5f9514cc5422c0bcdf45f2eae004a78b9fca34
 - type: file
-  dest: .m2/repository/commons-codec/commons-codec/1.20.0
-  url: https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.20.0/commons-codec-1.20.0.jar
-  sha256: 6af66595f9f6a7bb58ce66518d6888d40b547c366d2262f06676eee19528ff66
+  dest: .m2/repository/commons-codec/commons-codec/1.21.0
+  url: https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.21.0/commons-codec-1.21.0.jar
+  sha256: 4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f
 - type: file
-  dest: .m2/repository/commons-codec/commons-codec/1.20.0
-  url: https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.20.0/commons-codec-1.20.0.pom
-  sha256: aff645c58cd41ac5184d976ce8ee38de5694d99ab8764d6ee7f14f70ead5f98b
+  dest: .m2/repository/commons-codec/commons-codec/1.21.0
+  url: https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.21.0/commons-codec-1.21.0.pom
+  sha256: b230416ba6f5bf9df8fcb6e7f4a6c26b8fb0fe85ce371d13d5846ed3768309b7
 - type: file
   dest: .m2/repository/commons-io/commons-io/2.11.0
   url: https://repo.maven.apache.org/maven2/commons-io/commons-io/2.11.0/commons-io-2.11.0.jar
@@ -307,6 +307,10 @@
   url: https://repo.maven.apache.org/maven2/org/apache/apache/35/apache-35.pom
   sha256: ea297dcd114136e8b8e8b630230d52a76c2fc69f6c5db25d672b1857000728b8
 - type: file
+  dest: .m2/repository/org/apache/apache/37
+  url: https://repo.maven.apache.org/maven2/org/apache/apache/37/apache-37.pom
+  sha256: 524ec4787aff73af6b3a9fafa154c7f1881b648299b663fdbfcadda1286f2353
+- type: file
   dest: .m2/repository/org/apache/apache/4
   url: https://repo.maven.apache.org/maven2/org/apache/apache/4/apache-4.pom
   sha256: 9e9323a26ba8eb2394efef0c96d31b70df570808630dc147cab1e73541cc5194
@@ -390,6 +394,10 @@
   dest: .m2/repository/org/apache/commons/commons-parent/92
   url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/92/commons-parent-92.pom
   sha256: 94f6c027b15f6402995dd1b2c7ea35bfe1ebc88b6832b3134368b41998721953
+- type: file
+  dest: .m2/repository/org/apache/commons/commons-parent/96
+  url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/96/commons-parent-96.pom
+  sha256: 2cd3289b44efa53052d9cdaf3f05544833a520a682f9c7ffd403a00bbb157f9a
 - type: file
   dest: .m2/repository/org/apache/maven/doxia/doxia-sink-api/1.0
   url: https://repo.maven.apache.org/maven2/org/apache/maven/doxia/doxia-sink-api/1.0/doxia-sink-api-1.0.jar
@@ -1034,6 +1042,10 @@
   dest: .m2/repository/org/junit/junit-bom/5.13.4
   url: https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.13.4/junit-bom-5.13.4.pom
   sha256: d7a08a99b2502f0bb68cd4e1f984f0bf69324aaa208bd0f73366c03fc3548a42
+- type: file
+  dest: .m2/repository/org/junit/junit-bom/5.14.2
+  url: https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.14.2/junit-bom-5.14.2.pom
+  sha256: ed2dcc7855bd460bccc93a1bf0c962e63b566ff7d8f1ded0f1f2593ba8183aaf
 - type: file
   dest: .m2/repository/org/junit/junit-bom/5.7.1
   url: https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.7.1/junit-bom-5.7.1.pom

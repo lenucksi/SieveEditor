@@ -53,7 +53,7 @@ jobs:
         run: mvn clean package -DskipTests -B
 
       - name: Upload JAR for packaging
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: sieveeditor-jar
           path: target/SieveEditor-jar-with-dependencies.jar
@@ -155,7 +155,7 @@ jobs:
           ls -lh $PKG
 
       - name: Upload package artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: sieveeditor-${{ matrix.package-type }}
           path: ${{ steps.package.outputs.file }}
@@ -249,7 +249,7 @@ jobs:
           ls -lh $MSI
 
       - name: Upload MSI artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: sieveeditor-msi
           path: ${{ steps.package.outputs.file }}
@@ -368,7 +368,7 @@ jobs:
           ls -lh $DMG
 
       - name: Upload DMG artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: sieveeditor-dmg
           path: ${{ steps.package.outputs.file }}
@@ -431,7 +431,7 @@ jobs:
           upload-artifact: false
 
       - name: Upload Flatpak artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: sieveeditor-flatpak
           path: SieveEditor-${{ steps.version.outputs.version }}.flatpak
@@ -469,7 +469,7 @@ jobs:
           cat checksums.txt
 
       - name: Upload checksums
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: checksums
           path: checksums.txt

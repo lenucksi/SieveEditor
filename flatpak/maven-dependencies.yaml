@@ -55,13 +55,13 @@
   url: https://repo.maven.apache.org/maven2/com/github/javakeyring/java-keyring/1.0.4/java-keyring-1.0.4.pom
   sha256: ff0432c53fff6b5fdd727006d3ca2b03b94452397b838f8f1546f2f76bb43923
 - type: file
-  dest: .m2/repository/com/github/lenucksi/ManageSieveJ/managesievej-v0.3.9
-  url: https://jitpack.io/com/github/lenucksi/ManageSieveJ/managesievej-v0.3.9/ManageSieveJ-managesievej-v0.3.9.jar
-  sha256: 0a41d1d0955d689c26389c10f62376a15e1176e43c89096d98f75e7b32122ede
+  dest: .m2/repository/com/github/lenucksi/ManageSieveJ/managesievej-v0.3.11
+  url: https://jitpack.io/com/github/lenucksi/ManageSieveJ/managesievej-v0.3.11/ManageSieveJ-managesievej-v0.3.11.jar
+  sha256: 5971fdb054b417db84e0100f6bb5f879fb7b3d867aaa840d05aaf1949cc0bbcb
 - type: file
-  dest: .m2/repository/com/github/lenucksi/ManageSieveJ/managesievej-v0.3.9
-  url: https://jitpack.io/com/github/lenucksi/ManageSieveJ/managesievej-v0.3.9/ManageSieveJ-managesievej-v0.3.9.pom
-  sha256: 62c9713ffd5b09cb91bdf71494d301ab2236ec4288e4b5efcf11e432e6fe90d1
+  dest: .m2/repository/com/github/lenucksi/ManageSieveJ/managesievej-v0.3.11
+  url: https://jitpack.io/com/github/lenucksi/ManageSieveJ/managesievej-v0.3.11/ManageSieveJ-managesievej-v0.3.11.pom
+  sha256: 136cd08412e55108c2d296766d773358ae5c3636f62720583e6894a67858821f
 - type: file
   dest: .m2/repository/com/github/luben/zstd-jni/1.5.5-11
   url: https://repo.maven.apache.org/maven2/com/github/luben/zstd-jni/1.5.5-11/zstd-jni-1.5.5-11.jar
@@ -1139,21 +1139,21 @@
   url: https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/6.0.3/junit-platform-engine-6.0.3.pom
   sha256: 7a87d8c6a0a7db0260b00ce303180f6f41d040562895d6804619d5db6ee232be
 - type: file
-  dest: .m2/repository/org/mockito/mockito-core/5.21.0
-  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.21.0/mockito-core-5.21.0.jar
-  sha256: 03db23de742cbca42aa3d6127fdace560fac37b036d931870801f84c288bd286
+  dest: .m2/repository/org/mockito/mockito-core/5.22.0
+  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.22.0/mockito-core-5.22.0.jar
+  sha256: 18a206368c2c8fd693e762f3743e365acc208c32b1a75f26eeaa9af3b09261c7
 - type: file
-  dest: .m2/repository/org/mockito/mockito-core/5.21.0
-  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.21.0/mockito-core-5.21.0.pom
-  sha256: 0221b31f96df01a158c645371aad81b2d3f5bee0f589ca0d0c2eaa6e8da092f3
+  dest: .m2/repository/org/mockito/mockito-core/5.22.0
+  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.22.0/mockito-core-5.22.0.pom
+  sha256: 8273bb760bb3da6f1e684aa708318e9c9c5d24335415131e63924e541f3e8d30
 - type: file
-  dest: .m2/repository/org/mockito/mockito-junit-jupiter/5.21.0
-  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-junit-jupiter/5.21.0/mockito-junit-jupiter-5.21.0.jar
-  sha256: 107148b99e8cd0170302babc1f260123c405190ce83a0d2666b618be488c9b17
+  dest: .m2/repository/org/mockito/mockito-junit-jupiter/5.22.0
+  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-junit-jupiter/5.22.0/mockito-junit-jupiter-5.22.0.jar
+  sha256: bfd690449fde9b74effed8f266be7c2f4ab9a3a71ccb8e76b726470c5cfb4b6e
 - type: file
-  dest: .m2/repository/org/mockito/mockito-junit-jupiter/5.21.0
-  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-junit-jupiter/5.21.0/mockito-junit-jupiter-5.21.0.pom
-  sha256: b8d0f5cf01122a011a759f6f2821bf1e3d8b33c5482a3e72b88ac028df8d43ba
+  dest: .m2/repository/org/mockito/mockito-junit-jupiter/5.22.0
+  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-junit-jupiter/5.22.0/mockito-junit-jupiter-5.22.0.pom
+  sha256: 526fed994e5c339e7e4561aecfc518cda3f674670b6e26135af00200c6971590
 - type: file
   dest: .m2/repository/org/objenesis/objenesis-parent/3.3
   url: https://repo.maven.apache.org/maven2/org/objenesis/objenesis-parent/3.3/objenesis-parent-3.3.pom

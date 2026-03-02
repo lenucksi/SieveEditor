@@ -5,6 +5,67 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0](https://github.com/lenucksi/SieveEditor/compare/v1.0.3...v1.1.0) (2026-03-02)
+
+
+### Features
+
+* **connection:** add auto-reconnect and keep-alive mechanism ([9fda350](https://github.com/lenucksi/SieveEditor/commit/9fda3505126d52c7d554a951ca88219d5ad6da15))
+* **navigation:** add Sieve script structure navigator with rule detection ([80459f8](https://github.com/lenucksi/SieveEditor/commit/80459f8bbc017faa1100d987ace50d5d48c52b96))
+* **parser:** add severity levels and multi-occurrence tracking for warnings ([4836db3](https://github.com/lenucksi/SieveEditor/commit/4836db36c0877aa3ab235a919fe922bc570c0ff7))
+* **ui:** add auto-regeneration of navigator on comment edit ([d282d2c](https://github.com/lenucksi/SieveEditor/commit/d282d2c554c1c6c0a24cde0c505bfce702cac2de))
+* **ui:** add clickable warnings list in navigator ([3f08e15](https://github.com/lenucksi/SieveEditor/commit/3f08e150ff58e5ac0e12a1ac37d8e75e501c06b8))
+* **ui:** add ESC key handling to search panel ([65818b4](https://github.com/lenucksi/SieveEditor/commit/65818b490023d355020c654c6db5c8ed751fa127))
+* **ui:** add integrated search and replace panel ([9d1ae71](https://github.com/lenucksi/SieveEditor/commit/9d1ae718919859eb9e1c2165b5b36161a3fbe250))
+* **ui:** add resizable warning panel with auto-sizing ([406a893](https://github.com/lenucksi/SieveEditor/commit/406a893d20b7713ea99981f41a8110ff1c6b3d16))
+* **ui:** auto-size navigator width based on content ([ecb4e23](https://github.com/lenucksi/SieveEditor/commit/ecb4e23f419bfe6986a15a208bc15da06856b4bd))
+* **ui:** improve navigator layout and visibility ([a0e121f](https://github.com/lenucksi/SieveEditor/commit/a0e121fa220c63d277bf8fa47cbd356474dfbe8a))
+* **ui:** increase line number font size and remove redundant Load menu item ([a42ab14](https://github.com/lenucksi/SieveEditor/commit/a42ab147a6bf13957e8ac469ac0e74643597b07e))
+* **validation:** add error navigation with jump-to-line functionality ([c4a1bca](https://github.com/lenucksi/SieveEditor/commit/c4a1bcab19b0ec75b52cd8bb9e60ebb8f59117d0))
+* **validation:** add pre-save validation with user confirmation ([412dfc6](https://github.com/lenucksi/SieveEditor/commit/412dfc63a04fdb6ed0b07a422635b4fee624fb69))
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.fifesoft:rsyntaxtextarea to v3.6.1 ([d8de44b](https://github.com/lenucksi/SieveEditor/commit/d8de44bed362c779781fabe546c9eac82c186031))
+* **deps:** update dependency com.fifesoft:rsyntaxtextarea to v3.6.1 ([33e5fec](https://github.com/lenucksi/SieveEditor/commit/33e5fec4ebff8c9f1812552a65adc48ca46b2b38))
+* **deps:** update dependency com.github.lenucksi:managesievej to managesievej-v0.3.11 ([ca341ee](https://github.com/lenucksi/SieveEditor/commit/ca341ee1bea1884d4d1b1d6811d8aaeb88b3a113))
+* **deps:** update dependency com.github.lenucksi:managesievej to managesievej-v0.3.11 ([d119f71](https://github.com/lenucksi/SieveEditor/commit/d119f71b6df8da914de555085c8edf5610eb7891))
+* **deps:** update dependency commons-codec:commons-codec to v1.21.0 ([89bc1fe](https://github.com/lenucksi/SieveEditor/commit/89bc1fe0ac49ef74a266830ee1f47dc765a01541))
+* **deps:** update dependency commons-codec:commons-codec to v1.21.0 ([e7b7924](https://github.com/lenucksi/SieveEditor/commit/e7b792449cec9a8cc7f342d1a2790b7cd11fea6f))
+* **deps:** update dependency org.purejava:keepassxc-proxy-access to v1.3.1 ([5a9fd4c](https://github.com/lenucksi/SieveEditor/commit/5a9fd4c75655f5a9da0685914c99f7d103e3a24d))
+* **deps:** update dependency org.purejava:keepassxc-proxy-access to v1.3.1 ([f2ce8f1](https://github.com/lenucksi/SieveEditor/commit/f2ce8f1c176dc86b83e4d2586ec169d25911424f))
+* **parser:** handle OX Flag field with content in rule comments ([2dedb59](https://github.com/lenucksi/SieveEditor/commit/2dedb5923aefa72864be62fb9a3dd33dfb30c40e))
+* **parser:** improve rule parser robustness for edge cases ([a9539dc](https://github.com/lenucksi/SieveEditor/commit/a9539dc6d18dae1ae6e88ef6f1276262bdf85212))
+* **ui:** auto-focus password field in master password dialog ([0d49da1](https://github.com/lenucksi/SieveEditor/commit/0d49da101cadfc80d2cc37d67498501c51ba2153))
+* **ui:** clear navigator panel on disconnect ([f5c0a32](https://github.com/lenucksi/SieveEditor/commit/f5c0a3244adfdc3d9752b17bed26a0b80e71bb42))
+* **ui:** correct initialization order in RuleNavigatorPanel ([e7d0c16](https://github.com/lenucksi/SieveEditor/commit/e7d0c16e135b948e9c3d59b4bfe6273cb8807fb9))
+* **ui:** filter mouse button 4/5 events in script dialog ([b97e3d1](https://github.com/lenucksi/SieveEditor/commit/b97e3d1861e65ad0bc48372fe1a50bc0bb7c0032))
+* **ui:** move Script Rules navigator to right side ([5666f28](https://github.com/lenucksi/SieveEditor/commit/5666f287cc6c74ce7eff5c3feca4d981a281d62b))
+* **ui:** scroll selected rule to top of editor viewport ([7ed6d87](https://github.com/lenucksi/SieveEditor/commit/7ed6d874df419cb21d9b37e1ff0281d6396ae7ab))
+
+
+### Dependencies
+
+* **deps-dev:** bump org.apache.maven.plugins:maven-compiler-plugin ([5f0f6df](https://github.com/lenucksi/SieveEditor/commit/5f0f6df6dedbcdf6c7a30ec9731496892d8d73cf))
+* **deps-dev:** bump org.junit.jupiter:junit-jupiter from 6.0.2 to 6.0.3 ([2b3c3dc](https://github.com/lenucksi/SieveEditor/commit/2b3c3dcd093cf1760928a3688c11e66c5fc6f368))
+* **deps:** bump com.fifesoft:rsyntaxtextarea from 3.6.0 to 3.6.1 ([a4d9e47](https://github.com/lenucksi/SieveEditor/commit/a4d9e473c876bddbbaf47c4ef0e137f28c1a97b5))
+* **deps:** bump com.fifesoft:rsyntaxtextarea from 3.6.1 to 3.6.2 ([34fa484](https://github.com/lenucksi/SieveEditor/commit/34fa4844ea14b499171e2fcf9bcfec6040573951))
+* **deps:** bump org.purejava:keepassxc-proxy-access from 1.3.0 to 1.3.1 ([2f52388](https://github.com/lenucksi/SieveEditor/commit/2f52388900cb519d42c763a546232c50c7d6bbdb))
+* **flatpak:** update Maven dependencies ([f78c93c](https://github.com/lenucksi/SieveEditor/commit/f78c93c3b29cfe900678e29586a90d85b8b9848f))
+* **flatpak:** update Maven dependencies ([ed4769f](https://github.com/lenucksi/SieveEditor/commit/ed4769f53d0ed3cfe996f58b4983c27e58cb3934))
+* **flatpak:** update Maven dependencies ([11ce764](https://github.com/lenucksi/SieveEditor/commit/11ce764f828ce485c5c2b399c712f3b36a8b7dcc))
+* **flatpak:** update Maven dependencies ([6b55ecb](https://github.com/lenucksi/SieveEditor/commit/6b55ecb2fe9c7aa6974a1ab5a4d520a056159f65))
+* **flatpak:** update Maven dependencies ([ad83c76](https://github.com/lenucksi/SieveEditor/commit/ad83c7649bbeedd547e90d5e6e88c16e52127296))
+* **flatpak:** update Maven dependencies ([0c55936](https://github.com/lenucksi/SieveEditor/commit/0c559364d902c5416401790bf58baac2bfea0d44))
+* **flatpak:** update Maven dependencies ([a680ce6](https://github.com/lenucksi/SieveEditor/commit/a680ce6abc162f42607f22a1b2d7d5bcb27721b3))
+* **flatpak:** update Maven dependencies ([9617e38](https://github.com/lenucksi/SieveEditor/commit/9617e384385d01e217bea4f20bc630ba1110676c))
+
+
+### Documentation
+
+* document JDK mouse button bug and workaround ([3069089](https://github.com/lenucksi/SieveEditor/commit/3069089f0d0c7800be2c23da6e13b0bd46054410))
+
 ## [1.0.3](https://github.com/lenucksi/SieveEditor/compare/v1.0.4...v1.0.3) (2026-02-25)
 
 

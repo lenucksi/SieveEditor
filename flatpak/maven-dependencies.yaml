@@ -15,13 +15,13 @@
   url: https://repo.maven.apache.org/maven2/com/fifesoft/rsyntaxtextarea/3.6.2/rsyntaxtextarea-3.6.2.pom
   sha256: d345a842e64877a5209ea01eef51ac5d6b576a243698eedda42a077d7bb1ce18
 - type: file
-  dest: .m2/repository/com/formdev/flatlaf/3.7
-  url: https://repo.maven.apache.org/maven2/com/formdev/flatlaf/3.7/flatlaf-3.7.jar
-  sha256: 1dc4f08cc0e01122f5bc6cebe1dcf253872c1fe8126208f43dab314d7deb0da2
+  dest: .m2/repository/com/formdev/flatlaf/3.7.1
+  url: https://repo.maven.apache.org/maven2/com/formdev/flatlaf/3.7.1/flatlaf-3.7.1.jar
+  sha256: 11f498f3c89596a782fceaa727c853a665067aeabc09bd682dc53b3ef237d0c7
 - type: file
-  dest: .m2/repository/com/formdev/flatlaf/3.7
-  url: https://repo.maven.apache.org/maven2/com/formdev/flatlaf/3.7/flatlaf-3.7.pom
-  sha256: 5a34f270b74324f050464038f674ed5031a1b6c51e3d954bdad86dd5999dabec
+  dest: .m2/repository/com/formdev/flatlaf/3.7.1
+  url: https://repo.maven.apache.org/maven2/com/formdev/flatlaf/3.7.1/flatlaf-3.7.1.pom
+  sha256: a96c9dc73b18299072037da9b6d6801c10ba3efb63b4e15fec482c14faffab2b
 - type: file
   dest: .m2/repository/com/github/hypfvieh/dbus-java-core/4.2.1
   url: https://repo.maven.apache.org/maven2/com/github/hypfvieh/dbus-java-core/4.2.1/dbus-java-core-4.2.1.jar
@@ -63,14 +63,6 @@
   url: https://jitpack.io/com/github/lenucksi/ManageSieveJ/managesievej-v0.3.11/ManageSieveJ-managesievej-v0.3.11.pom
   sha256: 136cd08412e55108c2d296766d773358ae5c3636f62720583e6894a67858821f
 - type: file
-  dest: .m2/repository/com/github/luben/zstd-jni/1.5.5-11
-  url: https://repo.maven.apache.org/maven2/com/github/luben/zstd-jni/1.5.5-11/zstd-jni-1.5.5-11.jar
-  sha256: d75b2ced6059f81ad23e021c554259b906b6c4f2991cb772409827569ead4c1a
-- type: file
-  dest: .m2/repository/com/github/luben/zstd-jni/1.5.5-11
-  url: https://repo.maven.apache.org/maven2/com/github/luben/zstd-jni/1.5.5-11/zstd-jni-1.5.5-11.pom
-  sha256: a0152b1897c4a6e7dd36e5f686f0e631c3839b5db208b38daa11a4f6dc9b25ff
-- type: file
   dest: .m2/repository/com/github/luben/zstd-jni/1.5.7-4
   url: https://repo.maven.apache.org/maven2/com/github/luben/zstd-jni/1.5.7-4/zstd-jni-1.5.7-4.pom
   sha256: 6d60134c7644852574cca4caa37573206b21ff21439fd3203c42785d071166b9
@@ -98,14 +90,6 @@
   dest: .m2/repository/com/thoughtworks/qdox/qdox/2.2.0
   url: https://repo.maven.apache.org/maven2/com/thoughtworks/qdox/qdox/2.2.0/qdox-2.2.0.pom
   sha256: c850fbad0b05eada85ca1bce22409a75f758aea0ca1e47a828c6a505ad361fab
-- type: file
-  dest: .m2/repository/commons-codec/commons-codec/1.16.1
-  url: https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.16.1/commons-codec-1.16.1.jar
-  sha256: ec87bfb55f22cbd1b21e2190eeda28b2b312ed2a431ee49fbdcc01812d04a5e4
-- type: file
-  dest: .m2/repository/commons-codec/commons-codec/1.16.1
-  url: https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.16.1/commons-codec-1.16.1.pom
-  sha256: b826ddd92f9d7cc64371a02fa0830c154d67c98370ea54a2d196e72eb590ad28
 - type: file
   dest: .m2/repository/commons-codec/commons-codec/1.19.0
   url: https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.19.0/commons-codec-1.19.0.jar
@@ -275,17 +259,9 @@
   url: https://repo.maven.apache.org/maven2/org/apache/apache/25/apache-25.pom
   sha256: e68fc19a48cec582a6732fd0b10dbfe9feca25060963def89e547f8a3759d379
 - type: file
-  dest: .m2/repository/org/apache/apache/26
-  url: https://repo.maven.apache.org/maven2/org/apache/apache/26/apache-26.pom
-  sha256: 765b9c71832d2faad9611869c1f07263e3dfd000ebefdcd434d1f14cb2be3ea1
-- type: file
   dest: .m2/repository/org/apache/apache/29
   url: https://repo.maven.apache.org/maven2/org/apache/apache/29/apache-29.pom
   sha256: 3e49037174820bbd0df63420a977255886398954c2a06291fa61f727ac35b377
-- type: file
-  dest: .m2/repository/org/apache/apache/30
-  url: https://repo.maven.apache.org/maven2/org/apache/apache/30/apache-30.pom
-  sha256: 63dd4a393a9c0dfcb314efe83871a41d243bc8d200cbc7f2d197f30da78239d8
 - type: file
   dest: .m2/repository/org/apache/apache/31
   url: https://repo.maven.apache.org/maven2/org/apache/apache/31/apache-31.pom
@@ -319,14 +295,6 @@
   url: https://repo.maven.apache.org/maven2/org/apache/apache/7/apache-7.pom
   sha256: 1397ce1db433adc9f223dbf07496d133681448751f4ae29e58f68e78fb4b6c25
 - type: file
-  dest: .m2/repository/org/apache/commons/commons-compress/1.26.1
-  url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-compress/1.26.1/commons-compress-1.26.1.jar
-  sha256: 27bb5d40f37c3bb7205b4a0540247df057715e9f6cbbd97d626ab8b50318bb04
-- type: file
-  dest: .m2/repository/org/apache/commons/commons-compress/1.26.1
-  url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-compress/1.26.1/commons-compress-1.26.1.pom
-  sha256: 5f448a021d88c96f3840dfe619128d62e5cfb62712cd6e66dca8a7704945b06e
-- type: file
   dest: .m2/repository/org/apache/commons/commons-compress/1.28.0
   url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-compress/1.28.0/commons-compress-1.28.0.jar
   sha256: e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca
@@ -335,21 +303,17 @@
   url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-compress/1.28.0/commons-compress-1.28.0.pom
   sha256: 033f4c78d632da88d0eb8ead974fc14a264392cebf12ab6c68d6cea7adf0c64a
 - type: file
-  dest: .m2/repository/org/apache/commons/commons-lang3/3.12.0
-  url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar
-  sha256: d919d904486c037f8d193412da0c92e22a9fa24230b9d67a57855c5c31c7e94e
+  dest: .m2/repository/org/apache/commons/commons-lang3/3.16.0
+  url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.16.0/commons-lang3-3.16.0.pom
+  sha256: e280383956c2e72c1deb3a307b3b75f05ee43649b7d43f0215f7b6c7b15eea2c
 - type: file
-  dest: .m2/repository/org/apache/commons/commons-lang3/3.12.0
-  url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.pom
-  sha256: 82d31f1dcc4583effd744e979165b16da64bf86bca623fc5d1b03ed94f45c85a
+  dest: .m2/repository/org/apache/commons/commons-lang3/3.18.0
+  url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.18.0/commons-lang3-3.18.0.jar
+  sha256: 4eeeae8d20c078abb64b015ec158add383ac581571cddc45c68f0c9ae0230720
 - type: file
-  dest: .m2/repository/org/apache/commons/commons-lang3/3.14.0
-  url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.jar
-  sha256: 7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c
-- type: file
-  dest: .m2/repository/org/apache/commons/commons-lang3/3.14.0
-  url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.pom
-  sha256: 110438863bad37c28f906bf87016e38c7a8c758ba321e09d11dc5a2363a8e79e
+  dest: .m2/repository/org/apache/commons/commons-lang3/3.18.0
+  url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.18.0/commons-lang3-3.18.0.pom
+  sha256: aa254b373b6f6d46bc9dca86331b072a8ab86eb25ea9921fd439618392e98a16
 - type: file
   dest: .m2/repository/org/apache/commons/commons-lang3/3.20.0
   url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.20.0/commons-lang3-3.20.0.jar
@@ -367,17 +331,13 @@
   url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/52/commons-parent-52.pom
   sha256: 75dbe8f34e98e4c3ff42daae4a2f9eb4cbcd3b5f1047d54460ace906dbb4502e
 - type: file
-  dest: .m2/repository/org/apache/commons/commons-parent/64
-  url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/64/commons-parent-64.pom
-  sha256: 6f19638994e8357b4ed734696f992057efaafa1235673998133299798e2ccddb
-- type: file
-  dest: .m2/repository/org/apache/commons/commons-parent/66
-  url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/66/commons-parent-66.pom
-  sha256: 48fd6dc846e56b1f408660d163e75300f9e384bb63be482a8082a21d72a8db9c
-- type: file
   dest: .m2/repository/org/apache/commons/commons-parent/69
   url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/69/commons-parent-69.pom
   sha256: d50da9c39bdca823d618d1b4a03b73f196497fcb8616fd0da727c8623592a9bb
+- type: file
+  dest: .m2/repository/org/apache/commons/commons-parent/72
+  url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/72/commons-parent-72.pom
+  sha256: 4345debfc767b1aeac68abdd72fc67d18b521d4b390372a11b63ff0c586b2320
 - type: file
   dest: .m2/repository/org/apache/commons/commons-parent/81
   url: https://repo.maven.apache.org/maven2/org/apache/commons/commons-parent/81/commons-parent-81.pom
@@ -411,14 +371,6 @@
   url: https://repo.maven.apache.org/maven2/org/apache/maven/doxia/doxia/1.0/doxia-1.0.pom
   sha256: 38246291439393fd08f54c6d7fedde2db0fd5c94d0910f17b99e8d59a2858e98
 - type: file
-  dest: .m2/repository/org/apache/maven/maven-archiver/3.6.2
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/maven-archiver/3.6.2/maven-archiver-3.6.2.jar
-  sha256: 1f895a587df4844d9b7565e8e9a6352afe1d55532458a0dbeb746bc1d02e9216
-- type: file
-  dest: .m2/repository/org/apache/maven/maven-archiver/3.6.2
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/maven-archiver/3.6.2/maven-archiver-3.6.2.pom
-  sha256: 8b117b0dc205a71abda33463f8c7ff891513cfb92241d8a011f9e8ac5ea21e77
-- type: file
   dest: .m2/repository/org/apache/maven/maven-archiver/3.6.5
   url: https://repo.maven.apache.org/maven2/org/apache/maven/maven-archiver/3.6.5/maven-archiver-3.6.5.jar
   sha256: cea5dd2b7c6be818fa8d6b73cff4edacaecefec5842d361a791b7f47974fe156
@@ -451,17 +403,9 @@
   url: https://repo.maven.apache.org/maven2/org/apache/maven/maven-parent/35/maven-parent-35.pom
   sha256: d2edd4077c0abc9cc8202883c459503180424636cb39a83031ec1112394b2576
 - type: file
-  dest: .m2/repository/org/apache/maven/maven-parent/36
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/maven-parent/36/maven-parent-36.pom
-  sha256: fcc3ab64c3cc80966d562a9aa604d8c280b3b7092441dd09e5290b081dfbedb5
-- type: file
   dest: .m2/repository/org/apache/maven/maven-parent/39
   url: https://repo.maven.apache.org/maven2/org/apache/maven/maven-parent/39/maven-parent-39.pom
   sha256: cfe4820aa1d96ae51d1dc5b0e2a9dc582c42478c24c95ca8238f547e60bef721
-- type: file
-  dest: .m2/repository/org/apache/maven/maven-parent/41
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/maven-parent/41/maven-parent-41.pom
-  sha256: 762fcdd4ce8621c5fa0a2cf6495ad26972a8093eb432aa3e402bc2d4e2500c53
 - type: file
   dest: .m2/repository/org/apache/maven/maven-parent/42
   url: https://repo.maven.apache.org/maven2/org/apache/maven/maven-parent/42/maven-parent-42.pom
@@ -507,25 +451,17 @@
   url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-compiler-plugin/3.15.0/maven-compiler-plugin-3.15.0.pom
   sha256: 2d2f7a7073c1def3b1473fbedad7dbfc559ed6fb0dc5a94edc347fd4905e7651
 - type: file
-  dest: .m2/repository/org/apache/maven/plugins/maven-jar-plugin/3.4.1
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-jar-plugin/3.4.1/maven-jar-plugin-3.4.1.jar
-  sha256: 25e0a5b55b872d95e3a09a5d825bc1061f5ce25ee81f147e623405d8ebedfa5f
+  dest: .m2/repository/org/apache/maven/plugins/maven-jar-plugin/3.5.0
+  url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-jar-plugin/3.5.0/maven-jar-plugin-3.5.0.jar
+  sha256: 7562657fc3492649dee836ffdda07990aaf46f4133cad048c4dcd7330bfd3917
 - type: file
-  dest: .m2/repository/org/apache/maven/plugins/maven-jar-plugin/3.4.1
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-jar-plugin/3.4.1/maven-jar-plugin-3.4.1.pom
-  sha256: be9318cc19895ffd5532df090df37adb5b97396d9a827f961fde65753b5a922f
+  dest: .m2/repository/org/apache/maven/plugins/maven-jar-plugin/3.5.0
+  url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-jar-plugin/3.5.0/maven-jar-plugin-3.5.0.pom
+  sha256: 571d9446537993c3a7226cecb3169ee3df75710bcae8daeefb0d80768ec35917
 - type: file
   dest: .m2/repository/org/apache/maven/plugins/maven-plugins/35
   url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-plugins/35/maven-plugins-35.pom
   sha256: 42d759c550d723373ae34556e80930b9ed2e13495dace134adf99e64ddc8d2e1
-- type: file
-  dest: .m2/repository/org/apache/maven/plugins/maven-plugins/39
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-plugins/39/maven-plugins-39.pom
-  sha256: 18085afbef3a17942b442135a3f0e77018cda66edd33c6b18fd18440661bc29e
-- type: file
-  dest: .m2/repository/org/apache/maven/plugins/maven-plugins/42
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-plugins/42/maven-plugins-42.pom
-  sha256: 5b31681ea67e838a8ed1f08af891d1ae50f16dfadd3fc2b787900ed69d5f2503
 - type: file
   dest: .m2/repository/org/apache/maven/plugins/maven-plugins/45
   url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-plugins/45/maven-plugins-45.pom
@@ -535,13 +471,13 @@
   url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-plugins/47/maven-plugins-47.pom
   sha256: 58ddbb8e429cb5e9054c2f5f7b7cdfeb7adbcdfda21d92b67f67fa2b94edf982
 - type: file
-  dest: .m2/repository/org/apache/maven/plugins/maven-resources-plugin/3.3.1
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-resources-plugin/3.3.1/maven-resources-plugin-3.3.1.jar
-  sha256: eb4069c7fe50a313b3f5295ccd214f30402f63971c26f443f7f3e798be8cc2a7
+  dest: .m2/repository/org/apache/maven/plugins/maven-resources-plugin/3.4.0
+  url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-resources-plugin/3.4.0/maven-resources-plugin-3.4.0.jar
+  sha256: 72c7d66ea49256ea64a82b28a15df69177d13066d12afeb4a1ee0616da4648f1
 - type: file
-  dest: .m2/repository/org/apache/maven/plugins/maven-resources-plugin/3.3.1
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-resources-plugin/3.3.1/maven-resources-plugin-3.3.1.pom
-  sha256: 3269d0a6e3cd614a29486f57fc86488b0f1e458a11bebc61f9408fd6c7cf85ae
+  dest: .m2/repository/org/apache/maven/plugins/maven-resources-plugin/3.4.0
+  url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-resources-plugin/3.4.0/maven-resources-plugin-3.4.0.pom
+  sha256: 3879fb442ab95cc8a3f07459667873dab832fa99fe5f17be3e474f90ea6f6d2a
 - type: file
   dest: .m2/repository/org/apache/maven/plugins/maven-surefire-plugin/3.5.5
   url: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-surefire-plugin/3.5.5/maven-surefire-plugin-3.5.5.jar
@@ -579,14 +515,6 @@
   url: https://repo.maven.apache.org/maven2/org/apache/maven/resolver/maven-resolver/1.4.1/maven-resolver-1.4.1.pom
   sha256: 831c3849751101226495acfe9119582feb734a4539b070e0fbd9e85b03b501ce
 - type: file
-  dest: .m2/repository/org/apache/maven/shared/file-management/3.1.0
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/shared/file-management/3.1.0/file-management-3.1.0.jar
-  sha256: 2e8cb2d546a01c2259cb17f1e06732db3d14b079d19622bf8400c82cb1ee6b96
-- type: file
-  dest: .m2/repository/org/apache/maven/shared/file-management/3.1.0
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/shared/file-management/3.1.0/file-management-3.1.0.pom
-  sha256: 5e93a63b3042023e558dcbeb19914ce82e6a6fbccdbd68797f80b135121a8bde
-- type: file
   dest: .m2/repository/org/apache/maven/shared/file-management/3.2.0
   url: https://repo.maven.apache.org/maven2/org/apache/maven/shared/file-management/3.2.0/file-management-3.2.0.jar
   sha256: 32ac469785dd1547ac71437e4c3916c4a56a3d69303cb08d789ecdd0bfd1d6de
@@ -602,14 +530,6 @@
   dest: .m2/repository/org/apache/maven/shared/maven-common-artifact-filters/3.4.0
   url: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-common-artifact-filters/3.4.0/maven-common-artifact-filters-3.4.0.pom
   sha256: c93581d69b337c1fcc0957c727c430180b6387276ef1d3c2976c175e93765eb1
-- type: file
-  dest: .m2/repository/org/apache/maven/shared/maven-filtering/3.3.1
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-filtering/3.3.1/maven-filtering-3.3.1.jar
-  sha256: b12663187d9ffc6a1ee76139c0ef497fe9400efbe2ebe01616fe2703656fb4f0
-- type: file
-  dest: .m2/repository/org/apache/maven/shared/maven-filtering/3.3.1
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-filtering/3.3.1/maven-filtering-3.3.1.pom
-  sha256: a1d90278a9c3effef6c45db86c660749d2910d8d7361ed81983565950f667e85
 - type: file
   dest: .m2/repository/org/apache/maven/shared/maven-filtering/3.4.0
   url: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-filtering/3.4.0/maven-filtering-3.4.0.jar
@@ -631,17 +551,9 @@
   url: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-shared-components/34/maven-shared-components-34.pom
   sha256: 64d0edb5f21cfff600b1c3ab7d45f9754cd18ba5fbf83b3d1bb7c4849437d8e3
 - type: file
-  dest: .m2/repository/org/apache/maven/shared/maven-shared-components/36
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-shared-components/36/maven-shared-components-36.pom
-  sha256: ec8e973e7964aaf490dbddd39f312340e00d113b8470f135a13e35e45f4baf9f
-- type: file
   dest: .m2/repository/org/apache/maven/shared/maven-shared-components/39
   url: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-shared-components/39/maven-shared-components-39.pom
   sha256: 17e81388d88ba61c4055450ec90a32ee30acd07f46dc6e31e096b8e53735f4b2
-- type: file
-  dest: .m2/repository/org/apache/maven/shared/maven-shared-components/41
-  url: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-shared-components/41/maven-shared-components-41.pom
-  sha256: c6bd81e2588e0f0f87392d4db590e1d81c126a25ee9253252ef89c506cde1e34
 - type: file
   dest: .m2/repository/org/apache/maven/shared/maven-shared-components/42
   url: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-shared-components/42/maven-shared-components-42.pom
@@ -771,14 +683,6 @@
   url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-archiver/4.10.4/plexus-archiver-4.10.4.pom
   sha256: 53a2103d9257c801a8fc9c211d9fedea7e3ee1bf516bbbc28021ef45c1a219c5
 - type: file
-  dest: .m2/repository/org/codehaus/plexus/plexus-archiver/4.9.2
-  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-archiver/4.9.2/plexus-archiver-4.9.2.jar
-  sha256: a837bd7d73291564dc8e8c826de0fede75896527a35bdcddb77b0545ee656a4c
-- type: file
-  dest: .m2/repository/org/codehaus/plexus/plexus-archiver/4.9.2
-  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-archiver/4.9.2/plexus-archiver-4.9.2.pom
-  sha256: 7b4a569c92f60c859ae69594f8935d11bcbb940d86c518742c30f0925a48ba9f
-- type: file
   dest: .m2/repository/org/codehaus/plexus/plexus-compiler-api/2.16.2
   url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-compiler-api/2.16.2/plexus-compiler-api-2.16.2.jar
   sha256: db34d13c8d688063a946922f4de448c909ba43fec355ea15514495f33072b031
@@ -811,14 +715,6 @@
   url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-compilers/2.16.2/plexus-compilers-2.16.2.pom
   sha256: 835e6a3f53ed9f39d14a0fd2b367a47fde78698115464eddba4b5c5d9fd1250f
 - type: file
-  dest: .m2/repository/org/codehaus/plexus/plexus-interpolation/1.26
-  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-interpolation/1.26/plexus-interpolation-1.26.jar
-  sha256: b3b5412ce17889103ea564bcdfcf9fb3dfa540344ffeac6b538a73c9d7182662
-- type: file
-  dest: .m2/repository/org/codehaus/plexus/plexus-interpolation/1.26
-  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-interpolation/1.26/plexus-interpolation-1.26.pom
-  sha256: e1c10b3a6335641eb74a668daa9ee86ae4ab06610174e59ba07c8c68042327f7
-- type: file
   dest: .m2/repository/org/codehaus/plexus/plexus-interpolation/1.27
   url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-interpolation/1.27/plexus-interpolation-1.27.jar
   sha256: 3fb4fb6143fdf964024c3cb738551524b9ea84e5c211cd660c559ad0703e5230
@@ -826,6 +722,10 @@
   dest: .m2/repository/org/codehaus/plexus/plexus-interpolation/1.27
   url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-interpolation/1.27/plexus-interpolation-1.27.pom
   sha256: d54fbcbc4399e352322874a4128b9d28fe9fe1583f89ec361de242ea38d33f9b
+- type: file
+  dest: .m2/repository/org/codehaus/plexus/plexus-interpolation/1.28
+  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-interpolation/1.28/plexus-interpolation-1.28.jar
+  sha256: ab2a8715570438a2e4164d85ad3e8d489eabc38ea5093c2eb8ab7f58403535b5
 - type: file
   dest: .m2/repository/org/codehaus/plexus/plexus-interpolation/1.28
   url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-interpolation/1.28/plexus-interpolation-1.28.pom
@@ -838,14 +738,6 @@
   dest: .m2/repository/org/codehaus/plexus/plexus-interpolation/1.29
   url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-interpolation/1.29/plexus-interpolation-1.29.pom
   sha256: ce0d5634297bb1e065dddfdc8a2a5675717c08e8f4783edcf581543711516938
-- type: file
-  dest: .m2/repository/org/codehaus/plexus/plexus-io/3.4.2
-  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-io/3.4.2/plexus-io-3.4.2.jar
-  sha256: 6ba7fb0db6bfa348c248df3f983ae31318e9c14f35a86a932af5ffd7450aa62a
-- type: file
-  dest: .m2/repository/org/codehaus/plexus/plexus-io/3.4.2
-  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-io/3.4.2/plexus-io-3.4.2.pom
-  sha256: aafc90ce29fe79bc6a0aeafb2bf6bdeaf979a1b8211493428a2290228170355d
 - type: file
   dest: .m2/repository/org/codehaus/plexus/plexus-io/3.5.1
   url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-io/3.5.1/plexus-io-3.5.1.pom
@@ -879,26 +771,6 @@
   url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.0.24/plexus-utils-3.0.24.pom
   sha256: 11067f6a75fded12bcdc8daf7a66ddd942ce289c3daf88a3fe0f8b12858a2ee6
 - type: file
-  dest: .m2/repository/org/codehaus/plexus/plexus-utils/3.5.0
-  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.5.0/plexus-utils-3.5.0.pom
-  sha256: aa4ea451bb6fa92e9cc96654eef53e334ff4d36a946633e01765fed41e845e03
-- type: file
-  dest: .m2/repository/org/codehaus/plexus/plexus-utils/3.5.1
-  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.5.1/plexus-utils-3.5.1.jar
-  sha256: 86e0255d4c879c61b4833ed7f13124e8bb679df47debb127326e7db7dd49a07b
-- type: file
-  dest: .m2/repository/org/codehaus/plexus/plexus-utils/3.5.1
-  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.5.1/plexus-utils-3.5.1.pom
-  sha256: 94ff68edeb48204d12c99189c767164d3a9f778a1372d1dce11a41462e6236f2
-- type: file
-  dest: .m2/repository/org/codehaus/plexus/plexus-utils/4.0.1
-  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/4.0.1/plexus-utils-4.0.1.jar
-  sha256: 96b9cc44439191d2d0635974e2d44e768736b4fb2abcb65f94cd95e41912fa8b
-- type: file
-  dest: .m2/repository/org/codehaus/plexus/plexus-utils/4.0.1
-  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/4.0.1/plexus-utils-4.0.1.pom
-  sha256: bc4235a95cd1ebae42644c81ebba9c1d4c52565f81e96ab204b6e56e3e378cc1
-- type: file
   dest: .m2/repository/org/codehaus/plexus/plexus-utils/4.0.2
   url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/4.0.2/plexus-utils-4.0.2.jar
   sha256: 8957274e75fe2c278b1428dd16a0daeee1dd38152cb6eff816177ac28fccb697
@@ -915,17 +787,9 @@
   url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-xml/3.0.1/plexus-xml-3.0.1.pom
   sha256: 3242ddc20873f71b381c333b22afb9cf3596d6a63b6683036a16bd51bc8721a4
 - type: file
-  dest: .m2/repository/org/codehaus/plexus/plexus/10
-  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/10/plexus-10.pom
-  sha256: bba9c521064b9ca132ce97cc1cc7eb4afc2dbe32bc88cb872c88e99f6162301f
-- type: file
   dest: .m2/repository/org/codehaus/plexus/plexus/16
   url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/16/plexus-16.pom
   sha256: 68d4eed65a3dbbc342ed80dd138fbe9c67cb7fb4c2abc4f5201cdb5b9f645868
-- type: file
-  dest: .m2/repository/org/codehaus/plexus/plexus/17
-  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/17/plexus-17.pom
-  sha256: 91526ee66327c7f50fbb25bd41bfcb916e284414b868e31d50a23004bd7deea7
 - type: file
   dest: .m2/repository/org/codehaus/plexus/plexus/18
   url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/18/plexus-18.pom
@@ -950,18 +814,6 @@
   dest: .m2/repository/org/codehaus/plexus/plexus/4.0
   url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/4.0/plexus-4.0.pom
   sha256: 0a1b692d7fcc90d6a45dae2e50f4660d48f7a44504f174aa60ef34fbe1327f6a
-- type: file
-  dest: .m2/repository/org/codehaus/plexus/plexus/5.1
-  url: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/5.1/plexus-5.1.pom
-  sha256: a343e44ff5796aed0ea60be11454c935ce20ab1c5f164acc8da574482dcbc7e9
-- type: file
-  dest: .m2/repository/org/iq80/snappy/snappy/0.4
-  url: https://repo.maven.apache.org/maven2/org/iq80/snappy/snappy/0.4/snappy-0.4.jar
-  sha256: 46a0c87d504ce9d6063e1ff6e4d20738feb49d8abf85b5071a7d18df4f11bac9
-- type: file
-  dest: .m2/repository/org/iq80/snappy/snappy/0.4
-  url: https://repo.maven.apache.org/maven2/org/iq80/snappy/snappy/0.4/snappy-0.4.pom
-  sha256: a709ce17111e4149d9b79a5295644e0cd5a8355aec4b2ef4c0436aba7b25d08a
 - type: file
   dest: .m2/repository/org/jacoco/jacoco-maven-plugin/0.8.14
   url: https://repo.maven.apache.org/maven2/org/jacoco/jacoco-maven-plugin/0.8.14/jacoco-maven-plugin-0.8.14.jar
@@ -1023,10 +875,6 @@
   url: https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.pom
   sha256: cdab929a3b95211f43d2090c5e2d0dfe8465960e378bc32b35841dab324433a6
 - type: file
-  dest: .m2/repository/org/junit/junit-bom/5.10.0
-  url: https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.10.0/junit-bom-5.10.0.pom
-  sha256: e006dd8894f9fc7b75fc32bb12fe5ed8be65667d5b454f99e2e0b8c5bb8d30b3
-- type: file
   dest: .m2/repository/org/junit/junit-bom/5.10.1
   url: https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.10.1/junit-bom-5.10.1.pom
   sha256: 21c4b0286f4b20069577ff4b20978a85c100ac8a46b6f1c8672fbaab337bc3f2
@@ -1038,6 +886,10 @@
   dest: .m2/repository/org/junit/junit-bom/5.10.3
   url: https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.10.3/junit-bom-5.10.3.pom
   sha256: 10937d44c425984cb8739225d34712e1a3145641ca93ac3f7ef186fa25f6babc
+- type: file
+  dest: .m2/repository/org/junit/junit-bom/5.11.0-M2
+  url: https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.0-M2/junit-bom-5.11.0-M2.pom
+  sha256: 4a3ffc4a4edcfec2cb5d619922706a9407161798571939f854dfda73e4e17cc8
 - type: file
   dest: .m2/repository/org/junit/junit-bom/5.11.4
   url: https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom
@@ -1066,10 +918,6 @@
   dest: .m2/repository/org/junit/junit-bom/5.14.2
   url: https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.14.2/junit-bom-5.14.2.pom
   sha256: ed2dcc7855bd460bccc93a1bf0c962e63b566ff7d8f1ded0f1f2593ba8183aaf
-- type: file
-  dest: .m2/repository/org/junit/junit-bom/5.7.1
-  url: https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.7.1/junit-bom-5.7.1.pom
-  sha256: 0b9b14a3d62106fafe8c68a717b87b87ad18685899451b753c04fa41b6857784
 - type: file
   dest: .m2/repository/org/junit/junit-bom/5.7.2
   url: https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.7.2/junit-bom-5.7.2.pom
@@ -1139,21 +987,21 @@
   url: https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/6.0.3/junit-platform-engine-6.0.3.pom
   sha256: 7a87d8c6a0a7db0260b00ce303180f6f41d040562895d6804619d5db6ee232be
 - type: file
-  dest: .m2/repository/org/mockito/mockito-core/5.22.0
-  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.22.0/mockito-core-5.22.0.jar
-  sha256: 18a206368c2c8fd693e762f3743e365acc208c32b1a75f26eeaa9af3b09261c7
+  dest: .m2/repository/org/mockito/mockito-core/5.23.0
+  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.23.0/mockito-core-5.23.0.jar
+  sha256: ae295bebd5d11fab97ab297815dc7617188b86003cbce3dfd5c0d5c3a6cc4a0c
 - type: file
-  dest: .m2/repository/org/mockito/mockito-core/5.22.0
-  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.22.0/mockito-core-5.22.0.pom
-  sha256: 8273bb760bb3da6f1e684aa708318e9c9c5d24335415131e63924e541f3e8d30
+  dest: .m2/repository/org/mockito/mockito-core/5.23.0
+  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.23.0/mockito-core-5.23.0.pom
+  sha256: c02e2900b9277adbfe12756d7d0b9472e6b9e5972ae1f28d19a41aa6513777e3
 - type: file
-  dest: .m2/repository/org/mockito/mockito-junit-jupiter/5.22.0
-  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-junit-jupiter/5.22.0/mockito-junit-jupiter-5.22.0.jar
-  sha256: bfd690449fde9b74effed8f266be7c2f4ab9a3a71ccb8e76b726470c5cfb4b6e
+  dest: .m2/repository/org/mockito/mockito-junit-jupiter/5.23.0
+  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-junit-jupiter/5.23.0/mockito-junit-jupiter-5.23.0.jar
+  sha256: 65938526fdc311bb3a1c0015eb1c8a0be81515aa998f22b9f4e92f1b668e4f63
 - type: file
-  dest: .m2/repository/org/mockito/mockito-junit-jupiter/5.22.0
-  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-junit-jupiter/5.22.0/mockito-junit-jupiter-5.22.0.pom
-  sha256: 526fed994e5c339e7e4561aecfc518cda3f674670b6e26135af00200c6971590
+  dest: .m2/repository/org/mockito/mockito-junit-jupiter/5.23.0
+  url: https://repo.maven.apache.org/maven2/org/mockito/mockito-junit-jupiter/5.23.0/mockito-junit-jupiter-5.23.0.pom
+  sha256: b66d0df81aab2ed2fa53c990ea90c2f1f915031bc85e418602de4cfb8d2ad7e8
 - type: file
   dest: .m2/repository/org/objenesis/objenesis-parent/3.3
   url: https://repo.maven.apache.org/maven2/org/objenesis/objenesis-parent/3.3/objenesis-parent-3.3.pom
@@ -1306,14 +1154,6 @@
   dest: .m2/repository/org/tukaani/xz/1.10
   url: https://repo.maven.apache.org/maven2/org/tukaani/xz/1.10/xz-1.10.pom
   sha256: ef608b83c3bb6c8e3e6b3beaa38842ba15963b46495e4af91b0746c8b750f3b9
-- type: file
-  dest: .m2/repository/org/tukaani/xz/1.9
-  url: https://repo.maven.apache.org/maven2/org/tukaani/xz/1.9/xz-1.9.jar
-  sha256: 211b306cfc44f8f96df3a0a3ddaf75ba8c5289eed77d60d72f889bb855f535e5
-- type: file
-  dest: .m2/repository/org/tukaani/xz/1.9
-  url: https://repo.maven.apache.org/maven2/org/tukaani/xz/1.9/xz-1.9.pom
-  sha256: 093be1b03331bce2932d6825c37e98272d7621e6a9e9fb93289a002518b8dd5a
 - type: file
   dest: .m2/repository/pt/davidafsilva/apple/jkeychain/1.1.0
   url: https://repo.maven.apache.org/maven2/pt/davidafsilva/apple/jkeychain/1.1.0/jkeychain-1.1.0.jar

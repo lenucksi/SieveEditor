@@ -1,0 +1,31 @@
+.github/workflows/ci.yml
+  s_06f24f30caff57::t_9fc5437a5166d0 46,95
+  s_06f24f30caff57::t_33c9a9cb002bd0 85
+flatpak/target
+  ai_agent 1
+pom.xml
+  s_06f24f30caff57::t_71f335b5aa7d97 116
+  s_06f24f30caff57::t_20f706c595c2f1 144
+flatpak/flatpak/io.github.lenucksi.SieveEditor.desktop
+  ai_agent 1
+flatpak/flatpak/io.github.lenucksi.SieveEditor.png
+  ai_agent 1
+flatpak/flatpak/io.github.lenucksi.SieveEditor.metainfo.xml
+  ai_agent 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "02ae804e3103e136201f5cf21383a0fe6b2eeb62",
+  "prompts": {},
+  "sessions": {
+    "s_06f24f30caff57": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1c571b184ffed7i0j5P0eRebZ8",
+        "model": "big-pickle"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

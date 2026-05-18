@@ -1,0 +1,19 @@
+pom.xml
+  s_06f24f30caff57::t_04901f06c30d55 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "052e3990c106c28a7c6bde8e3c2a9b60656dbb9e",
+  "prompts": {},
+  "sessions": {
+    "s_06f24f30caff57": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1c571b184ffed7i0j5P0eRebZ8",
+        "model": "big-pickle"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

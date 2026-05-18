@@ -10,6 +10,7 @@ permissions:
   pull-requests: write  # For creating release PRs
   id-token: write  # For artifact attestations
   attestations: write  # For provenance generation
+  pages: write  # For Flatpak GitHub Pages deployment
 
 jobs:
   release-please:

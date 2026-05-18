@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0](https://github.com/lenucksi/SieveEditor/compare/v1.1.0...v1.2.0) (2026-05-18)
+
+
+### Features
+
+* **parser:** add support for vacation rule metadata fields ([292fe01](https://github.com/lenucksi/SieveEditor/commit/292fe01700b686c4347ae786774ad8135da1cd7b))
+* **profiles:** add renameProfile backend method and comprehensive tests ([05f8c38](https://github.com/lenucksi/SieveEditor/commit/05f8c380212102d18302ccd148bcca0e45742b6f))
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.formdev:flatlaf to v3.7.1 ([e39591d](https://github.com/lenucksi/SieveEditor/commit/e39591d0477464a7d8bdea8d5834be21a2fcfe96))
+* **deps:** update dependency com.formdev:flatlaf to v3.7.1 ([ff8eacd](https://github.com/lenucksi/SieveEditor/commit/ff8eacde023a2f9c2aab194c3cc7fd49d3e06068))
+* **script:** add screenshot method workaround for Java Robot ([61e058c](https://github.com/lenucksi/SieveEditor/commit/61e058c92bfcd24f6e59d9647c0b5146cd499fb2))
+* **ui:** refactor menu keystrokes to use InputMap/ActionMap pattern ([659ddd4](https://github.com/lenucksi/SieveEditor/commit/659ddd442d3016f43ef810fed156524c1608e378))
+
+
+### Dependencies
+
+* **deps:** bump commons-codec:commons-codec from 1.21.0 to 1.22.0 ([1d43109](https://github.com/lenucksi/SieveEditor/commit/1d431091e114c2134d93bc134245b07ff21b4a06))
+* **deps:** bump org.slf4j:slf4j-simple from 2.0.17 to 2.0.18 ([3c60587](https://github.com/lenucksi/SieveEditor/commit/3c6058731c675b8c7f74d7ddd0688e4a8ff75fed))
+* **flatpak:** update Maven dependencies ([a02319f](https://github.com/lenucksi/SieveEditor/commit/a02319f2db74509f7c397154a7a96c48c72f88ee))
+* **flatpak:** update Maven dependencies ([b28e551](https://github.com/lenucksi/SieveEditor/commit/b28e551ba71ae6c71d00ed0f19639cd9d981de81))
+* **flatpak:** update Maven dependencies ([618d2c7](https://github.com/lenucksi/SieveEditor/commit/618d2c7ebdb629688246362420ae8187afff5058))
+
 ## [1.1.0](https://github.com/lenucksi/SieveEditor/compare/v1.0.3...v1.1.0) (2026-03-02)
 
 

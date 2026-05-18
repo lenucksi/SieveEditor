@@ -1,0 +1,21 @@
+src/test/java/de/febrildur/sieveeditor/system/PropertiesSieveTest.java
+  s_8f46e03df89d6c::t_894159b74b582c 344-347
+.github/workflows/ci.yml
+  s_8f46e03df89d6c::t_872605198fc503 56-59,61-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "e63d17a0f8c76279b8390136012113ba5403cdb2",
+  "prompts": {},
+  "sessions": {
+    "s_8f46e03df89d6c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1c4f2f8a0ffem8sMFXWHNVJw2u",
+        "model": "big-pickle"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

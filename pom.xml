@@ -113,7 +113,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>5.5.0.6356</version>
+					<version>5.6.0.6792</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -141,7 +141,7 @@
 		<dependency>
 			<groupId>com.github.lenucksi</groupId>
 			<artifactId>ManageSieveJ</artifactId>
-			<version>managesievej-v0.3.11</version>
+			<version>managesievej-v0.3.12</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>

@@ -1,0 +1,27 @@
+.github/workflows/release.yml
+  s_ebb50abe7aa91d::t_efc53fc4e88050 13
+.github/workflows/package.yml
+  s_ebb50abe7aa91d::t_f69c6c0778b0b8 29
+  s_ebb50abe7aa91d::t_3101058e80b7e5 424-430
+  s_ebb50abe7aa91d::t_7fea41108ba05b 439
+  s_ebb50abe7aa91d::t_4433b4539cd091 442-453
+  s_ebb50abe7aa91d::t_a0993682147be4 461-467,473-523
+README.md
+  s_ebb50abe7aa91d::t_4e58e32768d5d0 75-93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "72b24a305d42f847cbe24f638191a8dbbb30041b",
+  "prompts": {},
+  "sessions": {
+    "s_ebb50abe7aa91d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1c5010a5fffeM8Cuyq3eL3non5",
+        "model": "big-pickle"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

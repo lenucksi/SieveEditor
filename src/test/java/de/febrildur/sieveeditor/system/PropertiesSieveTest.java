@@ -341,11 +341,10 @@ class PropertiesSieveTest {
 
     @Test
     void shouldReturnDefaultWhenLastUsedFileIsCorrupt() throws IOException {
-        // Given - Create corrupt last used file
-        File profilesDir = tempDir.resolve(".sieveprofiles").toFile();
-        profilesDir.mkdirs();
-        File lastUsedFile = new File(profilesDir, ".lastused");
-        Files.writeString(lastUsedFile.toPath(), ""); // Empty file
+        // Given - Create corrupt last used file in the actual config directory
+        Path configDir = AppDirectoryService.getUserConfigDir();
+        Path lastUsedFile = configDir.resolve(".lastused");
+        Files.writeString(lastUsedFile, ""); // Empty file
 
         // When
         String lastUsed = PropertiesSieve.getLastUsedProfile();

@@ -1,7 +1,5 @@
 # SieveEditor
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flenucksi%2FSieveEditor.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Flenucksi%2FSieveEditor?ref=badge_shield)
-
 A desktop editor for Sieve mail filter scripts on ManageSieve-compatible servers.
 
 ## Screenshots
@@ -124,4 +122,3 @@ It is explicitly forbidden to use it for any purpose that would be, direct or in
 
 ## License
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flenucksi%2FSieveEditor.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Flenucksi%2FSieveEditor?ref=badge_large)

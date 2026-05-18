@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0](https://github.com/lenucksi/SieveEditor/compare/v1.2.0...v1.3.0) (2026-05-18)
+
+
+### Features
+
+* **flatpak:** add signed Flatpak repository hosted on GitHub Pages ([72b24a3](https://github.com/lenucksi/SieveEditor/commit/72b24a305d42f847cbe24f638191a8dbbb30041b))
+
+
+### Bug Fixes
+
+* **ci:** repair Linux/Windows test failures ([#218](https://github.com/lenucksi/SieveEditor/issues/218)) ([d027c3c](https://github.com/lenucksi/SieveEditor/commit/d027c3c35bc4363f4f0780c641c52f1308b98b07))
+
 ## [1.2.0](https://github.com/lenucksi/SieveEditor/compare/v1.1.0...v1.2.0) (2026-05-18)
 
 

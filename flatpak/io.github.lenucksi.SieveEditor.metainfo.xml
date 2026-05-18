@@ -78,9 +78,31 @@
     <content_attribute id="social-info">mild</content_attribute>
   </content_rating>
   <releases>
-    <!-- x-release-please-start-date -->
+    <release version="1.2.0" date="2026-05-18">
+      <description>
+        <p>New Features:</p>
+        <ul>
+          <li>Add support for vacation rule metadata fields</li>
+          <li>Add renameProfile backend method and comprehensive tests</li>
+        </ul>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>Update dependency com.formdev:flatlaf to v3.7.1</li>
+          <li>Update dependency com.formdev:flatlaf to v3.7.1</li>
+          <li>Add screenshot method workaround for Java Robot</li>
+          <li>Refactor menu keystrokes to use InputMap/ActionMap pattern</li>
+        </ul>
+        <p>Dependencies:</p>
+        <ul>
+          <li>Bump commons-codec:commons-codec from 1.21.0 to 1.22.0</li>
+          <li>Bump org.slf4j:slf4j-simple from 2.0.17 to 2.0.18</li>
+          <li>Update Maven dependencies</li>
+          <li>Update Maven dependencies</li>
+          <li>Update Maven dependencies</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.2" date="2025-12-05">
-    <!-- x-release-please-end -->
       <description>
         <p>Initial release with core functionality</p>
       </description>

@@ -26,6 +26,7 @@ permissions:
   contents: read
   id-token: write  # For artifact attestations
   attestations: write  # For provenance
+  pages: write  # For GitHub Pages deployment
 
 jobs:
   # Build JAR once, use for all platforms
@@ -420,6 +421,13 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Building Flatpak version: $VERSION"
 
+      - name: Import GPG key
+        id: gpg
+        uses: crazy-max/ghaction-import-gpg@e89d40939c28e39f97cf32126055eeae86ba74ec # v6.3.0
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
       - name: Build Flatpak
         uses: flatpak/flatpak-github-actions/flatpak-builder@401fe28a8384095fc1531b9d320b292f0ee45adb # v6.7
         with:
@@ -428,7 +436,20 @@ jobs:
           cache-key: flatpak-builder-${{ hashFiles('io.github.lenucksi.SieveEditor.yml') }}
           arch: x86_64
           branch: master
+          gpg-sign: ${{ steps.gpg.outputs.fingerprint }}
           upload-artifact: false
+
+      - name: Update Flatpak repository summary
+        run: |
+          GPG_ARGS=()
+          if [ -n "${{ steps.gpg.outputs.fingerprint }}" ]; then
+            GPG_ARGS=(--gpg-sign="${{ steps.gpg.outputs.fingerprint }}")
+          fi
+          flatpak build-update-repo \
+            "${GPG_ARGS[@]}" \
+            --generate-static-deltas \
+            --prune \
+            repo/
 
       - name: Upload Flatpak artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -437,10 +458,69 @@ jobs:
           path: SieveEditor-${{ steps.version.outputs.version }}.flatpak
           retention-days: 30
 
+      - name: Upload Flatpak repository
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sieveeditor-flatpak-repo
+          path: repo/
+          retention-days: 30
+
       - name: Attest Flatpak provenance
         uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
         with:
           subject-path: SieveEditor-${{ steps.version.outputs.version }}.flatpak
+
+  # Deploy Flatpak repository to GitHub Pages
+  deploy-flatpak-pages:
+    name: Deploy Flatpak Repo to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: package-flatpak
+    if: github.event_name == 'release' || inputs.tag_name != ''
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@ab7a9404c0f3da075243ca237b5fac12c98deaa5 # v2.19.3
+        with:
+          egress-policy: audit
+
+      - name: Download Flatpak repository
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: sieveeditor-flatpak-repo
+          path: repo
+
+      - name: Generate .flatpakrepo
+        env:
+          GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY_BASE64 }}
+        run: |
+          {
+            echo "[Flatpak Repo]"
+            echo "Title=SieveEditor"
+            echo "Url=https://lenucksi.github.io/SieveEditor/"
+            echo "Homepage=https://github.com/lenucksi/SieveEditor"
+            echo "Comment=Sieve mail filter script editor"
+            echo "Description=Graphical editor for managing Sieve mail filter scripts on ManageSieve servers"
+            echo "Icon=https://raw.githubusercontent.com/lenucksi/SieveEditor/master/flatpak/io.github.lenucksi.SieveEditor.svg"
+            if [ -n "$GPG_PUBLIC_KEY" ]; then
+              echo "GPGKey=$GPG_PUBLIC_KEY"
+            fi
+          } > repo/index.flatpakrepo
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        with:
+          path: repo
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
 
   # Generate checksums and attestations summary
   checksums:

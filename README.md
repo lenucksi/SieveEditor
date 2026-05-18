@@ -72,6 +72,25 @@ This will create `target/SieveEditor-jar-with-dependencies.jar`
 java -jar target/SieveEditor-jar-with-dependencies.jar
 ```
 
+## Install
+
+### Flatpak (Linux)
+
+SieveEditor is available as a Flatpak via the project's GitHub Pages repository.
+
+**Add the repository and install:**
+
+```bash
+flatpak remote-add --from https://lenucksi.github.io/SieveEditor/index.flatpakrepo
+flatpak install sieveeditor io.github.lenucksi.SieveEditor
+```
+
+**After installation, updates are pulled automatically via:**
+
+```bash
+flatpak update
+```
+
 ## Features
 
 - Multiple account profiles support
@@ -121,4 +140,3 @@ Expect that this software will kill your dog and eat it. There will be bugs. It 
 It is explicitly forbidden to use it for any purpose that would be, direct or indirectly, be connected to anything that would be related to safety or security of building, entity, machinery, human life, etc. You have been warned; use at your own risk.
 
 ## License
-

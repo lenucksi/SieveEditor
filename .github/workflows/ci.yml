@@ -5,6 +5,8 @@ on:
     branches: [master, develop, 'feature/**', 'claude/**']
   pull_request:
     branches: [master, develop]
+    paths-ignore:
+      - 'pom.xml'
   workflow_dispatch:  # Allow manual trigger
 
 # Minimal permissions by default (principle of least privilege)

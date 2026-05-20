@@ -13,7 +13,7 @@
     "@lenucksi"
   ],
   "schedule": [
-    "after 10pm and before 6am every day"
+    "0 4 * * *"
   ],
   "timezone": "Europe/Berlin",
   "platformAutomerge": true,
@@ -35,7 +35,7 @@
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Dependency Dashboard 🤖",
   "dependencyDashboardHeader": "This dashboard tracks pending dependency updates.",
-  "dependencyDashboardFooter": "Managed by Renovate Bot. Updates are checked nightly (after 10pm CET).",
+  "dependencyDashboardFooter": "Managed by Renovate Bot. Updates are checked daily at 04:00 CET.",
   "commitMessagePrefix": "chore(deps):",
   "commitBody": "This PR contains the following updates:\n\n| Package | Update | Change |\n|---|---|---|\n{{#each upgrades as |upgrade|}}\n| {{upgrade.depName}} | {{upgrade.updateType}} | `{{upgrade.currentValue}}` -> `{{upgrade.newValue}}` |\n{{/each}}"
 }

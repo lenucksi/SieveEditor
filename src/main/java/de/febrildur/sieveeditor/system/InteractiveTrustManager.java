@@ -1,4 +1,7 @@
 package de.febrildur.sieveeditor.system;
+// SPDX-FileCopyrightText: 2025 Claude
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
 import java.awt.Component;
 import java.security.cert.CertificateException;

@@ -1,4 +1,7 @@
 package de.febrildur.sieveeditor.testutil;
+// SPDX-FileCopyrightText: 2025 Lenucksi
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
 import de.febrildur.sieveeditor.system.credentials.MasterKeyProviderFactory;
 import org.junit.jupiter.api.extension.BeforeAllCallback;

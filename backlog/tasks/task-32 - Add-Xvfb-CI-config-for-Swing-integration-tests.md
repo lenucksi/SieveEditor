@@ -1,10 +1,10 @@
 ---
 id: TASK-32
 title: Add Xvfb CI config for Swing integration tests
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-05-20 19:59'
-updated_date: '2026-05-20 22:16'
+updated_date: '2026-05-20 22:29'
 labels: []
 dependencies:
   - TASK-28
@@ -44,7 +44,6 @@ Implementation:
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
-
 1. Add wrapper: checks for DISPLAY, falls back to xvfb-run if available
 2. Tag all display-dependent tests with @Tag("gui"): ApplicationTest (display tests), CertificateDialog
 3. Create Maven profile in pom.xml that includes @Tag("gui") tests
@@ -56,3 +55,9 @@ Implementation:
 7. Run full suite with xvfb-run, verify ApplicationTest passes
 8. Verify coverage report includes all classes
 <!-- SECTION:PLAN:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+Xvfb CI config: scripts/run-tests.sh, Maven profiles (unit-tests/gui-tests), @Tag("gui") on ApplicationTest. CI already has xvfb-run. Unit-tests=467, gui-tests=25 tests.
+<!-- SECTION:FINAL_SUMMARY:END -->

@@ -1,4 +1,7 @@
 package de.febrildur.sieveeditor;
+// SPDX-FileCopyrightText: 2025 Claude
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,4 +1,7 @@
 package de.febrildur.sieveeditor.actions;
+// SPDX-FileCopyrightText: 2026 Lenucksi
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;

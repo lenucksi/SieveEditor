@@ -11,9 +11,13 @@
 ### Deactivated Backends
 
 - **KeePassXC** (`KeePassXCMasterKeyProvider`)
-  - Status: DEACTIVATED ❌
-  - Reason: Backend is currently broken and difficult to test
-  - Tests: All tests disabled with `@Disabled` annotation
+  - Status: DEACTIVATED at factory level ❌
+  - Reason: KeepassProxyAccess library has known issues with delayed association
+    responses (KeePassXC issue #7099) - cannot be fixed from this project
+  - Improvements made: Configurable retry/timeout, null safety, proper cleanup,
+    reconnection support, better error messages
+  - Tests: 19 tests covering identity, lifecycle, configuration, state
+    management, input validation, and default constants
   - Test file: `KeePassXCMasterKeyProviderTest.java`
 
 - **OS Keychain** (`OSKeychainMasterKeyProvider`)
@@ -35,13 +39,14 @@ The credential storage infrastructure remains in place for all backends:
 
 When backends are fixed in the future:
 
-1. Update implementation classes to fix the issues
+1. Fix the underlying KeepassProxyAccess library (or switch to a different
+   KeePassXC integration approach) to resolve delayed association responses
+   (KeePassXC issue #7099)
 2. Uncomment deactivated code in `MasterKeyProviderFactory.java`:
    - `showBackendSelectionDialog()` method
    - `createProviderByName()` method
    - `createProviderByBackendArg()` method
-3. Remove `@Disabled` annotation from test classes
-4. Update this README and `dev-docs/CREDENTIAL-BACKENDS-STATUS.md`
+3. Update this README and `dev-docs/CREDENTIAL-BACKENDS-STATUS.md`
 
 ## Testing Notes
 
@@ -55,12 +60,15 @@ All credential backends are difficult to test automatically because:
 
 ### Test Strategy
 
-When backends are re-enabled, tests should:
-
-- Focus on unit testing internal logic with mocks
-- Use `@Disabled` for integration tests that require external systems
-- Document expected behavior even if tests can't run in CI
-- Consider using `MasterKeyProviderFactory.setTestMode()` for testing applications that use the factory
+- KeePassXC tests use no mocking (KeepassProxyAccess is concrete). Tests
+  focus on identity, lifecycle, state management, configuration, and
+  input validation
+- Tests avoid triggering GUI dialogs (ensureConnected path) by not calling
+  getMasterKey()/setMasterKey() on unconnected providers in unit tests
+- isAvailable() is tested as a side-effect-free boolean check
+- MasterKeyProviderFactory tests use TestMasterKeyProvider for non-interactive
+  testing of the factory logic
+- Use `MasterKeyProviderFactory.setTestMode()` for testing applications that use the factory
 
 ## See Also
 

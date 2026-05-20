@@ -1,4 +1,7 @@
 package de.febrildur.sieveeditor.system.credentials;
+// SPDX-FileCopyrightText: 2025 Lenucksi
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
 import de.febrildur.sieveeditor.system.AppDirectoryService;
 
@@ -14,10 +17,20 @@ import java.util.logging.Logger;
 /**
  * Factory for creating MasterKeyProvider instances.
  *
- * TEMPORARY STATE (2025-12-02):
- * - KeePassXC backend is DEACTIVATED (broken)
+ * TEMPORARY STATE:
+ * - KeePassXC backend is DEACTIVATED at factory level (core KeepassProxyAccess
+ *   library has known issues with delayed association responses - KeePassXC
+ *   issue #7099 - that cannot be fixed from this project)
  * - OS Keychain backend is DEACTIVATED (broken)
  * - Only "Manual Password Entry" (UserPromptMasterKeyProvider) is available
+ *
+ * KeePassXC backend code has been improved with:
+ * - Configurable timeout/retry via constructor parameters
+ * - Proper null safety in getLogins() response handling
+ * - Clean resource cleanup in close() and resetConnection()
+ * - Reconnection support via tryReconnect()
+ * - Better error messages in CredentialException
+ * - 19 tests covering identity, lifecycle, configuration, and error handling
  *
  * The infrastructure for other backends remains in place for future fixes.
  * See dev-docs/CREDENTIAL-BACKENDS-STATUS.md for details.
@@ -160,7 +173,9 @@ public class MasterKeyProviderFactory {
 	 * Shows a dialog letting the user choose which backend to use.
 	 *
 	 * TEMPORARILY DISABLED: Only returns UserPromptMasterKeyProvider.
-	 * KeePassXC and OS Keychain backends are deactivated until fixed.
+	 * KeePassXC backend code is improved but the underlying KeepassProxyAccess
+	 * library (KeePassXC issue #7099) still causes runtime issues.
+	 * OS Keychain backend is also deactivated.
 	 *
 	 * @return selected and configured MasterKeyProvider
 	 * @throws CredentialException if user cancels or no provider can be created

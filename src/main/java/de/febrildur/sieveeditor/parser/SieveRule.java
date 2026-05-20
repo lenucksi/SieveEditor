@@ -1,4 +1,7 @@
 package de.febrildur.sieveeditor.parser;
+// SPDX-FileCopyrightText: 2025 Lenucksi
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
 /**
  * Represents a Sieve filter rule with its position and metadata.

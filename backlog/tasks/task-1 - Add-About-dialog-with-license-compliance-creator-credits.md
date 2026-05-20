@@ -1,9 +1,10 @@
 ---
 id: TASK-1
 title: Add About dialog with license compliance/creator credits
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-05-20 14:58'
+updated_date: '2026-05-20 22:40'
 labels:
   - ui
   - licensing

@@ -1,4 +1,7 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2026 Lenucksi
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
 # Wrapper script for running SieveEditor tests
 # Uses Xvfb if no display is available, otherwise runs directly
 set -e

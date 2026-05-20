@@ -1,4 +1,7 @@
 package de.febrildur.sieveeditor.util;
+// SPDX-FileCopyrightText: 2025 Lenucksi
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

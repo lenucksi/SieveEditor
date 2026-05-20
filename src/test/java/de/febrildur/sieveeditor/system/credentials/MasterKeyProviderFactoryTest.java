@@ -1,4 +1,7 @@
 package de.febrildur.sieveeditor.system.credentials;
+// SPDX-FileCopyrightText: 2026 Lenucksi
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
 import de.febrildur.sieveeditor.system.AppDirectoryService;
 import de.febrildur.sieveeditor.testutil.TestMasterKeyProvider;

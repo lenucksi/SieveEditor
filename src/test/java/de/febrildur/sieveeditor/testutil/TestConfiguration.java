@@ -1,4 +1,7 @@
 package de.febrildur.sieveeditor.testutil;
+// SPDX-FileCopyrightText: 2025 Claude
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
 import de.febrildur.sieveeditor.system.PropertiesSieve;
 import java.io.IOException;

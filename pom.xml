@@ -151,6 +151,23 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>generate-notices</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>license-maven-plugin</artifactId>
+						<version>2.5.0</version>
+						<configuration>
+							<outputDirectory>${project.build.directory}/notices</outputDirectory>
+							<thirdPartyFilename>THIRD-PARTY.txt</thirdPartyFilename>
+							<fileTemplate>src/main/resources/third-party-template.ftl</fileTemplate>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 	<dependencies>

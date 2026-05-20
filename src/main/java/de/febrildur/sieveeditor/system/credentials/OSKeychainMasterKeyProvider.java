@@ -1,22 +1,15 @@
 package de.febrildur.sieveeditor.system.credentials;
+// SPDX-FileCopyrightText: 2025 Lenucksi
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
+import com.github.javakeyring.BackendNotSupportedException;
 import com.github.javakeyring.Keyring;
 import com.github.javakeyring.PasswordAccessException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Master key provider that uses the operating system's credential manager.
- *
- * Platform-specific backends:
- * - Linux: Secret Service API (GNOME Keyring, KWallet via D-Bus)
- * - macOS: Keychain
- * - Windows: Credential Manager (Wincred API)
- *
- * Note: Security level varies by platform and application packaging.
- * See java-keyring documentation for details.
- */
 public class OSKeychainMasterKeyProvider implements MasterKeyProvider {
 
 	private static final Logger LOGGER = Logger.getLogger(OSKeychainMasterKeyProvider.class.getName());
@@ -28,13 +21,10 @@ public class OSKeychainMasterKeyProvider implements MasterKeyProvider {
 	@Override
 	public boolean isAvailable() {
 		try {
-			// Try to create keyring instance
-			Keyring testKeyring = Keyring.create();
-			// Test if it actually works by trying a dummy operation
-			// This will fail gracefully if the keyring is not available
+			Keyring testKeyring = createKeyring();
 			return testKeyring != null;
 		} catch (Exception e) {
-			LOGGER.log(Level.FINE, "OS keychain not available", e);
+			LOGGER.log(Level.FINE, "OS keychain not available: {0}", e.getMessage());
 			return false;
 		}
 	}
@@ -49,18 +39,14 @@ public class OSKeychainMasterKeyProvider implements MasterKeyProvider {
 				LOGGER.log(Level.INFO, "Retrieved master key from OS keychain");
 				return password;
 			}
-			// Password is null or empty - fall through to return null
 		} catch (PasswordAccessException e) {
-			// Check if it's a "not found" error (first run scenario)
 			if (e.getMessage() != null && e.getMessage().contains("No stored credentials match")) {
 				LOGGER.log(Level.INFO, "Master key not found in OS keychain (first run), will generate new key");
-				return null; // Return null so caller can generate and store a new key
+				return null;
 			}
-			// Some other error - rethrow
 			throw new CredentialException("Failed to retrieve master key from OS keychain", e);
 		}
 
-		// Entry doesn't exist yet (first run) - return null so caller can generate and store one
 		LOGGER.log(Level.INFO, "Master key not found in OS keychain (first run), will generate new key");
 		return null;
 	}
@@ -79,16 +65,7 @@ public class OSKeychainMasterKeyProvider implements MasterKeyProvider {
 
 	@Override
 	public String getName() {
-		String osName = System.getProperty("os.name", "").toLowerCase();
-		if (osName.contains("win")) {
-			return "Windows Credential Manager";
-		} else if (osName.contains("mac")) {
-			return "macOS Keychain";
-		} else if (osName.contains("nux")) {
-			return "Linux Secret Service";
-		} else {
-			return "System Keychain";
-		}
+		return detectOSName();
 	}
 
 	@Override
@@ -105,19 +82,62 @@ public class OSKeychainMasterKeyProvider implements MasterKeyProvider {
 		}
 	}
 
+	@Override
+	public void close() {
+		if (keyring != null) {
+			try {
+				keyring.close();
+			} catch (Exception e) {
+				LOGGER.log(Level.FINE, "Error closing OS keychain", e);
+			}
+			keyring = null;
+		}
+	}
+
+	Keyring createKeyring() throws BackendNotSupportedException {
+		return Keyring.create();
+	}
+
 	private void ensureKeyring() throws CredentialException {
 		if (keyring != null) {
 			return;
 		}
 
 		try {
-			keyring = Keyring.create();
+			keyring = createKeyring();
 			if (keyring == null) {
-				throw new CredentialException("Failed to initialize OS keychain");
+				throw new CredentialException("Failed to initialize OS keychain. " + getPlatformGuidance());
 			}
+		} catch (BackendNotSupportedException e) {
+			throw new CredentialException("Failed to initialize OS keychain. " + getPlatformGuidance(), e);
 		} catch (Exception e) {
-			throw new CredentialException("Failed to initialize OS keychain. " +
-				"Please ensure your system's credential manager is available.", e);
+			throw new CredentialException("Failed to initialize OS keychain. " + getPlatformGuidance(), e);
+		}
+	}
+
+	private static String getPlatformGuidance() {
+		String osName = System.getProperty("os.name", "").toLowerCase();
+		if (osName.contains("win")) {
+			return "Please ensure Windows Credential Manager service is running.";
+		} else if (osName.contains("mac")) {
+			return "Please ensure macOS Keychain is accessible (try 'security unlock-keychain' in Terminal).";
+		} else if (osName.contains("nux")) {
+			return "Please ensure a Secret Service provider is running (e.g., gnome-keyring, kwallet, or keepassxc).";
+		} else {
+			return "Please ensure your system's credential manager is available.";
+		}
+	}
+
+	private static String detectOSName() {
+		String osName = System.getProperty("os.name", "").toLowerCase();
+		if (osName.contains("win")) {
+			return "Windows Credential Manager";
+		} else if (osName.contains("mac")) {
+			return "macOS Keychain";
+		} else if (osName.contains("nux")) {
+			return "Linux Secret Service";
+		} else {
+			return "System Keychain";
 		}
 	}
 }

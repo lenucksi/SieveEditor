@@ -1,9 +1,10 @@
 ---
 id: TASK-2
 title: Add SPDX headers to all Java and shell source files
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-05-20 14:58'
+updated_date: '2026-05-20 22:40'
 labels:
   - licensing
 dependencies: []

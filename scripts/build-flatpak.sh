@@ -1,4 +1,7 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2025 Lenucksi
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
 # Build SieveEditor Flatpak locally
 #
 # This script builds a Flatpak package that can be installed and run

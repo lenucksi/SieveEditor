@@ -1,4 +1,7 @@
 package de.febrildur.sieveeditor.actions;
+// SPDX-FileCopyrightText: 2025 Lenucksi
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
 import java.awt.event.ActionEvent;
 import java.io.File;

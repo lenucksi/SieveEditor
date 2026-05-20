@@ -1,9 +1,10 @@
 ---
 id: TASK-4
 title: Fix KeePassXC credential backend
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-05-20 14:58'
+updated_date: '2026-05-20 22:40'
 labels:
   - security
   - credentials

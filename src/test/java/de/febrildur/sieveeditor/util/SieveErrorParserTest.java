@@ -1,4 +1,7 @@
 package de.febrildur.sieveeditor.util;
+// SPDX-FileCopyrightText: 2025 Lenucksi
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
 import org.junit.jupiter.api.Test;
 import de.febrildur.sieveeditor.util.SieveErrorParser.ErrorInfo;

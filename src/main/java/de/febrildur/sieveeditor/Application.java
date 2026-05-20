@@ -1,4 +1,9 @@
 package de.febrildur.sieveeditor;
+// SPDX-FileCopyrightText: 2019, 2020, 2024 Zwixx
+// SPDX-FileCopyrightText: 2025 Claude
+// SPDX-FileCopyrightText: 2025 Lenucksi
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -158,6 +163,14 @@ public class Application extends JFrame {
 		// Insert menu - templates
 		InsertMenuBuilder insertMenuBuilder = new InsertMenuBuilder(this);
 		menu.add(insertMenuBuilder.createInsertMenu());
+
+		// Help menu
+		JMenu help = new JMenu("Help");
+		menu.add(help);
+
+		JMenuItem aboutItem = new JMenuItem("About SieveEditor...");
+		aboutItem.addActionListener(e -> de.febrildur.sieveeditor.ui.AboutDialog.showAboutDialog(this));
+		help.add(aboutItem);
 
 		setJMenuBar(menu);
 

@@ -1,4 +1,7 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2025 Lenucksi
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
 # Check if all build dependencies are installed for SieveEditor
 
 GREEN='\033[0;32m'

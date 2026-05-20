@@ -1,4 +1,7 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2025 Lenucksi
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
 # SieveEditor launcher
 #
 # This script automatically builds the application if needed and launches it.

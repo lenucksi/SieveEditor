@@ -1,4 +1,7 @@
 package de.febrildur.sieveeditor.ui;
+// SPDX-FileCopyrightText: 2025 Lenucksi
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
 import de.febrildur.sieveeditor.parser.SieveRule;
 import de.febrildur.sieveeditor.parser.SieveRuleParser;

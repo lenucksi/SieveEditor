@@ -1,4 +1,7 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2025 Lenucksi
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
 # Fetch Maven dependencies and generate Flatpak YAML
 # This script automates the entire process of fetching Maven dependencies
 # and generating the maven-dependencies.yaml file for Flatpak builds.

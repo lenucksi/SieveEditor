@@ -1,0 +1,145 @@
+src/main/java/de/febrildur/sieveeditor/actions/ConnectionDialogPresenter.java
+  s_212d84c9c3a1df::t_0cfca283444fc6 1-204
+src/main/java/de/febrildur/sieveeditor/system/PropertiesSieve.java
+  s_6bdfede576e8a2::t_5cb6e0e2b5b255 224-232
+"backlog/tasks/task-33 - Extend-PropertiesSieve-Application-inner-class-coverage.md"
+  s_3d2b4934323cc1::t_b389c501379918 4,7
+  s_3d2b4934323cc1::t_7fc7d3fd88d736 21,29,31,43
+"backlog/tasks/task-29 - Extract-ActionConnect-dialog-logic-for-testability.md"
+  s_3d2b4934323cc1::t_b389c501379918 4,7
+  s_3d2b4934323cc1::t_7fc7d3fd88d736 21,33,35,48-50
+src/test/java/de/febrildur/sieveeditor/ui/CertificateInfoFormatterTest.java
+  s_570e2c103d8a61::t_0f439d02f712ed 1-183,185,190-198
+  s_570e2c103d8a61::t_cc34e315a31f5e 184,187-189
+  s_570e2c103d8a61::t_2cb3aa143159c9 186
+"backlog/tasks/task-32 - Add-Xvfb-CI-config-for-Swing-integration-tests.md"
+  s_3d2b4934323cc1::t_7fc7d3fd88d736 19,24,32,34,46-47,49-50,52
+src/test/java/de/febrildur/sieveeditor/ui/CertificateDialogTest.java
+  s_570e2c103d8a61::t_ec03cd57099b37 9
+src/test/java/de/febrildur/sieveeditor/ApplicationTest.java
+  s_6bdfede576e8a2::t_5cde13313cf708 13
+  s_6bdfede576e8a2::t_91edc7f4811961 240-273,279,281,288-298,300-304,306,308-309,311-313,315,317-341,345-354,356-375
+  s_6bdfede576e8a2::t_663ba7728e55f2 355
+  s_6bdfede576e8a2::t_0579e94a2a6521 379,384-386,391-400
+  s_6bdfede576e8a2::t_e653661904323d 376-378,380-383,387-390
+  s_d435922476769a::t_b83248c8047cc0 126-127
+  s_3d2b4934323cc1::t_b732f14ee94466 342-344
+  s_6bdfede576e8a2::t_d5d5a62e75e7bf 157
+  s_6bdfede576e8a2::t_99590faff5be92 12,14,16-18,36,50,64,78,90,104-105,108-109,111-112,114-124,129-156,158-238
+  s_6bdfede576e8a2::t_b273f896b432ce 280,282-287
+src/test/java/de/febrildur/sieveeditor/system/PropertiesSieveTest.java
+  s_6bdfede576e8a2::t_09e60ac7e42d68 897,901-903
+  s_eb9ae068faa6cf::t_0eb8ab723c1c7c 1034-1279
+  s_212d84c9c3a1df::t_98118fcb4eec1c 7-9,16-20,23
+src/main/java/de/febrildur/sieveeditor/ui/CertificateInfoFormatter.java
+  s_570e2c103d8a61::t_adaffa7379a54c 1-56
+src/test/java/de/febrildur/sieveeditor/actions/ActionActivateDeactivateScriptTest.java
+  s_212d84c9c3a1df::t_b7f28ceaf44e3d 14-18,20-24,26-35
+"backlog/tasks/task-30 - Extract-ActionActivateDeactivateScript-logic-for-testability.md"
+  s_3d2b4934323cc1::t_b389c501379918 4,7
+  s_3d2b4934323cc1::t_7fc7d3fd88d736 21,34,36,49,51
+"backlog/tasks/task-31 - Extract-CertificateDialog-formatting-logic-for-testability.md"
+  s_3d2b4934323cc1::t_7fc7d3fd88d736 21,35,37,49-51
+  s_3d2b4934323cc1::t_b389c501379918 4,7
+"backlog/tasks/task-28 - Refactor-ConnectAndListScripts-for-testability-DI.md"
+  s_3d2b4934323cc1::t_b389c501379918 4,7
+  s_3d2b4934323cc1::t_7fc7d3fd88d736 21,32,34,46-50
+src/main/java/de/febrildur/sieveeditor/ui/CertificateDialog.java
+  s_570e2c103d8a61::t_036c98b8bdde9b 79,83,87,91,95,108-109
+src/test/java/de/febrildur/sieveeditor/actions/ScriptManagementPresenterTest.java
+  s_212d84c9c3a1df::t_1413f253439fd8 1-48,50-58,60-88,90-99,101-120,122-131,133-153,155-170,176-243
+  s_212d84c9c3a1df::t_7ee69397744ee3 49
+  s_212d84c9c3a1df::t_6c60772803a63e 154
+  s_212d84c9c3a1df::t_1bf4a3b09c6953 171-175
+  s_d435922476769a::t_35a17b7cd46a06 59
+src/main/java/de/febrildur/sieveeditor/actions/ConnectionDialogModel.java
+  s_570e2c103d8a61::t_9bb37aa7b2d51c 1-61
+src/main/java/de/febrildur/sieveeditor/actions/ActionActivateDeactivateScript.java
+  s_212d84c9c3a1df::t_4e80a1e7e4d998 6,19,30-201
+src/main/java/de/febrildur/sieveeditor/actions/ScriptManagementView.java
+  s_212d84c9c3a1df::t_af778610bff2ab 1-13
+src/test/java/de/febrildur/sieveeditor/actions/ConnectionDialogPresenterTest.java
+  s_212d84c9c3a1df::t_98118fcb4eec1c 276,296,298,302-303
+  s_eb9ae068faa6cf::t_831c9f4235bb97 1-275,277-295,297,299-301,304-551
+src/main/java/de/febrildur/sieveeditor/actions/ActionConnect.java
+  s_eb9ae068faa6cf::t_ba33a6374ec7df 24-204
+src/test/java/de/febrildur/sieveeditor/system/ConnectAndListScriptsTest.java
+  s_d435922476769a::t_11ee5d3e657c2c 626-641
+  s_d435922476769a::t_fca6e40dd01178 676-682
+  s_d435922476769a::t_d38e8b71ef71b4 604-625,650-675
+  s_d435922476769a::t_674f9799dd65d6 683-688
+  s_eb9ae068faa6cf::t_9ad3a46bb25734 51-55,193,211,224,237,249,260,271,282,308,321,333,347,359,371,383,411,513,563-564,566,577,579,581,591-592,594
+  s_d435922476769a::t_89c07a3f785bf1 6,15-17,19-20,27-31,41-50,56-74,80-81,83,85-86,88-99,103-106,108-112,116-120,122-124,126-141,179-182,189-192,194-203,205-207,210,213-214,216-219,223,226-232,236,239-244,248,251-255,259,262-266,270,273-277,281,284-288,292,296-301,304-305,307,310-314,316,320,323-328,331-332,334-343,346,349-354,358,361-366,369-370,372-379,382,384-389,394,397-410,413-426,432-437,439-452,458,477,481-512,514-517,559-562,565,567-576,578,580,582-590,593,595-603,689-707,709,711-712
+  s_6bdfede576e8a2::t_6247ca03d3fe57 293-294
+  s_d435922476769a::t_acca6f3cb5441e 518,540-558
+  s_eb9ae068faa6cf::t_4e47ab981483a5 395-396
+  s_d435922476769a::t_c4ea6aa56c929f 642-649
+  s_d435922476769a::t_5369fae2d216ad 519-539
+src/main/java/de/febrildur/sieveeditor/actions/ConnectionDialogView.java
+  s_570e2c103d8a61::t_9bb37aa7b2d51c 1-22
+src/main/java/de/febrildur/sieveeditor/system/SieveConnectionFactory.java
+  s_570e2c103d8a61::t_9bb37aa7b2d51c 1-7
+src/main/java/de/febrildur/sieveeditor/system/ConnectAndListScripts.java
+  s_d435922476769a::t_38f533ec0f34fe 91
+  s_d435922476769a::t_df697d78cb02d1 34
+  s_212d84c9c3a1df::t_0cfca283444fc6 31
+  s_d435922476769a::t_95e8b475ce681d 46-53
+src/main/java/de/febrildur/sieveeditor/actions/ScriptManagementPresenter.java
+  s_212d84c9c3a1df::t_3566c24aa3c3b2 1-101
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "32f92310e8a81dfa0a277ebf5e92d917b102ea22",
+  "prompts": {},
+  "sessions": {
+    "s_212d84c9c3a1df": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b9020080ffeBw366QDv3ttXsm",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_3d2b4934323cc1": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b95e7092ffeyv0DxJgQ5M7p5g",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_570e2c103d8a61": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b901e86bffe6EpoDDjTStdiAA",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_6bdfede576e8a2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b901cf46ffeMNb6BvhG9JEhGR",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_d435922476769a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b9022d7fffej3lQBbG9ty4pYd",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_eb9ae068faa6cf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b9021495ffemVQk5gpG0UhoJd",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

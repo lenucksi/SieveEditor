@@ -1,0 +1,27 @@
+"backlog/tasks/task-2 - Add-SPDX-headers-to-all-Java-and-shell-source-files.md"
+  s_3d2b4934323cc1::t_204aa718460e8b 4,7
+"backlog/tasks/task-3 - Use-OSS-Review-Toolkit-for-third-party-notices.md"
+  s_3d2b4934323cc1::t_204aa718460e8b 4,7
+"backlog/tasks/task-4 - Fix-KeePassXC-credential-backend.md"
+  s_3d2b4934323cc1::t_204aa718460e8b 4,7
+"backlog/tasks/task-1 - Add-About-dialog-with-license-compliance-creator-credits.md"
+  s_3d2b4934323cc1::t_204aa718460e8b 4,7
+"backlog/tasks/task-5 - Fix-OS-Keychain-credential-backend.md"
+  s_3d2b4934323cc1::t_204aa718460e8b 4,7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "542d782281bba14be7f7742ef2c254afdf442f3a",
+  "prompts": {},
+  "sessions": {
+    "s_3d2b4934323cc1": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b95e7092ffeyv0DxJgQ5M7p5g",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

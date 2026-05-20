@@ -4,14 +4,23 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedConstruction;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import de.febrildur.sieveeditor.system.credentials.MasterKeyProviderFactory;
+import de.febrildur.sieveeditor.testutil.TestMasterKeyProvider;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 // Note: AppDirectoryService is in the same package, no import needed
 
@@ -885,12 +894,13 @@ class PropertiesSieveTest {
     // ===== Load Error Handling =====
 
     @Test
-    void shouldThrowExceptionWhenLoadingInvalidPort() throws IOException {
+    void shouldFallbackToDefaultPortWhenLoadingInvalidPort() throws IOException {
         Path profileFile = AppDirectoryService.getProfilesDir().resolve("default.properties");
         Files.writeString(profileFile, "sieve.port=notanumber");
 
-        assertThatThrownBy(() -> properties.load())
-                .isInstanceOf(NumberFormatException.class);
+        properties.load();
+
+        assertThat(properties.getPort()).isEqualTo(4190);
     }
 
     @Test
@@ -1020,5 +1030,251 @@ class PropertiesSieveTest {
         PropertiesSieve.migrateOldProperties();
 
         assertThat(Files.readString(newLastUsed).trim()).isEqualTo("newprofile");
+    }
+
+    // ===== Port Parsing Edge Cases =====
+
+    @Test
+    void shouldHandlePortParsingEdgeCases() throws IOException {
+        Path profileFile = AppDirectoryService.getProfilesDir().resolve("default.properties");
+
+        Files.writeString(profileFile, "sieve.port=-1");
+        properties.load();
+        assertThat(properties.getPort()).isEqualTo(4190);
+
+        Files.writeString(profileFile, "sieve.port=70000");
+        properties.load();
+        assertThat(properties.getPort()).isEqualTo(4190);
+
+        Files.writeString(profileFile, "sieve.port=99999");
+        properties.load();
+        assertThat(properties.getPort()).isEqualTo(4190);
+
+        Files.writeString(profileFile, "sieve.port=0");
+        properties.load();
+        assertThat(properties.getPort()).isEqualTo(0);
+    }
+
+    // ===== Server Name Edge Cases =====
+
+    @Test
+    void shouldHandleUnicodeServerName() throws IOException {
+        properties.setServer("s\u00fcber.mail.tld");
+        properties.write();
+
+        PropertiesSieve loaded = new PropertiesSieve();
+        loaded.load();
+        assertThat(loaded.getServer()).isEqualTo("s\u00fcber.mail.tld");
+    }
+
+    @Test
+    void shouldHandleExtremelyLongServerName() throws IOException {
+        String longServer = "server-" + "a".repeat(500) + ".com";
+        properties.setServer(longServer);
+        properties.write();
+
+        PropertiesSieve loaded = new PropertiesSieve();
+        loaded.load();
+        assertThat(loaded.getServer()).isEqualTo(longServer);
+    }
+
+    // ===== Profile Name Edge Cases =====
+
+    @Test
+    void shouldHandleProfileNameWithDotsAndSpaces() throws IOException {
+        String profileName = "my profile.v2";
+        PropertiesSieve profile = new PropertiesSieve(profileName);
+        profile.setServer("example.com");
+        profile.write();
+
+        PropertiesSieve loaded = new PropertiesSieve(profileName);
+        loaded.load();
+        assertThat(loaded.getServer()).isEqualTo("example.com");
+
+        PropertiesSieve.deleteProfile(profileName);
+    }
+
+    @Test
+    void shouldHandleProfileNameWithUnicode() throws IOException {
+        String profileName = "\u30d7\u30ed\u30d5\u30a1\u30a4\u30eb";
+        PropertiesSieve profile = new PropertiesSieve(profileName);
+        profile.setServer("unicode.example.com");
+        profile.write();
+
+        PropertiesSieve loaded = new PropertiesSieve(profileName);
+        loaded.load();
+        assertThat(loaded.getServer()).isEqualTo("unicode.example.com");
+
+        PropertiesSieve.deleteProfile(profileName);
+    }
+
+    // ===== Master Key Edge Cases =====
+
+    @Test
+    void shouldGenerateKeyWhenMasterKeyIsNull() throws IOException {
+        MasterKeyProviderFactory.setTestMode(new TestMasterKeyProvider(null));
+        try {
+            PropertiesSieve props = new PropertiesSieve("test-null-key");
+            props.setServer("example.com");
+            props.write();
+
+            PropertiesSieve loaded = new PropertiesSieve("test-null-key");
+            loaded.load();
+            assertThat(loaded.getServer()).isEqualTo("example.com");
+        } finally {
+            PropertiesSieve.deleteProfile("test-null-key");
+            MasterKeyProviderFactory.setTestMode(new TestMasterKeyProvider());
+        }
+    }
+
+    // ===== Encryption Tier Tests =====
+
+    @Test
+    void shouldFallbackToTripleDesWhenAesNotAvailable() throws Exception {
+        AtomicInteger counter = new AtomicInteger(0);
+        var encMap = new ConcurrentHashMap<String, String>();
+
+        try (MockedConstruction<StandardPBEStringEncryptor> mocked = mockConstruction(
+                StandardPBEStringEncryptor.class,
+                (mock, context) -> {
+                    int idx = counter.getAndIncrement();
+                    if (idx < 2) {
+                        when(mock.encrypt(anyString()))
+                                .thenThrow(new EncryptionOperationNotPossibleException("AES not available"));
+                    } else {
+                        when(mock.encrypt(anyString())).thenAnswer(invocation -> {
+                            String plain = invocation.getArgument(0);
+                            String enc = java.util.Base64.getEncoder().encodeToString(plain.getBytes());
+                            encMap.put(enc, plain);
+                            return enc;
+                        });
+                        when(mock.decrypt(anyString())).thenAnswer(invocation -> {
+                            String enc = invocation.getArgument(0);
+                            String plain = encMap.get(enc);
+                            return plain != null ? plain : enc;
+                        });
+                    }
+                }
+        )) {
+            PropertiesSieve props = new PropertiesSieve("test-tier2");
+            props.setPassword("tier2-pass");
+            props.write();
+
+            PropertiesSieve loaded = new PropertiesSieve("test-tier2");
+            loaded.load();
+            assertThat(loaded.getPassword()).isEqualTo("tier2-pass");
+        }
+    }
+
+    @Test
+    void shouldFallbackToDesWhenAesAndTripleDesNotAvailable() throws Exception {
+        AtomicInteger counter = new AtomicInteger(0);
+        var encMap = new ConcurrentHashMap<String, String>();
+
+        try (MockedConstruction<StandardPBEStringEncryptor> mocked = mockConstruction(
+                StandardPBEStringEncryptor.class,
+                (mock, context) -> {
+                    int idx = counter.getAndIncrement();
+                    if (idx < 4) {
+                        when(mock.encrypt(anyString()))
+                                .thenThrow(new EncryptionOperationNotPossibleException("AES/TripleDES not available"));
+                    } else {
+                        when(mock.encrypt(anyString())).thenAnswer(invocation -> {
+                            String plain = invocation.getArgument(0);
+                            String enc = java.util.Base64.getEncoder().encodeToString(plain.getBytes());
+                            encMap.put(enc, plain);
+                            return enc;
+                        });
+                        when(mock.decrypt(anyString())).thenAnswer(invocation -> {
+                            String enc = invocation.getArgument(0);
+                            String plain = encMap.get(enc);
+                            return plain != null ? plain : enc;
+                        });
+                    }
+                }
+        )) {
+            PropertiesSieve props = new PropertiesSieve("test-tier3");
+            props.setPassword("tier3-pass");
+            props.write();
+
+            PropertiesSieve loaded = new PropertiesSieve("test-tier3");
+            loaded.load();
+            assertThat(loaded.getPassword()).isEqualTo("tier3-pass");
+        }
+    }
+
+    @Test
+    void shouldThrowWhenNoEncryptionAlgorithmAvailable() {
+        try (MockedConstruction<StandardPBEStringEncryptor> mocked = mockConstruction(
+                StandardPBEStringEncryptor.class,
+                (mock, context) -> {
+                    when(mock.encrypt(anyString()))
+                            .thenThrow(new EncryptionOperationNotPossibleException("No algorithm available"));
+                }
+        )) {
+            assertThatThrownBy(() -> new PropertiesSieve("test-all-fail"))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("No suitable encryption algorithm");
+        }
+    }
+
+    // ===== Last Used File Edge Cases =====
+
+    @Test
+    void shouldHandleLastUsedFileWithWhitespaceOnly() throws IOException {
+        Path configDir = AppDirectoryService.getUserConfigDir();
+        Path lastUsedFile = configDir.resolve(".lastused");
+        Files.writeString(lastUsedFile, "   \n\t  ");
+
+        String lastUsed = PropertiesSieve.getLastUsedProfile();
+        assertThat(lastUsed).isEqualTo("default");
+    }
+
+    // ===== Migration Edge Cases =====
+
+    @Test
+    void shouldHandleMigrationWithMultipleFiles() throws IOException {
+        Path legacyDir = AppDirectoryService.getLegacyProfilesDir();
+        Files.createDirectories(legacyDir);
+
+        Path legacyProfile1 = legacyDir.resolve("alpha.properties");
+        Files.writeString(legacyProfile1, "sieve.server=alpha.com");
+
+        Path legacyProfile2 = legacyDir.resolve("beta.properties");
+        Files.writeString(legacyProfile2, "sieve.server=beta.com");
+
+        PropertiesSieve.migrateOldProperties();
+
+        Path newDir = AppDirectoryService.getProfilesDir();
+        assertThat(newDir.resolve("alpha.properties")).exists();
+        assertThat(newDir.resolve("beta.properties")).exists();
+
+        Files.deleteIfExists(newDir.resolve("alpha.properties"));
+        Files.deleteIfExists(newDir.resolve("beta.properties"));
+    }
+
+    @Test
+    void shouldHandleMigrationWhenDestinationMissing() throws IOException {
+        Path legacyDir = AppDirectoryService.getLegacyProfilesDir();
+        Files.createDirectories(legacyDir);
+
+        Path legacyProfile = legacyDir.resolve("dest.properties");
+        Files.writeString(legacyProfile, "sieve.server=dest.com");
+
+        Path newDir = AppDirectoryService.getProfilesDir();
+        Path destProfile = newDir.resolve("dest.properties");
+        Files.deleteIfExists(destProfile);
+        Files.writeString(destProfile, "sieve.server=existing.com");
+
+        PropertiesSieve.migrateOldProperties();
+
+        assertThat(Files.readString(destProfile)).contains("existing.com");
+    }
+
+    // ===== Non-Existent Profile Edge Cases =====
+
+    @Test
+    void shouldCheckNonExistentProfileReturnsFalse() {
+        assertThat(PropertiesSieve.profileExists("nonexistent")).isFalse();
     }
 }

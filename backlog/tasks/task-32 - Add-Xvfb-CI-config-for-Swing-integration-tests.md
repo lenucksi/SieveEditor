@@ -16,11 +16,12 @@ ordinal: 32000
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Current CI runs tests in headless mode (no X11 display), which means ALL Swing dialog-based tests (ApplicationTest, ActionConnect, ActionActivateDeactivateScript, CertificateDialog) are skipped or fail. 
+Current CI runs tests in headless mode (no X11 display), which means ALL Swing dialog-based tests (ApplicationTest, ActionConnect, ActionActivateDeactivateScript, CertificateDialog) are skipped or fail.
 
 Adding Xvfb (X Virtual Framebuffer) to CI provides a virtual display, enabling full Swing component testing without a physical monitor. This is the industry-standard approach for Swing GUI testing in CI.
 
 Implementation:
+
 1. Add xvfb-run wrapper to Maven test execution
 2. Document in CONTRIBUTING.md how to run tests locally with/without display
 3. CI workflow: add xvfb package installation, wrap mvn call with xvfb-run
@@ -28,7 +29,9 @@ Implementation:
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
+
 <!-- AC:BEGIN -->
+
 - [ ] #1 xvfb-run wrapper script created
 - [ ] #2 Maven profiles unit-tests and gui-tests working
 - [ ] #3 CI workflow updated to install xvfb and run full suite
@@ -40,12 +43,13 @@ Implementation:
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
-1. Add  wrapper: checks for DISPLAY, falls back to xvfb-run if available
+
+1. Add wrapper: checks for DISPLAY, falls back to xvfb-run if available
 2. Tag all display-dependent tests with @Tag("gui"): ApplicationTest (display tests), CertificateDialog
-3. Create Maven profile  in pom.xml that includes @Tag("gui") tests
-4. Create Maven profile  (default) that excludes @Tag("gui") tests
+3. Create Maven profile in pom.xml that includes @Tag("gui") tests
+4. Create Maven profile (default) that excludes @Tag("gui") tests
 5. Update CI workflow (.github/workflows/ci.yml): install xvfb, run tests with xvfb-run
-6. Document in CONTRIBUTING.md: 
+6. Document in CONTRIBUTING.md:
    - `mvn test` → unit tests only (no display needed)
    - `xvfb-run mvn test -Pgui-tests` → all tests including Swing GUI
 7. Run full suite with xvfb-run, verify ApplicationTest passes

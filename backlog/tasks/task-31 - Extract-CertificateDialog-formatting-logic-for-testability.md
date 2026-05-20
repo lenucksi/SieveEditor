@@ -1,9 +1,10 @@
 ---
 id: TASK-31
 title: Extract CertificateDialog formatting logic for testability
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-05-20 19:59'
+updated_date: '2026-05-20 20:04'
 labels: []
 dependencies:
   - TASK-23
@@ -17,6 +18,7 @@ ordinal: 31000
 CertificateDialog (0% coverage, 500 instr) extends JDialog and cannot be instantiated in headless mode. Its fingerprint formatting logic and certificate info extraction are tightly coupled to Swing components. However, 60% of the instruction volume is pure data formatting: fingerprint display, certificate detail extraction, date formatting.
 
 Refactoring plan:
+
 1. Extract CertificateInfoFormatter: static methods for formatting cert details
    - getFormattedFingerprintMultiline(String fingerprint) already exists as private
    - ExtractCertificateDetails: subject, issuer, validity dates, serial from X509Certificate
@@ -30,7 +32,9 @@ Goal: 60% effective coverage on the class.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
+
 <!-- AC:BEGIN -->
+
 - [ ] #1 CertificateInfoFormatter class created
 - [ ] #2 formatFingerprintMultiline made accessible and fully tested
 - [ ] #3 All existing CertificateDialogTest enum + multiline tests still pass
@@ -42,8 +46,9 @@ Goal: 60% effective coverage on the class.
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
-1. Create  class with package-private access
-2. Move  from CertificateDialog to formatter
+
+1. Create class with package-private access
+2. Move from CertificateDialog to formatter
 3. Extract methods: getSubjectDisplay(), getIssuerDisplay(), getValidityPeriod(), getSerialDisplay(), getFingerprintDisplay()
 4. Write tests:
    - formatFingerprintMultiline with 32 hex pairs → 4 lines of 8 pairs each

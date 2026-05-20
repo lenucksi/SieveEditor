@@ -1,9 +1,10 @@
 ---
 id: TASK-29
 title: Extract ActionConnect dialog logic for testability
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-05-20 19:58'
+updated_date: '2026-05-20 20:04'
 labels: []
 dependencies:
   - TASK-24
@@ -17,6 +18,7 @@ ordinal: 29000
 ActionConnect (2.4% coverage, 668 instr) has 300+ lines of Swing dialog construction inside actionPerformed(). The dialog creates JComboBox, JTextField, JPasswordField, JButton instances and wires up 5+ ActionListeners inline. Zero testability without a display.
 
 Refactoring plan:
+
 1. Extract ConnectionDialogModel - data class holding all dialog state (server, port, username, password, selected profile, profiles list)
 2. Extract ConnectionDialogView interface for the Swing dialog
 3. Extract ConnectionDialogPresenter with all business logic (save/load profile, connect, rename, delete)
@@ -28,7 +30,9 @@ Reference patterns: MVP with Humble Dialog pattern from Swing testability resear
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
+
 <!-- AC:BEGIN -->
+
 - [ ] #1 ConnectionDialogModel extracted with all dialog state
 - [ ] #2 ConnectionDialogView interface extracted
 - [ ] #3 ConnectionDialogPresenter handles all business logic
@@ -41,8 +45,9 @@ Reference patterns: MVP with Humble Dialog pattern from Swing testability resear
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
-1. Extract  class: server, port, username, password, selectedProfile, profiles list, currentDisplayedProfile
-2. Extract  interface: show(), close(), showError(String), getFieldValues()→Model, setFieldValues(Model)
+
+1. Extract class: server, port, username, password, selectedProfile, profiles list, currentDisplayedProfile
+2. Extract interface: show(), close(), showError(String), getFieldValues()→Model, setFieldValues(Model)
 3. Extract : handleOk(), handleProfileChange(), handleNewProfile(), handleDeleteProfile(), handleRenameProfile(), handleProfileSwitch()
 4. Move all PropertiesSieve interaction from anonymous listeners into Presenter methods
 5. Slim down ActionConnect.actionPerformed to ~50 lines: create dialog → create presenter → wire

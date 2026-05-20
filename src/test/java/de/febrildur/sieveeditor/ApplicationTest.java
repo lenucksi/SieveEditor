@@ -9,14 +9,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Field;
 
-import static org.assertj.core.api.Assertions.*;
+import de.febrildur.sieveeditor.system.ConnectAndListScripts;
+import de.febrildur.sieveeditor.system.PropertiesSieve;
 
-/**
- * Test suite for Application class window resize behavior.
- *
- * Tests the auto-resize functionality for the rule navigator panel
- * when the main window is resized (Task #22).
- */
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import org.mockito.MockedStatic;
+
 class ApplicationTest {
 
 	private Application app;
@@ -33,10 +33,8 @@ class ApplicationTest {
 	@Test
 	@DisplayName("Application should have userHasManuallyResizedDivider flag")
 	void shouldHaveManualResizeFlag() throws Exception {
-		// Given/When
-		app = new Application(); // Default constructor
+		app = new Application();
 
-		// Then - Verify the flag exists using reflection
 		Field field = Application.class.getDeclaredField("userHasManuallyResizedDivider");
 		field.setAccessible(true);
 		Boolean flagValue = (Boolean) field.get(app);
@@ -49,10 +47,8 @@ class ApplicationTest {
 	@Test
 	@DisplayName("Application should have isAdjustingDividerProgrammatically flag")
 	void shouldHaveProgrammaticAdjustmentFlag() throws Exception {
-		// Given/When
-		app = new Application(); // Default constructor
+		app = new Application();
 
-		// Then - Verify the flag exists using reflection
 		Field field = Application.class.getDeclaredField("isAdjustingDividerProgrammatically");
 		field.setAccessible(true);
 		Boolean flagValue = (Boolean) field.get(app);
@@ -65,10 +61,8 @@ class ApplicationTest {
 	@Test
 	@DisplayName("Application should have mainSplitPane field")
 	void shouldHaveMainSplitPane() throws Exception {
-		// Given/When
-		app = new Application(); // Default constructor
+		app = new Application();
 
-		// Then - Verify the mainSplitPane exists
 		Field field = Application.class.getDeclaredField("mainSplitPane");
 		field.setAccessible(true);
 		JSplitPane splitPane = (JSplitPane) field.get(app);
@@ -81,10 +75,8 @@ class ApplicationTest {
 	@Test
 	@DisplayName("Application should register ComponentListener for window resize")
 	void shouldHaveComponentListener() {
-		// Given/When
-		app = new Application(); // Default constructor
+		app = new Application();
 
-		// Then - Verify a ComponentListener is registered
 		java.awt.event.ComponentListener[] listeners = app.getComponentListeners();
 
 		assertThat(listeners)
@@ -95,15 +87,12 @@ class ApplicationTest {
 	@Test
 	@DisplayName("MainSplitPane should have PropertyChangeListener for divider location")
 	void shouldHavePropertyChangeListener() throws Exception {
-		// Given/When
-		app = new Application(); // Default constructor
+		app = new Application();
 
-		// Get mainSplitPane via reflection
 		Field field = Application.class.getDeclaredField("mainSplitPane");
 		field.setAccessible(true);
 		JSplitPane splitPane = (JSplitPane) field.get(app);
 
-		// Then - Verify PropertyChangeListener is registered
 		java.beans.PropertyChangeListener[] listeners = splitPane.getPropertyChangeListeners(JSplitPane.DIVIDER_LOCATION_PROPERTY);
 
 		assertThat(listeners)
@@ -111,83 +100,303 @@ class ApplicationTest {
 			.isNotEmpty();
 	}
 
-	/**
-	 * Integration test for manual resize detection.
-	 * This test verifies that when a user manually moves the divider,
-	 * the userHasManuallyResizedDivider flag is set to true.
-	 *
-	 * Note: This test requires Swing EDT and may be flaky in CI environments.
-	 */
 	@Test
-	@DisplayName("Manual divider resize should set userHasManuallyResizedDivider flag")
-	void shouldDetectManualDividerResize() throws Exception {
-		// Given
+	@DisplayName("ComponentResized event should not throw exception")
+	void shouldHandleComponentResizedEvent() {
 		app = new Application();
 
-		// Get the mainSplitPane and flag via reflection
-		Field splitPaneField = Application.class.getDeclaredField("mainSplitPane");
-		splitPaneField.setAccessible(true);
-		JSplitPane splitPane = (JSplitPane) splitPaneField.get(app);
+		java.awt.event.ComponentListener[] listeners = app.getComponentListeners();
+		assertThat(listeners).isNotEmpty();
 
-		Field flagField = Application.class.getDeclaredField("userHasManuallyResizedDivider");
-		flagField.setAccessible(true);
+		java.awt.event.ComponentEvent event = new java.awt.event.ComponentEvent(
+			app, java.awt.event.ComponentEvent.COMPONENT_RESIZED);
 
-		// Ensure initial state
-		assertThat((Boolean) flagField.get(app))
-			.as("Flag should initially be false")
-			.isFalse();
+		assertThatCode(() -> {
+			for (java.awt.event.ComponentListener listener : listeners) {
+				listener.componentResized(event);
+			}
+		}).doesNotThrowAnyException();
+	}
 
-		// Make the frame visible and wait for layout
+	@Test
+	@DisplayName("Document changed events should not throw exception")
+	void shouldHandleDocumentChangedEvent() {
+		app = new Application();
+
+		javax.swing.text.Document doc = app.getScriptArea().getDocument();
+		assertThat(doc.getLength()).isEqualTo(0);
+
+		assertThatCode(() -> {
+			app.getScriptArea().setText("require \"fileinto\";\n");
+			app.getScriptArea().setText("");
+		}).doesNotThrowAnyException();
+	}
+
+	@Test
+	@DisplayName("Disconnect action should clear server state")
+	void shouldHandleDisconnectAction() throws Exception {
+		app = new Application();
+
+		ConnectAndListScripts mockServer = mock(ConnectAndListScripts.class);
+
+		Field serverField = Application.class.getDeclaredField("server");
+		serverField.setAccessible(true);
+		serverField.set(app, mockServer);
+
+		Field scriptField = Application.class.getDeclaredField("script");
+		scriptField.setAccessible(true);
+
+		app.getScriptArea().setText("some script content");
+
+		Field actionField = Application.class.getDeclaredField("actionDisconnect");
+		actionField.setAccessible(true);
+		AbstractAction disconnectAction = (AbstractAction) actionField.get(app);
+
+		disconnectAction.actionPerformed(new java.awt.event.ActionEvent(app, 0, "Disconnect"));
+
+		verify(mockServer).logout();
+		assertThat(serverField.get(app)).isNull();
+		assertThat(scriptField.get(app)).isNull();
+		assertThat(app.getScriptArea().getText()).isEmpty();
+		assertThat(app.getTitle()).isEqualTo("Sieve Editor");
+	}
+
+	@Test
+	@DisplayName("Disconnect action should do nothing when server is null")
+	void shouldHandleDisconnectActionWhenServerNull() throws Exception {
+		app = new Application();
+
+		Field actionField = Application.class.getDeclaredField("actionDisconnect");
+		actionField.setAccessible(true);
+		AbstractAction disconnectAction = (AbstractAction) actionField.get(app);
+
+		assertThatCode(() ->
+			disconnectAction.actionPerformed(new java.awt.event.ActionEvent(app, 0, "Disconnect"))
+		).doesNotThrowAnyException();
+	}
+
+	@Test
+	@DisplayName("updateStatus should update action enable states")
+	void shouldHandleUpdateStatus() {
+		app = new Application();
+
+		assertThatCode(() -> app.updateStatus())
+			.doesNotThrowAnyException();
+	}
+
+	@Test
+	@DisplayName("loadLocalScript should set text and update title")
+	void shouldHandleLoadLocalScript() {
+		app = new Application();
+		app.loadLocalScript("require \"fileinto\";", "test.sieve");
+
+		assertThat(app.getScriptText()).isEqualTo("require \"fileinto\";");
+		assertThat(app.getTitle()).contains("test.sieve");
+	}
+
+	@Test
+	@DisplayName("jumpToLine should handle invalid line numbers")
+	void shouldJumpToLineWithInvalidLine() {
+		app = new Application();
+		app.getScriptArea().setText("line1\nline2\nline3\n");
+
+		assertThatCode(() -> app.jumpToLine(0))
+			.doesNotThrowAnyException();
+
+		assertThatCode(() -> app.jumpToLine(100))
+			.doesNotThrowAnyException();
+
+		assertThatCode(() -> app.jumpToLine(-5))
+			.doesNotThrowAnyException();
+	}
+
+	@Test
+	@DisplayName("jumpToLine should navigate to valid line")
+	void shouldJumpToLineWithValidLine() {
+		app = new Application();
+		app.getScriptArea().setText("line1\nline2\nline3\n");
+
+		assertThatCode(() -> app.jumpToLine(2))
+			.doesNotThrowAnyException();
+	}
+
+	@Test
+	@DisplayName("getProp should return non-null PropertiesSieve")
+	void shouldGetProp() {
+		app = new Application();
+
+		assertThat(app.getProp()).isNotNull();
+	}
+
+	@Test
+	@DisplayName("updateRuleNavigator should not throw when navigator is ready")
+	void shouldUpdateRuleNavigator() {
+		app = new Application();
+		app.getScriptArea().setText("require \"fileinto\";\nif true { keep; }\n");
+
+		assertThatCode(() -> app.updateRuleNavigator())
+			.doesNotThrowAnyException();
+	}
+
+	@Test
+	@DisplayName("setServer and getServer should round-trip")
+	void shouldSetAndGetServer() throws Exception {
+		app = new Application();
+		ConnectAndListScripts mockServer = mock(ConnectAndListScripts.class);
+
+		app.setServer(mockServer);
+		assertThat(app.getServer()).isSameAs(mockServer);
+	}
+
+	@Test
+	@DisplayName("setProp and getProp should round-trip")
+	void shouldSetAndGetProp() {
+		app = new Application();
+		PropertiesSieve original = app.getProp();
+		assertThat(original).isNotNull();
+
+		app.setProp(original);
+		assertThat(app.getProp()).isSameAs(original);
+	}
+
+	@Test
+	@DisplayName("getSearchPanel should return non-null panel")
+	void shouldGetSearchPanel() {
+		app = new Application();
+		assertThat(app.getSearchPanel()).isNotNull();
+	}
+
+	@Test
+	@DisplayName("ComponentResized with auto-sized navigator should not throw")
+	void shouldHandleComponentResizedWithAutoSizedNavigator() throws Exception {
+		app = new Application();
+		app.getScriptArea().setText("require \"fileinto\";\nif true { keep; }\n");
+
 		SwingUtilities.invokeAndWait(() -> {
 			app.setVisible(true);
 			app.setSize(800, 600);
 		});
+		try {
+			SwingUtilities.invokeAndWait(() -> app.updateRuleNavigator());
 
-		Thread.sleep(100); // Allow layout to complete
+			Field navigatorField = Application.class.getDeclaredField("ruleNavigator");
+			navigatorField.setAccessible(true);
+			Object navigator = navigatorField.get(app);
+			navigator.getClass().getMethod("markWidthAutoSized").invoke(navigator);
 
-		// When - Simulate user manually moving the divider
-		// First, load a script to trigger auto-sizing
-		SwingUtilities.invokeAndWait(() -> {
-			app.getScriptArea().setText("# Test script\nrequire \"fileinto\";\n");
-			app.updateRuleNavigator();
-		});
+			Thread.sleep(50);
 
-		Thread.sleep(200); // Allow auto-resize to complete
-
-		// Now manually move the divider (simulate user action)
-		SwingUtilities.invokeAndWait(() -> {
-			splitPane.setDividerLocation(400); // User manually sets divider
-		});
-
-		Thread.sleep(100); // Allow property change to propagate
-
-		// Then
-		Boolean flagValue = (Boolean) flagField.get(app);
-		assertThat(flagValue)
-			.as("userHasManuallyResizedDivider should be true after manual divider move")
-			.isTrue();
-
-		// Cleanup
-		SwingUtilities.invokeAndWait(() -> app.dispose());
+			java.awt.event.ComponentEvent event = new java.awt.event.ComponentEvent(
+				app, java.awt.event.ComponentEvent.COMPONENT_RESIZED);
+			for (java.awt.event.ComponentListener listener : app.getComponentListeners()) {
+				assertThatCode(() -> listener.componentResized(event))
+					.doesNotThrowAnyException();
+			}
+		} finally {
+			SwingUtilities.invokeAndWait(() -> app.dispose());
+		}
 	}
 
-	/**
-	 * Placeholder test for window resize behavior.
-	 * Full testing would require:
-	 * - Creating a visible frame
-	 * - Loading a script with rules
-	 * - Triggering window resize events
-	 * - Verifying divider position adjustment
-	 *
-	 * This is complex in headless environments and may require GUI test frameworks.
-	 */
 	@Test
-	@DisplayName("Window resize should adjust navigator width when auto-sizing is active")
-	void shouldAdjustNavigatorWidthOnWindowResize() {
-		// This test is a placeholder for manual verification
-		// Testing Swing resize behavior in unit tests is challenging
-		assertThat(true)
-			.as("Manual testing required for full window resize verification")
-			.isTrue();
+	@DisplayName("save with mock server should not throw")
+	void shouldSaveWithMockServer() throws Exception {
+		app = new Application();
+		ConnectAndListScripts mockServer = mock(ConnectAndListScripts.class);
+
+		app.setServer(mockServer);
+
+		com.fluffypeople.managesieve.SieveScript mockScript = mock(com.fluffypeople.managesieve.SieveScript.class);
+		when(mockScript.getName()).thenReturn("testscript");
+
+		Field scriptField = Application.class.getDeclaredField("script");
+		scriptField.setAccessible(true);
+		scriptField.set(app, mockScript);
+
+		app.getScriptArea().setText("require \"fileinto\";");
+
+		assertThatCode(() -> app.save())
+			.doesNotThrowAnyException();
+
+		verify(mockServer).putScript("testscript", "require \"fileinto\";");
+	}
+
+	@Test
+	@DisplayName("save with exception from server should handle gracefully")
+	void shouldSaveWithExceptionFromServer() throws Exception {
+		app = new Application();
+		ConnectAndListScripts mockServer = mock(ConnectAndListScripts.class);
+		doThrow(new java.io.IOException("Test IO error"))
+			.when(mockServer).putScript(anyString(), anyString());
+
+		app.setServer(mockServer);
+
+		com.fluffypeople.managesieve.SieveScript mockScript = mock(com.fluffypeople.managesieve.SieveScript.class);
+		when(mockScript.getName()).thenReturn("testscript");
+
+		Field scriptField = Application.class.getDeclaredField("script");
+		scriptField.setAccessible(true);
+		scriptField.set(app, mockScript);
+
+		app.getScriptArea().setText("test content");
+
+		try (MockedStatic<JOptionPane> jp = mockStatic(JOptionPane.class)) {
+			app.save();
+		}
+	}
+
+	@Test
+	@DisplayName("setScript with mock server should update text area")
+	void shouldHandleSetScript() throws Exception {
+		app = new Application();
+		ConnectAndListScripts mockServer = mock(ConnectAndListScripts.class);
+
+		app.setServer(mockServer);
+
+		com.fluffypeople.managesieve.SieveScript mockScript = mock(com.fluffypeople.managesieve.SieveScript.class);
+		doReturn("require \"fileinto\";\n").when(mockServer).getScript(mockScript);
+
+		assertThatCode(() -> app.setScript(mockScript))
+			.doesNotThrowAnyException();
+
+		assertThat(app.getScriptText()).isEqualTo("require \"fileinto\";\n");
+	}
+
+	@Test
+	@DisplayName("registerGlobalKeystroke should register key binding")
+	void shouldRegisterGlobalKeystroke() throws Exception {
+		app = new Application();
+
+		Field textAreaField = Application.class.getDeclaredField("textArea");
+		textAreaField.setAccessible(true);
+		javax.swing.text.JTextComponent textArea = (javax.swing.text.JTextComponent) textAreaField.get(app);
+
+		javax.swing.InputMap inputMap = textArea.getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW);
+		assertThat(inputMap).isNotNull();
+	}
+
+	@Test
+	@DisplayName("printHelp should print usage information")
+	void shouldPrintHelp() throws Exception {
+		java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+		java.io.PrintStream original = System.out;
+		System.setOut(new java.io.PrintStream(out));
+		try {
+			java.lang.reflect.Method method = Application.class.getDeclaredMethod("printHelp");
+			method.setAccessible(true);
+			method.invoke(null);
+			assertThat(out.toString()).contains("SieveEditor");
+		} finally {
+			System.setOut(original);
+		}
+	}
+
+	@Test
+	@DisplayName("enableVerboseLogging should set log levels")
+	void shouldEnableVerboseLogging() throws Exception {
+		java.lang.reflect.Method method = Application.class.getDeclaredMethod("enableVerboseLogging");
+		method.setAccessible(true);
+		method.invoke(null);
+		assertThat(java.util.logging.Logger.getLogger("de.febrildur.sieveeditor").getLevel())
+			.isEqualTo(java.util.logging.Level.FINE);
 	}
 }

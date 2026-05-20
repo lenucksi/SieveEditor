@@ -1,9 +1,10 @@
 ---
 id: TASK-30
 title: Extract ActionActivateDeactivateScript logic for testability
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-05-20 19:59'
+updated_date: '2026-05-20 20:04'
 labels: []
 dependencies:
   - TASK-24
@@ -17,6 +18,7 @@ ordinal: 30000
 ActionActivateDeactivateScript (3.4% coverage, 467 instr) is a Swing-heavy action that shows a JTable of scripts, handles activate/deactivate/rename/delete operations. It has documented bugs (ArrayIndexOutOfBoundsException when no row selected, BUG-001) and inline Swing listeners. Zero testability.
 
 Refactoring plan:
+
 1. Extract ScriptTableModel: data model for the JTable (script names, active status)
 2. Extract ScriptManagementPresenter: activate/deactivate/rename/delete logic
 3. Extract ScriptManagementView interface for the dialog
@@ -29,7 +31,9 @@ Refactoring plan:
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
+
 <!-- AC:BEGIN -->
+
 - [ ] #1 ScriptTableModel extracted with script list
 - [ ] #2 ScriptManagementView interface extracted
 - [ ] #3 ScriptManagementPresenter extracted with all operations
@@ -42,8 +46,9 @@ Refactoring plan:
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
+
 1. Extract : list of script names + active status, sorting
-2. Extract  interface: showScripts(), showError(), getSelectedRow()→int
+2. Extract interface: showScripts(), showError(), getSelectedRow()→int
 3. Extract : handleActivate(), handleDeactivate(), handleRename(), handleDelete()
 4. Fix BUG-001: add null check for getSelectedRow() before array access
 5. Move logic from anonymous ActionListeners into presenter methods

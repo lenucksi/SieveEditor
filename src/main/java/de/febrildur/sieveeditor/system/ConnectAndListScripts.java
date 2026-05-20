@@ -28,9 +28,10 @@ import com.fluffypeople.managesieve.SieveScript;
 
 public class ConnectAndListScripts {
 
+	private final SieveConnectionFactory connectionFactory;
 	private ManageSieveClient client;
 	private java.util.Timer keepAliveTimer;
-	private static final long KEEP_ALIVE_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+	private static long KEEP_ALIVE_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 	private boolean keepAliveEnabled = true;
 	private Component parentComponent;
 
@@ -41,6 +42,14 @@ public class ConnectAndListScripts {
 	private String lastPassword;
 	private boolean allowInteractiveCertValidation = true;
 	private static final Logger LOGGER = Logger.getLogger(ConnectAndListScripts.class.getName());
+
+	public ConnectAndListScripts() {
+		this(ManageSieveClient::new);
+	}
+
+	public ConnectAndListScripts(SieveConnectionFactory factory) {
+		this.connectionFactory = factory;
+	}
 
 	/**
 	 * Sets the parent component for showing certificate dialogs.
@@ -79,7 +88,7 @@ public class ConnectAndListScripts {
 		this.lastPassword = password;
 		this.allowInteractiveCertValidation = allowInteractiveCertValidation;
 
-		client = new ManageSieveClient();
+		client = connectionFactory.create();
 		ManageSieveResponse resp = client.connect(server, port);
 		if (!resp.isOk()) {
 			client = null;

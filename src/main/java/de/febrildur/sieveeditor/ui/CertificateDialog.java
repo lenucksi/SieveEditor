@@ -8,7 +8,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.security.cert.X509Certificate;
-import java.text.SimpleDateFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -19,8 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
-
-import de.febrildur.sieveeditor.system.CertificateStore;
 
 /**
  * Dialog for displaying certificate information and requesting user trust decision.
@@ -77,27 +74,25 @@ public class CertificateDialog extends JDialog {
 		gbc.insets = new Insets(5, 5, 5, 5);
 		gbc.anchor = GridBagConstraints.WEST;
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
 		// Subject
 		addDetailRow(detailsPanel, gbc, 0, "Subject:",
-			cert.getSubjectX500Principal().getName());
+			CertificateInfoFormatter.formatSubject(cert));
 
 		// Issuer
 		addDetailRow(detailsPanel, gbc, 1, "Issued By:",
-			cert.getIssuerX500Principal().getName());
+			CertificateInfoFormatter.formatIssuer(cert));
 
 		// Valid from
 		addDetailRow(detailsPanel, gbc, 2, "Valid From:",
-			dateFormat.format(cert.getNotBefore()));
+			CertificateInfoFormatter.formatValidityFrom(cert));
 
 		// Valid until
 		addDetailRow(detailsPanel, gbc, 3, "Valid Until:",
-			dateFormat.format(cert.getNotAfter()));
+			CertificateInfoFormatter.formatValidityTo(cert));
 
 		// Serial number
 		addDetailRow(detailsPanel, gbc, 4, "Serial Number:",
-			cert.getSerialNumber().toString(16).toUpperCase());
+			CertificateInfoFormatter.formatSerialNumber(cert));
 
 		// SHA-256 Fingerprint
 		gbc.gridy = 5;
@@ -110,8 +105,8 @@ public class CertificateDialog extends JDialog {
 		gbc.gridx = 1;
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.weightx = 1.0;
-		JTextArea fingerprintArea = new JTextArea(formatFingerprintMultiline(
-			CertificateStore.getFormattedFingerprint(cert)));
+		JTextArea fingerprintArea = new JTextArea(
+			CertificateInfoFormatter.formatFingerprintDisplay(cert));
 		fingerprintArea.setEditable(false);
 		fingerprintArea.setFont(new Font("Monospaced", Font.PLAIN, 11));
 		fingerprintArea.setRows(3);
@@ -193,22 +188,6 @@ public class CertificateDialog extends JDialog {
 		valueArea.setOpaque(false);
 		valueArea.setBorder(BorderFactory.createEmptyBorder());
 		panel.add(valueArea, gbc);
-	}
-
-	private String formatFingerprintMultiline(String fingerprint) {
-		// Break fingerprint into groups of 8 hex pairs per line
-		StringBuilder sb = new StringBuilder();
-		String[] parts = fingerprint.split(":");
-		for (int i = 0; i < parts.length; i++) {
-			sb.append(parts[i]);
-			if (i < parts.length - 1) {
-				sb.append(":");
-				if ((i + 1) % 8 == 0) {
-					sb.append("\n");
-				}
-			}
-		}
-		return sb.toString();
 	}
 
 	public UserDecision getDecision() {

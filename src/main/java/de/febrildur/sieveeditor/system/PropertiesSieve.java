@@ -221,7 +221,15 @@ public class PropertiesSieve {
 			prop.load(input);
 
 			server = prop.getProperty("sieve.server", "");
-			port = Integer.valueOf(prop.getProperty("sieve.port", "4190"));
+			try {
+				String portStr = prop.getProperty("sieve.port", "4190");
+				port = Integer.parseInt(portStr);
+				if (port < 0 || port > 65535) {
+					port = 4190;
+				}
+			} catch (NumberFormatException e) {
+				port = 4190;
+			}
 			username = prop.getProperty("sieve.user", "");
 			try {
 				password = prop.getProperty("sieve.password", "");

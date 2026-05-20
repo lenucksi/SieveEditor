@@ -1,9 +1,10 @@
 ---
 id: TASK-33
 title: Extend PropertiesSieve + Application inner class coverage
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-05-20 19:59'
+updated_date: '2026-05-20 20:04'
 labels: []
 dependencies:
   - TASK-26
@@ -17,6 +18,7 @@ ordinal: 33000
 PropertiesSieve (72.3%, 896 instr) still has untested paths in encryption algorithm selection (algorithm tiers) and port handling. Application (61.6%, 940 instr) has 5+ anonymous inner classes with low/zero coverage (ComponentAdapter 36.9%, Runnable 0%, AbstractAction 27-50%).
 
 Refactoring plan:
+
 1. PropertiesSieve: Test createEncryptor() algorithm switching paths with reflection
 2. Application inner classes: Extract named inner classes or test via reflection
 3. Add edge case tests for port validation, null handling
@@ -24,7 +26,9 @@ Refactoring plan:
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
+
 <!-- AC:BEGIN -->
+
 - [ ] #1 PropertiesSieve encryption algorithm tier switching tested
 - [ ] #2 PropertiesSieve port edge cases tested
 - [ ] #3 Application.inner classes ComponentAdapter and DocumentListener tested
@@ -36,6 +40,7 @@ Refactoring plan:
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
+
 1. PropertiesSieve encryption:
    - createEncryptor() has algorithm tier selection (Tier 1: AES-CBC-PBE, Tier 2: AES-CBC, Tier 3: AES)
    - Use reflection or configuration manipulation to trigger each tier

@@ -1,0 +1,27 @@
+"backlog/tasks/task-28 - Refactor-ConnectAndListScripts-for-testability-DI.md"
+  s_3d2b4934323cc1::t_95e2fbb88fac23 4,7,60-65
+"backlog/tasks/task-31 - Extract-CertificateDialog-formatting-logic-for-testability.md"
+  s_3d2b4934323cc1::t_95e2fbb88fac23 4,7,64-69
+"backlog/tasks/task-29 - Extract-ActionConnect-dialog-logic-for-testability.md"
+  s_3d2b4934323cc1::t_95e2fbb88fac23 4,7,63-68
+"backlog/tasks/task-33 - Extend-PropertiesSieve-Application-inner-class-coverage.md"
+  s_3d2b4934323cc1::t_95e2fbb88fac23 4,7,59-64
+"backlog/tasks/task-30 - Extract-ActionActivateDeactivateScript-logic-for-testability.md"
+  s_3d2b4934323cc1::t_95e2fbb88fac23 4,7,63-68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "bfade073ec9f6b3f44b39b5465601530269606bb",
+  "prompts": {},
+  "sessions": {
+    "s_3d2b4934323cc1": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b95e7092ffeyv0DxJgQ5M7p5g",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

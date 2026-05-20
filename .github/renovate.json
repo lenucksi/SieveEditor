@@ -2,13 +2,40 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    "helpers:pinGitHubActionDigests"
+    "helpers:pinGitHubActionDigests",
+    ":dependencyDashboard",
+    ":semanticCommits"
   ],
+  "labels": [
+    "dependencies"
+  ],
+  "assignees": [
+    "@lenucksi"
+  ],
+  "schedule": [
+    "after 10pm and before 6am every day"
+  ],
+  "timezone": "Europe/Berlin",
   "platformAutomerge": true,
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
     }
-  ]
+  ],
+  "vulnerabilityAlerts": {
+    "labels": ["security"],
+    "assignees": ["@lenucksi"],
+    "automerge": false
+  },
+  "prConcurrentLimit": 5,
+  "prCreation": "immediate",
+  "prHourlyLimit": 0,
+  "configMigration": true,
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Dependency Dashboard 🤖",
+  "dependencyDashboardHeader": "This dashboard tracks pending dependency updates.",
+  "dependencyDashboardFooter": "Managed by Renovate Bot. Updates are checked nightly (after 10pm CET).",
+  "commitMessagePrefix": "chore(deps):",
+  "commitBody": "This PR contains the following updates:\n\n| Package | Update | Change |\n|---|---|---|\n{{#each upgrades as |upgrade|}}\n| {{upgrade.depName}} | {{upgrade.updateType}} | `{{upgrade.currentValue}}` -> `{{upgrade.newValue}}` |\n{{/each}}"
 }

@@ -1,0 +1,94 @@
+"backlog/tasks/task-1 - Add-About-dialog-with-license-compliance-creator-credits.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-21
+"backlog/docs/flatpak/doc-1 - Flatpak-Packaging-Guide.md"
+  s_002e5ca712a28f::t_2baad94958e80f 1-5,7,9
+  s_002e5ca712a28f::t_8ea6bb10fd20c8 6,8,10-31
+"backlog/tasks/task-5 - Fix-OS-Keychain-credential-backend.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-21
+backlog/config.yml
+  s_002e5ca712a28f::t_c537e079c63cdc 1-15
+"backlog/tasks/task-19 - Add-search-replace-panel.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-20
+"backlog/tasks/task-12 - Implement-release-automation-with-release-please.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-21
+"backlog/decisions/decision-8 - Flatpak-repo-on-GitHub-Pages.md"
+  s_002e5ca712a28f::t_74c383e66af69d 1-8,10-12,14-15,18
+  s_002e5ca712a28f::t_bd703c8a6049a3 9,13,16-17
+"backlog/tasks/task-10 - Refactor-credential-storage-system.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-21
+"backlog/docs/architecture/doc-3 - Credential-System-Architecture.md"
+  s_002e5ca712a28f::t_2baad94958e80f 1-5,7,9
+  s_002e5ca712a28f::t_8ea6bb10fd20c8 6,8,10-30
+"backlog/decisions/decision-4 - Flatpak-as-primary-distribution-format.md"
+  s_002e5ca712a28f::t_2baad94958e80f 1-8,10-12,14-15,18
+  s_002e5ca712a28f::t_d1a2f90f6c832d 9,13,16-17
+"backlog/docs/ci/doc-2 - CI-CD-Strategy-Overview.md"
+  s_002e5ca712a28f::t_8ea6bb10fd20c8 6,8,10-33
+  s_002e5ca712a28f::t_2baad94958e80f 1-5,7,9
+"backlog/tasks/task-2 - Add-SPDX-headers-to-all-Java-and-shell-source-files.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-20
+"backlog/tasks/task-16 - Add-vacation-rule-metadata-fields.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-20
+"backlog/tasks/task-17 - Implement-auto-reconnect-and-keep-alive.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-20
+"backlog/tasks/task-14 - Implement-Claude-Code-harness-with-6-agents.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-20
+"backlog/tasks/task-7 - Refactor-multi-module-to-single-module-Maven.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-20
+"backlog/decisions/decision-3 - UserPromptMasterKeyProvider-as-only-active-credential-backend.md"
+  s_002e5ca712a28f::t_2baad94958e80f 1-8,10-12,14-15,18
+  s_002e5ca712a28f::t_4c05e7aa85b27c 9,13,16-17
+"backlog/tasks/task-9 - Implement-Flatpak-packaging.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-21
+"backlog/tasks/task-18 - Add-script-structure-navigator.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-20
+"backlog/decisions/decision-2 - FlatLaf-over-system-look-and-feel.md"
+  s_002e5ca712a28f::t_2baad94958e80f 1-8,10-12,14-15,18
+  s_002e5ca712a28f::t_86c062644a865a 9,13,16-17
+"backlog/tasks/task-21 - Implement-severity-levels-for-warnings.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-20
+"backlog/decisions/decision-7 - Conventional-commits-for-automated-changelog.md"
+  s_002e5ca712a28f::t_54929f0c9c284c 9,13,16-17
+  s_002e5ca712a28f::t_74c383e66af69d 1-8,10-12,14-15,18
+"backlog/tasks/task-11 - Set-up-CI-CD-with-11-GitHub-Actions-workflows.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-20
+"backlog/tasks/task-15 - Publish-Flatpak-to-Flathub.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-20
+"backlog/tasks/task-6 - Improve-test-coverage-to-70.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-20
+"backlog/tasks/task-13 - Add-OpenSSF-Scorecard-SLSA-Level-3.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-21
+"backlog/decisions/decision-5 - LGPL-3.0-only-license.md"
+  s_002e5ca712a28f::t_74c383e66af69d 1-8,10-12,14-15,18
+  s_002e5ca712a28f::t_33fbc65945ab61 9,13,16-17
+"backlog/decisions/decision-6 - JitPack-for-ManageSieveJ-dependency.md"
+  s_002e5ca712a28f::t_74c383e66af69d 1-8,10-12,14-15,18
+  s_002e5ca712a28f::t_4538c608503fc0 9,13,16-17
+"backlog/tasks/task-4 - Fix-KeePassXC-credential-backend.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-21
+"backlog/tasks/task-3 - Use-OSS-Review-Toolkit-for-third-party-notices.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-20
+"backlog/tasks/task-8 - Migrate-to-FlatLaf-look-and-feel.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-20
+"backlog/decisions/decision-1 - Single-module-Maven-over-multi-module.md"
+  s_002e5ca712a28f::t_b759b631dd4837 9,13,16-17
+  s_002e5ca712a28f::t_74c383e66af69d 1-8,10-12,14-15,18
+"backlog/tasks/task-20 - Add-pre-save-validation.md"
+  s_002e5ca712a28f::t_8c7abc8fce99b6 1-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "c50f335dacafecc892e291200c863fd81a0b378e",
+  "prompts": {},
+  "sessions": {
+    "s_002e5ca712a28f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1ba3c2162ffe41qK4o85kLDIV2",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

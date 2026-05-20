@@ -1,0 +1,33 @@
+scripts/run-tests.sh
+  s_4446ba5c44ac3d::t_51540df2ef2e6b 1-16
+"backlog/tasks/task-32 - Add-Xvfb-CI-config-for-Swing-integration-tests.md"
+  s_3d2b4934323cc1::t_4ee54bc7c39441 4,7
+src/test/java/de/febrildur/sieveeditor/ApplicationTest.java
+  s_4446ba5c44ac3d::t_f5dcca6e66f456 21
+pom.xml
+  s_4446ba5c44ac3d::t_c692411f7c9e60 122-155
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "a85ea547ceb62bf8494ef0549da365766ccb2eb7",
+  "prompts": {},
+  "sessions": {
+    "s_3d2b4934323cc1": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b95e7092ffeyv0DxJgQ5M7p5g",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_4446ba5c44ac3d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b889b6a8ffe6vcJgthQjbK0Ph",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

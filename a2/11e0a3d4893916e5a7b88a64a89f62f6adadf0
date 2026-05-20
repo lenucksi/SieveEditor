@@ -1,0 +1,171 @@
+"backlog/tasks/task-23 - Add-certificate-trust-tests-0→80.md"
+  s_3d2b4934323cc1::t_818dbea747a9db 4,7,19-24
+  s_3d2b4934323cc1::t_d6aa05db240929 1-3,5-6,8-18
+src/test/java/de/febrildur/sieveeditor/system/credentials/KeePassXCMasterKeyProviderTest.java
+  s_db5d7b6f2264db::t_8de7c1b288dab3 3-4,7-8,10,12-51
+"backlog/tasks/task-26 - Extend-PropertiesSieve-tests-66→95.md"
+  s_3d2b4934323cc1::t_4b28cbd0e365b5 4,7,19-24
+  s_3d2b4934323cc1::t_a93cee0991515a 1-3,5-6,8-18
+src/test/java/de/febrildur/sieveeditor/system/ToStringListCellRendererTest.java
+  s_89b93d1648a120::t_af040f044e65c3 1-43
+"backlog/tasks/task-28 - Refactor-ConnectAndListScripts-for-testability-DI.md"
+  s_3d2b4934323cc1::t_a2950ffda6dc82 1-41,47-55
+  s_3d2b4934323cc1::t_7fc7d3fd88d736 42-46
+"backlog/tasks/task-24 - Add-network-layer-tests-12→85.md"
+  s_3d2b4934323cc1::t_a14c6dca0cd37c 1-3,5-18
+"backlog/tasks/task-27 - Improve-UI-component-tests-48-62→70.md"
+  s_3d2b4934323cc1::t_988d3469f5d5ee 1-3,5-18
+"backlog/tasks/task-22 - Add-credential-provider-tests-0→85.md"
+  s_3d2b4934323cc1::t_c89111751afb99 4,7,19-24
+  s_3d2b4934323cc1::t_670d9ff05c6d85 1-3,5-6,8-18
+src/test/java/de/febrildur/sieveeditor/system/PropertiesSieveTest.java
+  s_73f9eb84061284::t_e08c10e4268e3a 896-906
+  s_73f9eb84061284::t_6245912ca6fd0e 854-895,907-1023
+src/test/java/de/febrildur/sieveeditor/actions/ActionConnectTest.java
+  s_ea40ccd44a5448::t_c26bd1292642f3 38-41
+  s_ea40ccd44a5448::t_9ff090a5422b21 1-37,42-43
+src/test/java/de/febrildur/sieveeditor/templates/TemplateServiceTest.java
+  s_a590f58f524b53::t_d35dc95d0d109b 204-295
+  s_41ed2f4c54c29c::t_147f9d901676f5 3,5,9-10,18-20,22,29-30,34-40
+src/test/java/de/febrildur/sieveeditor/parser/SieveRuleTest.java
+  s_41ed2f4c54c29c::t_5e3e51ec27195a 1-147
+src/test/java/de/febrildur/sieveeditor/system/credentials/UserPromptMasterKeyProviderTest.java
+  s_db5d7b6f2264db::t_9c2e81c6236af1 62,64-66
+  s_db5d7b6f2264db::t_0a6356bacdc8b1 1-61,63,67-74,76-78,81-87,98-99
+  s_a590f58f524b53::t_cee281ad5b06be 88-89,91-93,97
+  s_db5d7b6f2264db::t_b2968b5851870b 75,79-80
+  s_a590f58f524b53::t_5561d4148cf8e3 90,94-96
+src/test/java/de/febrildur/sieveeditor/system/credentials/OSKeychainMasterKeyProviderTest.java
+  s_db5d7b6f2264db::t_db365b6809a2f0 1-35,37,39-46,48,50-52,54,57-70
+  s_db5d7b6f2264db::t_c3c64d27ccf644 36,38,47,49,53,55-56
+"backlog/tasks/task-32 - Add-Xvfb-CI-config-for-Swing-integration-tests.md"
+  s_3d2b4934323cc1::t_7fc7d3fd88d736 19,43-44,46-47,49
+  s_3d2b4934323cc1::t_2e00ffc63c0e55 1-18,20-42,45,48,50-53
+src/test/java/de/febrildur/sieveeditor/ui/RuleNavigatorPanelTest.java
+  s_89b93d1648a120::t_9e301668d00443 1-146
+src/test/java/de/febrildur/sieveeditor/actions/ActionCheckScriptTest.java
+  s_89b93d1648a120::t_2d96ead3112104 1-33
+"backlog/tasks/task-31 - Extract-CertificateDialog-formatting-logic-for-testability.md"
+  s_3d2b4934323cc1::t_d81f4dbd2c4438 1-44,48-59
+  s_3d2b4934323cc1::t_7fc7d3fd88d736 45-47
+src/test/java/de/febrildur/sieveeditor/actions/ActionLoadScriptTest.java
+  s_89b93d1648a120::t_c1f614a5dbdabc 1-23
+src/test/java/de/febrildur/sieveeditor/system/InteractiveTrustManagerTest.java
+  s_73f9eb84061284::t_bb0aa0edb5980e 32-33
+  s_951d99589e6d8e::t_043a126f0f60fa 1-14,16-24,27-29,36-154,237-261
+  s_41ed2f4c54c29c::t_53750ad5e0c774 156
+  s_41ed2f4c54c29c::t_cdc382cee4f38a 15
+  s_41ed2f4c54c29c::t_7b0a57e4b6b76d 25-26,30-31,34-35
+  s_73f9eb84061284::t_07aee9b29e98a3 155,157-167,169-170,182-184,186-187,199-201,203-204,216-221,231-236
+  s_41ed2f4c54c29c::t_b10348affd9434 168,171-181,185,188-198,202,205-215,222-230
+src/test/java/de/febrildur/sieveeditor/system/CertificateStoreTest.java
+  s_951d99589e6d8e::t_a73301d4c378ba 1-233
+src/test/java/de/febrildur/sieveeditor/actions/ActionSaveScriptAsTest.java
+  s_89b93d1648a120::t_23d7774ad27599 1-35
+src/test/java/de/febrildur/sieveeditor/ui/CertificateDialogTest.java
+  s_951d99589e6d8e::t_ca2d6a15e4a781 1-84,86-104,106-152
+  s_951d99589e6d8e::t_79c5e085f9260b 85,105
+"backlog/tasks/task-33 - Extend-PropertiesSieve-Application-inner-class-coverage.md"
+  s_3d2b4934323cc1::t_eaf41d18a9a0a0 1-54
+src/test/java/de/febrildur/sieveeditor/actions/InsertMenuBuilderTest.java
+  s_89b93d1648a120::t_0c484e258f3f38 1-58
+"backlog/tasks/task-30 - Extract-ActionActivateDeactivateScript-logic-for-testability.md"
+  s_3d2b4934323cc1::t_faea39bc69589e 1-45,47-58
+  s_3d2b4934323cc1::t_7fc7d3fd88d736 46
+src/test/java/de/febrildur/sieveeditor/ui/SearchPanelTest.java
+  s_89b93d1648a120::t_80192d0fe4123a 31,36-38,42-43,61-65
+  s_89b93d1648a120::t_faeba1112ff9e8 1-30,32-35,39-41,44-60,66-67
+"backlog/tasks/task-25 - Improve-Action-classes-coverage-0-76→80.md"
+  s_3d2b4934323cc1::t_43e7e928c34cbc 1-3,5-6,8-18
+  s_3d2b4934323cc1::t_784169f8b56d61 4,7,19-24
+src/test/java/de/febrildur/sieveeditor/system/credentials/MasterKeyProviderFactoryTest.java
+  s_a590f58f524b53::t_871807b3d83ac3 3,10,12-14,16,97-108,111-212
+  s_89b93d1648a120::t_93a6e02d83a865 1-2,4-9,11,15,17-37,39-40,44-96,109-110,213-216
+  s_db5d7b6f2264db::t_4d10e7f5e8af09 38
+  s_db5d7b6f2264db::t_86d15430bf83c3 41-43
+src/test/java/de/febrildur/sieveeditor/ApplicationTest.java
+  s_3d2b4934323cc1::t_7b7053d04a3abc 24-28
+src/test/java/de/febrildur/sieveeditor/actions/ActionReplaceTest.java
+  s_89b93d1648a120::t_a8a72ca0ee04a8 1-33
+"backlog/tasks/task-29 - Extract-ActionConnect-dialog-logic-for-testability.md"
+  s_3d2b4934323cc1::t_72c8a002a24c3e 1-43,47-58
+  s_3d2b4934323cc1::t_7fc7d3fd88d736 44-46
+src/test/java/de/febrildur/sieveeditor/system/AppDirectoryServiceTest.java
+  s_89b93d1648a120::t_b488ce5dc48c0e 22,27-28,39-41,45
+  s_73f9eb84061284::t_e6c4364a342d55 126-134
+  s_73f9eb84061284::t_fb79d8a5fdaeb6 152-165
+  s_73f9eb84061284::t_f2a349ba3f7704 97-125,135-151
+  s_89b93d1648a120::t_743f0e30371a74 1-21,23-26,29-38,42-44,46-96,166
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.11",
+  "base_commit_sha": "a211e0a3d4893916e5a7b88a64a89f62f6adadf0",
+  "prompts": {},
+  "sessions": {
+    "s_3d2b4934323cc1": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b95e7092ffeyv0DxJgQ5M7p5g",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_41ed2f4c54c29c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b9275ba3ffe73zDkTYN2IDhP0",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_73f9eb84061284": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b9276dd2ffeYHD45LF8MyH2Xt",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_89b93d1648a120": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b94de9a8ffeQVrAC12iR3FgqJ",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_951d99589e6d8e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b94e2493ffeikU6mw7u6D3InG",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_a590f58f524b53": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b92747c5ffe6oRcYyLqgDBdWt",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_db5d7b6f2264db": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b94e47eaffeYIhf0qxvkM6BJ4",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_ea40ccd44a5448": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1b94e03e2ffeLa48f5sJuG1OPT",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

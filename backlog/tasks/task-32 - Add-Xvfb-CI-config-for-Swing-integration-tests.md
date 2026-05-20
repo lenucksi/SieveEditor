@@ -1,9 +1,10 @@
 ---
 id: TASK-32
 title: Add Xvfb CI config for Swing integration tests
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-05-20 19:59'
+updated_date: '2026-05-20 22:16'
 labels: []
 dependencies:
   - TASK-28

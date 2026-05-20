@@ -1,5 +1,6 @@
 package de.febrildur.sieveeditor;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.*;
 
 import org.mockito.MockedStatic;
 
+@Tag("gui")
 class ApplicationTest {
 
 	private Application app;

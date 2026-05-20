@@ -1,10 +1,10 @@
 ---
 id: TASK-30
 title: Extract ActionActivateDeactivateScript logic for testability
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-05-20 19:59'
-updated_date: '2026-05-20 20:04'
+updated_date: '2026-05-20 22:14'
 labels: []
 dependencies:
   - TASK-24
@@ -46,7 +46,6 @@ Refactoring plan:
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
-
 1. Extract : list of script names + active status, sorting
 2. Extract interface: showScripts(), showError(), getSelectedRow()→int
 3. Extract : handleActivate(), handleDeactivate(), handleRename(), handleDelete()
@@ -61,3 +60,9 @@ Refactoring plan:
    - Error handling → shows error on IOException
 7. Run mvn test + jacoco:report, verify ≥ 80%
 <!-- SECTION:PLAN:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+ActionActivateDeactivateScript MVP refactor: extracted ScriptManagementView/Presenter. BUG-001 fixed (ArrayIndexOutOfBounds). 19 tests.
+<!-- SECTION:FINAL_SUMMARY:END -->

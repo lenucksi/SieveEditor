@@ -1,10 +1,10 @@
 ---
 id: TASK-33
 title: Extend PropertiesSieve + Application inner class coverage
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-05-20 19:59'
-updated_date: '2026-05-20 20:04'
+updated_date: '2026-05-20 22:14'
 labels: []
 dependencies:
   - TASK-26
@@ -40,7 +40,6 @@ Refactoring plan:
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
-
 1. PropertiesSieve encryption:
    - createEncryptor() has algorithm tier selection (Tier 1: AES-CBC-PBE, Tier 2: AES-CBC, Tier 3: AES)
    - Use reflection or configuration manipulation to trigger each tier
@@ -57,3 +56,9 @@ Refactoring plan:
 4. Write tests using @TempDir + reflection + system property manipulation
 5. Run mvn test + jacoco:report, verify targets met
 <!-- SECTION:PLAN:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+PropertiesSieve 72.3%→93.3% (encryption tiers tested). Application 61.6%→80.3% (inner class tests). 21 new tests.
+<!-- SECTION:FINAL_SUMMARY:END -->

@@ -1,10 +1,10 @@
 ---
 id: TASK-31
 title: Extract CertificateDialog formatting logic for testability
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-05-20 19:59'
-updated_date: '2026-05-20 20:04'
+updated_date: '2026-05-20 22:14'
 labels: []
 dependencies:
   - TASK-23
@@ -46,7 +46,6 @@ Goal: 60% effective coverage on the class.
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
-
 1. Create class with package-private access
 2. Move from CertificateDialog to formatter
 3. Extract methods: getSubjectDisplay(), getIssuerDisplay(), getValidityPeriod(), getSerialDisplay(), getFingerprintDisplay()
@@ -62,3 +61,9 @@ Goal: 60% effective coverage on the class.
 5. Slim down CertificateDialog.initComponents() to use formatter
 6. Run mvn test + jacoco:report, verify ≥ 60% on CertificateDialog package
 <!-- SECTION:PLAN:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+CertificateInfoFormatter extracted from CertificateDialog. 100% coverage (20 tests). Dialog reduced to thin Swing shell.
+<!-- SECTION:FINAL_SUMMARY:END -->

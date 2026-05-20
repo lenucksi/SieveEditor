@@ -1,10 +1,10 @@
 ---
 id: TASK-28
 title: Refactor ConnectAndListScripts for testability (DI)
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-05-20 19:58'
-updated_date: '2026-05-20 20:04'
+updated_date: '2026-05-20 22:14'
 labels: []
 dependencies:
   - TASK-24
@@ -43,7 +43,6 @@ This is the single highest-impact refactoring for coverage: 743 instructions, cu
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
-
 1. Extract interface from public methods
 2. Extract interface with single method
 3. Add constructor + keep no-arg constructor for production
@@ -58,3 +57,9 @@ This is the single highest-impact refactoring for coverage: 743 instructions, cu
    - keep-alive: timer fires NOOP, disable/enable lifecycle
 6. Run mvn test + jacoco:report, verify ConnectAndListScripts ≥ 85%
 <!-- SECTION:PLAN:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+ConnectAndListScripts DI refactor: extracted SieveConnectionFactory interface, constructor injection. Coverage 12.8%→84.1%. 31 new tests (56 total). Highest single coverage gain.
+<!-- SECTION:FINAL_SUMMARY:END -->

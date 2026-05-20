@@ -1,10 +1,10 @@
 ---
 id: TASK-29
 title: Extract ActionConnect dialog logic for testability
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-05-20 19:58'
-updated_date: '2026-05-20 20:04'
+updated_date: '2026-05-20 22:14'
 labels: []
 dependencies:
   - TASK-24
@@ -45,7 +45,6 @@ Reference patterns: MVP with Humble Dialog pattern from Swing testability resear
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
-
 1. Extract class: server, port, username, password, selectedProfile, profiles list, currentDisplayedProfile
 2. Extract interface: show(), close(), showError(String), getFieldValues()→Model, setFieldValues(Model)
 3. Extract : handleOk(), handleProfileChange(), handleNewProfile(), handleDeleteProfile(), handleRenameProfile(), handleProfileSwitch()
@@ -61,3 +60,9 @@ Reference patterns: MVP with Humble Dialog pattern from Swing testability resear
    - Profile switch → saves current, loads new
 7. Run mvn test + jacoco:report, verify ActionConnect ≥ 80%
 <!-- SECTION:PLAN:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+ActionConnect MVP refactor: extracted ConnectionDialogModel/View/Presenter. actionPerformed() reduced to 7 lines. Presenter 96% coverage (31 tests).
+<!-- SECTION:FINAL_SUMMARY:END -->

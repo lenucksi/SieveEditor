@@ -1,0 +1,129 @@
+name: Security & Supply Chain
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  schedule:
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  sbom-and-scan:
+    name: SBOM + Vuln Scan + Notices
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@ab7a9404c0f3da075243ca237b5fac12c98deaa5 # v2.19.3
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build JAR
+        run: mvn -B package -DskipTests
+
+      # ── SBOM Generation (parallel tracks) ──
+
+      - name: Generate SBOM with Syft (source scan)
+        uses: anchore/sbom-action@d5d3c2be293e5c1805e36e4b5e7b2c6de0e15153 # v0.17.1
+        with:
+          path: ./
+          format: cyclonedx-json
+          output-file: sbom-syft.cdx.json
+
+      - name: Generate SBOM with Syft (SPDX)
+        uses: anchore/sbom-action@d5d3c2be293e5c1805e36e4b5e7b2c6de0e15153 # v0.17.1
+        with:
+          path: ./
+          format: spdx-json
+          output-file: sbom-syft.spdx.json
+
+      - name: Generate SBOM with CycloneDX Maven plugin
+        run: |
+          mvn -B org.cyclonedx:cyclonedx-maven-plugin:2.9.1:makeBom \
+            -Dcyclonedx.outputFormat=json \
+            -Dcyclonedx.outputName=sbom-cyclonedx-maven
+
+      - name: Generate SBOM with cdxgen
+        run: |
+          docker run --rm -v $PWD:/app ghcr.io/cyclonedx/cdxgen@sha256:3c0c4ee1f8e2d67a5a7f6f944e91f0cc6e4af4a4f5c6b43ca3182e1faf3e33dc \
+            -r /app \
+            -o /app/target/sbom-cdxgen.json \
+            -t maven || true
+
+      # ── Vulnerability Scanning (parallel tracks) ──
+
+      - name: Scan source with Trivy
+        uses: aquasecurity/trivy-action@97dca0210b06c0a65c2c56e96f77b71ab60be303 # v0.29.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-results.sarif
+          severity: MEDIUM,HIGH,CRITICAL
+          exit-code: 0
+
+      - name: Upload Trivy SARIF
+        uses: github/codeql-action/upload-sarif@fa0e9271cb1a181d6cfc14802f315a2ed76e9bb5 # v3.28.16
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy
+
+      - name: Scan SBOM with Grype
+        uses: anchore/scan-action@6ac0f0e07a2e8cf2b3f31911e77e76b6f26f771a # v7.0.0
+        id: grype
+        with:
+          sbom: target/sbom-cyclonedx-maven.json
+          severity-cutoff: medium
+          output-format: sarif
+          fail-build: false
+
+      - name: Upload Grype SARIF
+        uses: github/codeql-action/upload-sarif@fa0e9271cb1a181d6cfc14802f315a2ed76e9bb5 # v3.28.16
+        with:
+          sarif_file: ${{ steps.grype.outputs.sarif }}
+          category: grype
+
+      # ── Third-Party Notices ──
+
+      - name: Generate NOTICE from sbom-to-notices
+        run: |
+          pip install sbom-to-notices 2>/dev/null || pip3 install sbom-to-notices 2>/dev/null || true
+          if [ -f target/sbom-cyclonedx-maven.json ] && command -v sbom-to-notices 2>/dev/null; then
+            sbom-to-notices target/sbom-cyclonedx-maven.json > NOTICE.generated 2>/dev/null || true
+          fi
+
+      - name: Generate license report with Grant
+        continue-on-error: true
+        run: |
+          npx @anchore/grant check SBOM:target/sbom-cyclonedx-maven.json --output json > grant-report.json 2>/dev/null || true
+
+      # ── Upload Artifacts ──
+
+      - name: Upload SBOMs and reports
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sbom-and-security
+          path: |
+            sbom-syft.cdx.json
+            sbom-syft.spdx.json
+            target/sbom-cyclonedx-maven.json
+            target/sbom-cdxgen.json
+            trivy-results.sarif
+            NOTICE.generated
+            grant-report.json
+          retention-days: 90

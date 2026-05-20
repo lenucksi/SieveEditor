@@ -1,27 +1,43 @@
 package de.febrildur.sieveeditor.templates;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-/**
- * Test suite for TemplateService class.
- */
 class TemplateServiceTest {
 
+    private static final String SIEVEEDITOR_TEST_DIR = "sieveeditor.test.dir";
+    private static final String SIEVE_TEMPLATE_CONTENT = "require [\"fileinto\"];\nif true { keep; }";
+
     private TemplateService templateService;
+    private String originalTestDir;
 
     @TempDir
     Path tempDir;
 
     @BeforeEach
     void setUp() {
+        originalTestDir = System.getProperty(SIEVEEDITOR_TEST_DIR);
+        System.setProperty(SIEVEEDITOR_TEST_DIR, tempDir.toString());
         templateService = new TemplateService();
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (originalTestDir != null) {
+            System.setProperty(SIEVEEDITOR_TEST_DIR, originalTestDir);
+        } else {
+            System.clearProperty(SIEVEEDITOR_TEST_DIR);
+        }
     }
 
     @Test
@@ -180,11 +196,102 @@ class TemplateServiceTest {
 
     @Test
     void builtinTemplatesShouldBeImmutable() {
-        // When
         List<SieveTemplate> templates = templateService.getBuiltinTemplates();
 
-        // Then
         assertThatThrownBy(() -> templates.add(SieveTemplate.builtin("New", "desc", "content")))
                 .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Nested
+    class UserTemplateTests {
+
+        @BeforeEach
+        void setUp() throws IOException {
+            Path templatesDir = templateService.getTemplatesDirectory();
+            Files.createDirectories(templatesDir);
+        }
+
+        @Test
+        void shouldReturnEmptyWhenNoSieveFiles() {
+            List<SieveTemplate> userTemplates = templateService.getUserTemplates();
+
+            assertThat(userTemplates).isEmpty();
+        }
+
+        @Test
+        void shouldLoadUserTemplatesFromDirectory() throws IOException {
+            Path templatesDir = templateService.getTemplatesDirectory();
+            Files.writeString(templatesDir.resolve("my-filter.sieve"), SIEVE_TEMPLATE_CONTENT);
+
+            List<SieveTemplate> userTemplates = templateService.getUserTemplates();
+
+            assertThat(userTemplates).hasSize(1);
+            assertThat(userTemplates.get(0).getName()).isEqualTo("my-filter");
+            assertThat(userTemplates.get(0).getContent()).isEqualTo(SIEVE_TEMPLATE_CONTENT);
+            assertThat(userTemplates.get(0).isBuiltin()).isFalse();
+        }
+
+        @Test
+        void shouldLoadMultipleUserTemplates() throws IOException {
+            Path templatesDir = templateService.getTemplatesDirectory();
+            Files.writeString(templatesDir.resolve("vacation.sieve"), "require [\"vacation\"];");
+            Files.writeString(templatesDir.resolve("spam.sieve"), "require [\"fileinto\"];");
+
+            List<SieveTemplate> userTemplates = templateService.getUserTemplates();
+
+            assertThat(userTemplates).hasSize(2);
+            assertThat(userTemplates).extracting(SieveTemplate::getName)
+                .containsExactlyInAnyOrder("vacation", "spam");
+        }
+
+        @Test
+        void shouldIgnoreNonSieveFiles() throws IOException {
+            Path templatesDir = templateService.getTemplatesDirectory();
+            Files.writeString(templatesDir.resolve("test.txt"), "text");
+            Files.writeString(templatesDir.resolve("notes.md"), "notes");
+
+            List<SieveTemplate> userTemplates = templateService.getUserTemplates();
+
+            assertThat(userTemplates).isEmpty();
+        }
+
+        @Test
+        void shouldIncludeUserTemplatesInAllTemplates() throws IOException {
+            Path templatesDir = templateService.getTemplatesDirectory();
+            Files.writeString(templatesDir.resolve("custom.sieve"), SIEVE_TEMPLATE_CONTENT);
+
+            List<SieveTemplate> allTemplates = templateService.getAllTemplates();
+
+            assertThat(allTemplates).extracting(SieveTemplate::getName)
+                .contains("custom");
+            assertThat(allTemplates.size())
+                .isGreaterThan(templateService.getBuiltinTemplates().size());
+        }
+    }
+
+    @Nested
+    class DirectoryManagementTests {
+
+        @Test
+        void ensureTemplatesDirectoryExistsShouldCreateDirectory() {
+            Path templatesDir = templateService.getTemplatesDirectory();
+
+            assertThat(templatesDir).doesNotExist();
+
+            templateService.ensureTemplatesDirectoryExists();
+
+            assertThat(templatesDir).exists();
+            assertThat(templatesDir).isDirectory();
+        }
+
+        @Test
+        void ensureTemplatesDirectoryExistsShouldNotFailWhenAlreadyExists() throws IOException {
+            Path templatesDir = templateService.getTemplatesDirectory();
+            Files.createDirectories(templatesDir);
+
+            templateService.ensureTemplatesDirectoryExists();
+
+            assertThat(templatesDir).exists();
+        }
     }
 }

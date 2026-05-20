@@ -851,4 +851,174 @@ class PropertiesSieveTest {
         // This test documents current behavior - may need enhancement
         assertThat(result).isFalse();
     }
+
+    // ===== Port Edge Cases =====
+
+    @Test
+    void shouldHandlePortZero() throws IOException {
+        properties.setPort(0);
+        properties.write();
+
+        PropertiesSieve loaded = new PropertiesSieve();
+        loaded.load();
+
+        assertThat(loaded.getPort()).isZero();
+    }
+
+    @Test
+    void shouldHandlePortMaxValue() throws IOException {
+        properties.setPort(65535);
+        properties.write();
+
+        PropertiesSieve loaded = new PropertiesSieve();
+        loaded.load();
+
+        assertThat(loaded.getPort()).isEqualTo(65535);
+    }
+
+    @Test
+    void shouldHandleNegativePort() {
+        properties.setPort(-1);
+        assertThat(properties.getPort()).isEqualTo(-1);
+    }
+
+    // ===== Load Error Handling =====
+
+    @Test
+    void shouldThrowExceptionWhenLoadingInvalidPort() throws IOException {
+        Path profileFile = AppDirectoryService.getProfilesDir().resolve("default.properties");
+        Files.writeString(profileFile, "sieve.port=notanumber");
+
+        assertThatThrownBy(() -> properties.load())
+                .isInstanceOf(NumberFormatException.class);
+    }
+
+    @Test
+    void shouldCreateFileAndSetPermissionsWhenLoadingNonExistentFile() throws IOException {
+        Path profileFile = AppDirectoryService.getProfilesDir().resolve("default.properties");
+        Files.deleteIfExists(profileFile);
+
+        properties.load();
+
+        assertThat(profileFile).exists();
+        assertThat(properties.getPort()).isEqualTo(4190);
+    }
+
+    // ===== IO Error Handling =====
+
+    @Test
+    void shouldHandleIOExceptionWhenWriting() throws IOException {
+        Path profileFile = AppDirectoryService.getProfilesDir().resolve("default.properties");
+        profileFile.toFile().setWritable(false);
+
+        properties.setServer("newserver");
+
+        assertThatCode(() -> properties.write())
+                .doesNotThrowAnyException();
+
+        profileFile.toFile().setWritable(true);
+    }
+
+    @Test
+    void shouldHandleIOExceptionWhenSavingLastUsedProfile() throws IOException {
+        Path configDir = AppDirectoryService.getUserConfigDir();
+        Path lastUsedFile = configDir.resolve(".lastused");
+        Files.deleteIfExists(lastUsedFile);
+        configDir.toFile().setWritable(false);
+
+        assertThatCode(() -> PropertiesSieve.saveLastUsedProfile("test"))
+                .doesNotThrowAnyException();
+
+        configDir.toFile().setWritable(true);
+    }
+
+    @Test
+    void shouldHandleIOExceptionWhenDeletingProfile() throws IOException {
+        PropertiesSieve profile = new PropertiesSieve("todeleteio");
+        profile.write();
+
+        Path profilesDir = AppDirectoryService.getProfilesDir();
+        profilesDir.toFile().setWritable(false);
+
+        boolean result = PropertiesSieve.deleteProfile("todeleteio");
+        assertThat(result).isFalse();
+
+        profilesDir.toFile().setWritable(true);
+        PropertiesSieve.deleteProfile("todeleteio");
+    }
+
+    @Test
+    void shouldHandleIOExceptionWhenRenamingProfile() throws IOException {
+        PropertiesSieve profile = new PropertiesSieve("oldnameio");
+        profile.write();
+
+        Path profilesDir = AppDirectoryService.getProfilesDir();
+        profilesDir.toFile().setWritable(false);
+
+        boolean result = PropertiesSieve.renameProfile("oldnameio", "newnameio");
+        assertThat(result).isFalse();
+
+        profilesDir.toFile().setWritable(true);
+        PropertiesSieve.deleteProfile("oldnameio");
+    }
+
+    // ===== Constructor Edge Cases =====
+
+    @Test
+    void shouldConstructWithForcedBackend() {
+        assertThatCode(() -> {
+            PropertiesSieve props = new PropertiesSieve("test_backend_profile", null);
+            props.setServer("example.com");
+            props.write();
+            props.deleteProfile("test_backend_profile");
+        }).doesNotThrowAnyException();
+    }
+
+    // ===== saveLastUsedProfile Edge Cases =====
+
+    @Test
+    void shouldOverwriteLastUsedProfile() throws IOException {
+        PropertiesSieve.saveLastUsedProfile("profile1");
+        PropertiesSieve.saveLastUsedProfile("profile2");
+
+        assertThat(PropertiesSieve.getLastUsedProfile()).isEqualTo("profile2");
+    }
+
+    // ===== Migration Edge Cases =====
+
+    @Test
+    void shouldMigrateLastUsedWithLegacy() throws IOException {
+        Path legacyDir = AppDirectoryService.getLegacyProfilesDir();
+        Files.createDirectories(legacyDir);
+
+        Path legacyProfile = legacyDir.resolve("test.properties");
+        Files.writeString(legacyProfile, "sieve.server=server.com");
+
+        Path legacyLastUsed = legacyDir.resolve(".lastused");
+        Files.writeString(legacyLastUsed, "test");
+
+        PropertiesSieve.migrateOldProperties();
+
+        Path newLastUsed = AppDirectoryService.getUserConfigDir().resolve(".lastused");
+        assertThat(newLastUsed).exists();
+        assertThat(Files.readString(newLastUsed).trim()).isEqualTo("test");
+    }
+
+    @Test
+    void shouldSkipLastUsedMigrationIfAlreadyExists() throws IOException {
+        Path configDir = AppDirectoryService.getUserConfigDir();
+        Path newLastUsed = configDir.resolve(".lastused");
+        Files.writeString(newLastUsed, "newprofile");
+
+        Path legacyDir = AppDirectoryService.getLegacyProfilesDir();
+        Files.createDirectories(legacyDir);
+        Path legacyProfile = legacyDir.resolve("test.properties");
+        Files.writeString(legacyProfile, "sieve.server=server.com");
+        Path legacyLastUsed = legacyDir.resolve(".lastused");
+        Files.writeString(legacyLastUsed, "oldprofile");
+
+        PropertiesSieve.migrateOldProperties();
+
+        assertThat(Files.readString(newLastUsed).trim()).isEqualTo("newprofile");
+    }
 }

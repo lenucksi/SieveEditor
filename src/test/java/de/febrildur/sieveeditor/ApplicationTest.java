@@ -1,6 +1,7 @@
 package de.febrildur.sieveeditor;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 
@@ -20,11 +21,13 @@ class ApplicationTest {
 
 	private Application app;
 
+	@BeforeAll
+	static void setUpOnce() {
+		System.setProperty("java.awt.headless", "false");
+	}
+
 	@BeforeEach
 	void setUp() {
-		// Create application in headless mode for testing
-		// Note: Full GUI testing would require a display environment
-		System.setProperty("java.awt.headless", "false");
 	}
 
 	@Test

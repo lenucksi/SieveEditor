@@ -1,24 +1,28 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
+    "config:best-practices",
     "helpers:pinGitHubActionDigests",
     ":dependencyDashboard",
-    ":semanticCommits"
+    ":semanticCommits",
+    "default:automergeDigest"
   ],
-  "labels": [
-    "dependencies"
-  ],
-  "assignees": [
-    "@lenucksi"
-  ],
-  "schedule": [
-    "0 4 * * *"
-  ],
+  "labels": ["dependencies"],
+  "assignees": ["@lenucksi"],
+  "schedule": ["0 4 * * *"],
   "timezone": "Europe/Berlin",
+  "minimumReleaseAge": "3 days",
   "platformAutomerge": true,
   "packageRules": [
     {
+      "description": "Maven dependencies",
+      "matchManagers": ["maven"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    },
+    {
+      "description": "GitHub Actions",
+      "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
     }
@@ -34,7 +38,7 @@
   "configMigration": true,
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Dependency Dashboard 🤖",
-  "dependencyDashboardHeader": "This dashboard tracks pending dependency updates.",
+  "dependencyDashboardHeader": "This dashboard tracks pending dependency updates and provides an overview of the repository's dependency status.",
   "dependencyDashboardFooter": "Managed by Renovate Bot. Updates are checked daily at 04:00 CET.",
   "commitMessagePrefix": "chore(deps):",
   "commitBody": "This PR contains the following updates:\n\n| Package | Update | Change |\n|---|---|---|\n{{#each upgrades as |upgrade|}}\n| {{upgrade.depName}} | {{upgrade.updateType}} | `{{upgrade.currentValue}}` -> `{{upgrade.newValue}}` |\n{{/each}}"

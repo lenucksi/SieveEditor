@@ -68,7 +68,7 @@ jobs:
 
       - name: Generate SBOM with cdxgen
         run: |
-          docker run --rm -v $PWD:/app ghcr.io/cyclonedx/cdxgen:10.10.7 \
+          docker run --rm -v $PWD:/app ghcr.io/cyclonedx/cdxgen:v9.9.4 \
             -r /app \
             -o /app/target/sbom-cdxgen.json \
             -t maven || true

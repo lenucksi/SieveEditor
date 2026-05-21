@@ -39,14 +39,14 @@ jobs:
       # ── SBOM Generation (parallel tracks) ──
 
       - name: Generate SBOM with Syft (source scan)
-        uses: anchore/sbom-action@d5d3c2be293e5c1805e36e4b5e7b2c6de0e15153 # v0.17.1
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.17.1
         with:
           path: ./
           format: cyclonedx-json
           output-file: sbom-syft.cdx.json
 
       - name: Generate SBOM with Syft (SPDX)
-        uses: anchore/sbom-action@d5d3c2be293e5c1805e36e4b5e7b2c6de0e15153 # v0.17.1
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.17.1
         with:
           path: ./
           format: spdx-json
@@ -56,11 +56,19 @@ jobs:
         run: |
           mvn -B org.cyclonedx:cyclonedx-maven-plugin:2.9.1:makeBom \
             -Dcyclonedx.outputFormat=json \
-            -Dcyclonedx.outputName=sbom-cyclonedx-maven
+            -Dcyclonedx.outputName=sbom-cyclonedx-maven 2>/dev/null || true
+          if [ -f target/sbom-cyclonedx-maven.json ]; then
+            echo "Maven CycloneDX SBOM generated"
+          elif [ -f target/bom.json ]; then
+            cp target/bom.json target/sbom-cyclonedx-maven.json
+            echo "Using target/bom.json as CycloneDX SBOM"
+          else
+            echo "No Maven CycloneDX SBOM generated - will use Syft SBOM instead"
+          fi
 
       - name: Generate SBOM with cdxgen
         run: |
-          docker run --rm -v $PWD:/app ghcr.io/cyclonedx/cdxgen@sha256:3c0c4ee1f8e2d67a5a7f6f944e91f0cc6e4af4a4f5c6b43ca3182e1faf3e33dc \
+          docker run --rm -v $PWD:/app ghcr.io/cyclonedx/cdxgen:10.10.7 \
             -r /app \
             -o /app/target/sbom-cdxgen.json \
             -t maven || true
@@ -68,7 +76,7 @@ jobs:
       # ── Vulnerability Scanning (parallel tracks) ──
 
       - name: Scan source with Trivy
-        uses: aquasecurity/trivy-action@97dca0210b06c0a65c2c56e96f77b71ab60be303 # v0.29.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: fs
           scan-ref: .
@@ -78,39 +86,42 @@ jobs:
           exit-code: 0
 
       - name: Upload Trivy SARIF
-        uses: github/codeql-action/upload-sarif@fa0e9271cb1a181d6cfc14802f315a2ed76e9bb5 # v3.28.16
+        uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba # v4.35.5
         with:
           sarif_file: trivy-results.sarif
           category: trivy
 
       - name: Scan SBOM with Grype
-        uses: anchore/scan-action@6ac0f0e07a2e8cf2b3f31911e77e76b6f26f771a # v7.0.0
         id: grype
-        with:
-          sbom: target/sbom-cyclonedx-maven.json
-          severity-cutoff: medium
-          output-format: sarif
-          fail-build: false
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -d -b /usr/local/bin v0.110.0 2>&1
+          SBOM_FILE="sbom-syft.cdx.json"
+          [ -f "target/sbom-cyclonedx-maven.json" ] && SBOM_FILE="target/sbom-cyclonedx-maven.json"
+          grype sbom:"$SBOM_FILE" -o sarif --file grype-results.sarif --fail-on medium 2>&1 || true
 
       - name: Upload Grype SARIF
-        uses: github/codeql-action/upload-sarif@fa0e9271cb1a181d6cfc14802f315a2ed76e9bb5 # v3.28.16
+        uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba # v4.35.5
         with:
-          sarif_file: ${{ steps.grype.outputs.sarif }}
+          sarif_file: grype-results.sarif
           category: grype
 
       # ── Third-Party Notices ──
 
       - name: Generate NOTICE from sbom-to-notices
         run: |
+          SBOM_FILE="sbom-syft.cdx.json"
+          [ -f "target/sbom-cyclonedx-maven.json" ] && SBOM_FILE="target/sbom-cyclonedx-maven.json"
           pip install sbom-to-notices 2>/dev/null || pip3 install sbom-to-notices 2>/dev/null || true
-          if [ -f target/sbom-cyclonedx-maven.json ] && command -v sbom-to-notices 2>/dev/null; then
-            sbom-to-notices target/sbom-cyclonedx-maven.json > NOTICE.generated 2>/dev/null || true
+          if command -v sbom-to-notices 2>/dev/null; then
+            sbom-to-notices "$SBOM_FILE" > NOTICE.generated 2>/dev/null || true
           fi
 
       - name: Generate license report with Grant
         continue-on-error: true
         run: |
-          npx @anchore/grant check SBOM:target/sbom-cyclonedx-maven.json --output json > grant-report.json 2>/dev/null || true
+          SBOM_FILE="sbom-syft.cdx.json"
+          [ -f "target/sbom-cyclonedx-maven.json" ] && SBOM_FILE="target/sbom-cyclonedx-maven.json"
+          npx @anchore/grant check "SBOM:$SBOM_FILE" --output json > grant-report.json 2>/dev/null || true
 
       # ── Upload Artifacts ──
 

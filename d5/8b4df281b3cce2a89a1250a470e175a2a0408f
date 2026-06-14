@@ -1,0 +1,35 @@
+scripts/generate_flatpak_maven_sources.py
+  s_69373cb4279d15::t_9eb6e72b8cbd44 174,176-202,212-226,228,233-253,256-272
+  s_69373cb4279d15::t_f644d03a2df721 203-211
+  s_69373cb4279d15::t_ad7d2c632364c6 19
+  s_69373cb4279d15::t_695313fc10f9aa 381
+  s_69373cb4279d15::t_23366486272a2a 16-17
+  s_69373cb4279d15::t_d93d1dd35ef7e1 365-370
+  s_69373cb4279d15::t_043861427ae496 227,229-232
+  s_69373cb4279d15::t_669394c5c02a59 172-173,175
+pom.xml
+  s_69373cb4279d15::t_e558950bbb73de 114-137
+.github/workflows/update-flatpak-deps.yml
+  s_69373cb4279d15::t_d734a804545535 32
+  s_69373cb4279d15::t_a02b04aa30ffcc 91-96
+scripts/fetch-maven-deps-for-flatpak.sh
+  s_69373cb4279d15::t_aca5b073121106 78-80,85,94-97,104-107
+  s_69373cb4279d15::t_a7bcf39287365a 98-103
+  s_69373cb4279d15::t_cb7f1310250197 140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "d58b4df281b3cce2a89a1250a470e175a2a0408f",
+  "prompts": {},
+  "sessions": {
+    "s_69373cb4279d15": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_13a2b7e7effej37wX1R27KaQjL",
+        "model": "deepseek-v4-flash-free"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+from_latest_tag = true
+ignore_merge_commits = true
+ignore_fixup_commits = false
+skip_untracked = false
+disable_bump_commit = false
+disable_changelog = false
+tag_prefix = "v"
+skip_ci = "[skip ci]"
+branch_whitelist = []
+
+pre_bump_hooks = []
+post_bump_hooks = []
+pre_package_bump_hooks = []
+post_package_bump_hooks = []
+
+[changelog]
+path = "CHANGELOG.md"
+template = "remote"
+remote = "github.com"
+owner = "lenucksi"
+repository = "SieveEditor"
+authors = []
+
+[commit_types]
+feat = { changelog_title = "Features", order = 1 }
+fix = { changelog_title = "Bug Fixes", order = 2 }
+docs = { changelog_title = "Documentation", order = 3 }
+style = { changelog_title = "Code Style", order = 4, omit_from_changelog = true }
+refactor = { changelog_title = "Refactoring", order = 5 }
+perf = { changelog_title = "Performance", order = 6 }
+test = { changelog_title = "Testing", order = 7, omit_from_changelog = true }
+build = { changelog_title = "Build System", order = 8, omit_from_changelog = true }
+ci = { changelog_title = "CI/CD", order = 9, omit_from_changelog = true }
+chore = { changelog_title = "Chores", order = 10, omit_from_changelog = true }
+revert = { changelog_title = "Reverts", order = 11, omit_from_changelog = true }
+deps = { changelog_title = "Dependencies", bump_patch = true, order = 12 }
+security = { changelog_title = "Security", bump_patch = true, order = 13 }
+
+[bump_profiles]
+
+[git_hooks]

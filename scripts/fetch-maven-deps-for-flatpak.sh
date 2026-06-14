@@ -75,11 +75,14 @@ run_maven_fetch() {
   echo "  Maven repo: ${temp_dir}"
   echo "  Download log: ${temp_log}"
   echo ""
+  echo "  Maven version:"
+  mvn --version 2>&1 | head -2 | sed 's/^/    /'
+  echo ""
 
   # Run Maven and capture full output to a temp file
   local maven_output="${temp_log}.full"
 
-  if mvn clean package -DskipTests -B -Dmaven.repo.local="${temp_dir}" > "${maven_output}" 2>&1; then
+  if mvn -U clean package -DskipTests -B -Dmaven.repo.local="${temp_dir}" > "${maven_output}" 2>&1; then
     # Maven succeeded, extract download lines
     grep "Downloaded" "${maven_output}" > "${temp_log}" || true
 
@@ -87,6 +90,21 @@ run_maven_fetch() {
     download_count=$(wc -l < "${temp_log}" 2>/dev/null || echo "0")
     echo -e "${GREEN}  Maven build successful${NC}"
     echo "  Downloaded: ${download_count} artifacts"
+
+    # Resolve all dependencies to ensure complete download log
+    echo ""
+    echo -e "${BLUE}Resolving all dependencies...${NC}"
+    if mvn -U dependency:resolve -DskipTests -B -Dmaven.repo.local="${temp_dir}" >> "${maven_output}" 2>&1; then
+      # Extract additional download lines from dependency:resolve (write to temp, then append)
+      local new_lines
+      new_lines="$(grep "Downloaded" "${maven_output}" | grep -v -F -f "${temp_log}" 2>/dev/null || true)"
+      if [ -n "$new_lines" ]; then
+        echo "$new_lines" >> "${temp_log}"
+      fi
+      echo -e "${GREEN}  Dependency resolution complete${NC}"
+    else
+      echo -e "${YELLOW}  WARNING: dependency:resolve reported issues${NC}"
+    fi
 
     # Show last few lines of Maven output
     echo ""
@@ -119,7 +137,7 @@ generate_yaml() {
     return 1
   fi
 
-  if python3 "${PYTHON_GENERATOR}" "${temp_log}" "${temp_dir}" "${output}"; then
+  if python3 "${PYTHON_GENERATOR}" --pom "${REPO_ROOT}/pom.xml" "${temp_log}" "${temp_dir}" "${output}"; then
     echo -e "${GREEN}  YAML generated: ${output}${NC}"
   else
     echo -e "${RED}  ERROR: YAML generation failed${NC}"

@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0](https://github.com/lenucksi/SieveEditor/compare/v1.3.0...v1.4.0) (2026-06-14)
+
+
+### Features
+
+* About dialog, SPDX headers, ORT, credential backend fixes ([f2cdfec](https://github.com/lenucksi/SieveEditor/commit/f2cdfecfdf598c5290c774dfd186fe248d39b91d))
+* initialize Backlog.md project management ([c50f335](https://github.com/lenucksi/SieveEditor/commit/c50f335dacafecc892e291200c863fd81a0b378e))
+* initialize Backlog.md project management ([#230](https://github.com/lenucksi/SieveEditor/issues/230)) ([43bba1d](https://github.com/lenucksi/SieveEditor/commit/43bba1d6d2a78b4eb2f72704c23a75e2d18ee5f0))
+* max out Renovate + add security supply-chain CI stack ([c10a7ec](https://github.com/lenucksi/SieveEditor/commit/c10a7ec48ea37beb5ec0a7c14e1f9c42ffc03ed9))
+* max out Renovate + add security supply-chain CI stack ([c10a7ec](https://github.com/lenucksi/SieveEditor/commit/c10a7ec48ea37beb5ec0a7c14e1f9c42ffc03ed9))
+* max out Renovate + add security supply-chain CI stack ([0a3a57b](https://github.com/lenucksi/SieveEditor/commit/0a3a57b14ebe15f066bd4ebc88f7bd71c8c236bc))
+
+
+### Bug Fixes
+
+* cdxgen tag 10.10.7 -&gt; v9.9.4 (tag didn't exist) ([51d8aba](https://github.com/lenucksi/SieveEditor/commit/51d8aba8ba1ed1121918bdb01615ff1cf6721ade))
+* fall back to Syft SBOM when Maven CycloneDX plugin fails, install grype for direct use ([5e531fe](https://github.com/lenucksi/SieveEditor/commit/5e531fe4ae41069e467c0bf7908e66b87dc3f61c))
+* **renovate:** enable SHA pinning and platform automerge ([397e0ed](https://github.com/lenucksi/SieveEditor/commit/397e0ed923f6d95d9db4a4c61251e8c3792ef0cf))
+* **renovate:** enable SHA pinning and platform automerge ([#228](https://github.com/lenucksi/SieveEditor/issues/228)) ([7753a03](https://github.com/lenucksi/SieveEditor/commit/7753a03931198831e4aa68f385e92c592388290d))
+
+
+### Dependencies
+
+* **flatpak:** update Maven dependencies ([a60dead](https://github.com/lenucksi/SieveEditor/commit/a60dead776506d8b65eec262cc38ae9b87cb72fd))
+* **flatpak:** update Maven dependencies ([941cfe5](https://github.com/lenucksi/SieveEditor/commit/941cfe57cff9857d84c26b98b89f40794078e5d9))
+* **flatpak:** update Maven dependencies ([49d13d2](https://github.com/lenucksi/SieveEditor/commit/49d13d284efbb7dfb8e89da689b7bc1635249b11))
+
 ## [1.3.0](https://github.com/lenucksi/SieveEditor/compare/v1.2.0...v1.3.0) (2026-05-18)
 
 

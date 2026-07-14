@@ -50,3 +50,5 @@ app/
 .vscode/
 
 **__pycache__
+
+jbr/*

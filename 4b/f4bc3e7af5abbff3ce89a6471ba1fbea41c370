@@ -1,0 +1,91 @@
+"backlog/tasks/task-35.4 - Autocomplete-Integration.md"
+  s_d6e797ed2590e5::t_f50eb7a5c5e9ff 4
+  s_d6e797ed2590e5::t_6df7cb45e3f89c 8,26-30
+  s_e2bdb6dade92b0::t_c388740832622b 1-3,7,9-22,24,31
+  s_d6e797ed2590e5::t_da9d6d77e9bc1d 32-37
+  s_d6e797ed2590e5::t_750623743cca64 5-6
+  s_e2bdb6dade92b0::t_f07bf1345be8d8 23,25
+docs/subagent-research-reports/sieve-tokenmaker-analysis.md
+  s_e2bdb6dade92b0::t_ab4c58d9eb18c3 1-73,75-80,83-85,87-99,101-106,109-120,122-124,126-128,130-138,140,142-153,155-178,181-418,420-427,429-433,435-446,448-454,456-573
+  s_e2bdb6dade92b0::t_267d06c4bc7ea9 74,81-82,86,100,107-108,121,125,129,139,141,154,179-180,419,428,434,447,455
+"backlog/tasks/task-35 - Sieve-Syntax-Highlighting-Autocomplete-verbessern.md"
+  s_e2bdb6dade92b0::t_f96470d81b1a95 1-5,8-22,24,34,36,38,40-42
+  s_e2bdb6dade92b0::t_85e428a66a2ef0 6-7,26-33,35
+  s_e2bdb6dade92b0::t_f07bf1345be8d8 23,25,37,39,43
+"backlog/tasks/task-35.2 - TokenMaker-getTokenList-verbessern.md"
+  s_e2bdb6dade92b0::t_18b000ecb74512 1-3,10-23,25
+  s_7f00dc7bf62edd::t_67ebbb18843257 5
+  s_e2bdb6dade92b0::t_f07bf1345be8d8 24,26,29-31,38
+  s_7f00dc7bf62edd::t_57837020898bc8 4,9,28,32-37
+  s_e2bdb6dade92b0::t_d7bc0a8b9db5db 6-8,27
+"backlog/tasks/task-35.1 - TokenMaker-Keyword-Map-erweitern.md"
+  s_d173620a06d0ec::t_a8fe870fba7c30 5-6,8
+  s_d173620a06d0ec::t_8e77e2411207dc 32-37
+  s_d173620a06d0ec::t_84a6c38191f153 26-30
+  s_e2bdb6dade92b0::t_f07bf1345be8d8 4,23,25
+  s_e2bdb6dade92b0::t_3354af25e9fa39 1-3,7,9-22,24,31
+"backlog/tasks/task-35.3 - text-Heredoc-Cross-Line-State-Tracking.md"
+  s_e2bdb6dade92b0::t_f07bf1345be8d8 24,26,38
+  s_e2bdb6dade92b0::t_6c54825e10fe93 1-2,10-23,25,32
+  s_7f00dc7bf62edd::t_5b9c4df5cf3783 3,6-8,27,33-37
+  s_7f00dc7bf62edd::t_49a5ad46b973ab 5
+  s_7f00dc7bf62edd::t_543c225add19f0 4,9,28
+  s_e2bdb6dade92b0::t_56bb9b190a9840 29-31
+"backlog/tasks/task-35.5 - Tests-für-TokenMaker-Autocomplete.md"
+  s_c50b9b84405841::t_8a3c589f825ec8 27
+  s_c50b9b84405841::t_704599c2fbbc72 28
+  s_e2bdb6dade92b0::t_6f5010e2ab186d 1-3,9-22,24,33
+  s_c50b9b84405841::t_afb2ea0673ad53 29
+  s_c50b9b84405841::t_dacc1ce7bb4907 30-32,34-40
+  s_c50b9b84405841::t_054dff217bf677 8,26
+  s_c50b9b84405841::t_5f87cbf9ed859e 4-7
+  s_e2bdb6dade92b0::t_f07bf1345be8d8 23,25,41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "4bf4bc3e7af5abbff3ce89a6471ba1fbea41c370",
+  "prompts": {},
+  "sessions": {
+    "s_7f00dc7bf62edd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09eaeedb1ffedGDDmGO65RVEX5",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_c50b9b84405841": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09ea76adfffeaThokNwpmecuML",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_d173620a06d0ec": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09eb36539ffe3pw9F6OCSqhFQu",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_d6e797ed2590e5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09eb34f8bffeNZnA58cBFfpJk0",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_e2bdb6dade92b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09ecc9abafferu66DqhjnZve2Y",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

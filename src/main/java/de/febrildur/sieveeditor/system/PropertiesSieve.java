@@ -61,6 +61,7 @@ public class PropertiesSieve {
 
 	private String profileName;
 	private String propFileName;
+	private int fontSize = 13;
 
 	public PropertiesSieve() {
 		this("default");
@@ -243,6 +244,16 @@ public class PropertiesSieve {
 				LOGGER.log(Level.WARNING, "Failed to decrypt password - may need re-entry after key change", e);
 				password = "";
 			}
+			try {
+				fontSize = Integer.parseInt(prop.getProperty("sieve.fontSize", "13"));
+				if (fontSize < 6 || fontSize > 72) {
+			fontSize = 13;
+		}
+
+
+			} catch (NumberFormatException e) {
+				fontSize = 13;
+			}
 		}
 	}
 
@@ -257,6 +268,7 @@ public class PropertiesSieve {
 			prop.setProperty("sieve.user", username != null ? username : "");
 			prop.setProperty("sieve.password",
 					password != null ? String.format("ENC(%s)", encryptor.encrypt(password)) : "");
+			prop.setProperty("sieve.fontSize", Integer.toString(fontSize));
 
 			prop.store(output, null);
 
@@ -298,6 +310,20 @@ public class PropertiesSieve {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public int getFontSize() {
+		return fontSize;
+	}
+
+	public void setFontSize(int fontSize) {
+		if (fontSize < 6) {
+			this.fontSize = 6;
+		} else if (fontSize > 72) {
+			this.fontSize = 72;
+		} else {
+			this.fontSize = fontSize;
+		}
 	}
 
 	public static List<String> getAvailableProfiles() {

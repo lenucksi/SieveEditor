@@ -1,0 +1,43 @@
+default_install_hook_types = ["pre-commit", "commit-msg"]
+
+[[repos]]
+repo = "https://github.com/gitleaks/gitleaks"
+rev = "v8.30.0"
+hooks = [{ id = "gitleaks" }]
+
+[[repos]]
+repo = "https://github.com/jumanjihouse/pre-commit-hooks"
+rev = "3.0.0"
+hooks = [{ id = "shellcheck" }]
+
+[[repos]]
+repo = "builtin"
+hooks = [
+  { id = "end-of-file-fixer" },
+  { id = "trailing-whitespace" },
+]
+
+[[repos]]
+repo = "https://github.com/espressif/conventional-precommit-linter"
+rev = "v1.11.0"
+hooks = [
+  {
+    id = "conventional-precommit-linter",
+    stages = ["commit-msg"],
+    args = [
+      "--types=feat,fix,docs,style,refactor,test,chore,ci,build,perf,remove,revert,change",
+      "--allow-breaking",
+      "--subject-min-length=15",
+    ],
+  },
+]
+
+[[repos]]
+repo = "https://github.com/rvben/rumdl-pre-commit"
+rev = "v0.0.199"
+hooks = [
+  {
+    id = "rumdl",
+    args = ["--fix"],
+  },
+]

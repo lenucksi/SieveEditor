@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ConnectionDialogView {
 
-    void show();
+    void display();
 
     void close();
 

@@ -2,13 +2,13 @@ app-id: io.github.lenucksi.SieveEditor
 runtime: org.freedesktop.Platform
 runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
-sdk-extensions:
-  - org.freedesktop.Sdk.Extension.openjdk21
 
 command: sieveeditor
 
 finish-args:
-  # X11 access for Swing GUI
+  # Wayland socket for native Wayland support (via JBR WLToolkit)
+  - --socket=wayland
+  # X11 socket as fallback for X11/XWayland
   - --socket=x11
   # IPC namespace (required for X11)
   - --share=ipc
@@ -24,10 +24,18 @@ finish-args:
   - --filesystem=~/.sieveprofiles:ro
 
 modules:
-  - name: openjdk
+  - name: jetbrains-runtime
     buildsystem: simple
+    sources:
+      - type: archive
+        url: https://cache-redirector.jetbrains.com/intellij-jbr/jbr-25.0.3-linux-x64-b508.16.tar.gz
+        sha512: f936d2a4048485d3cb552c26f69b41f13eba0f75de1178c9ff6185547755c336d0ef5af9641f004e916d0d0414e34d1e9f9d12c08d262038cbca517dcad0dc96
+        dest: jbr-download
     build-commands:
-      - /usr/lib/sdk/openjdk21/install.sh
+      - mkdir -p /app/jre
+      - cp -r jbr-download/jbr-*/bin /app/jre/
+      - cp -r jbr-download/jbr-*/lib /app/jre/
+      - cp -r jbr-download/jbr-*/conf /app/jre/
 
   - name: sieveeditor
     buildsystem: simple
@@ -46,7 +54,6 @@ modules:
       - |
         cat > /app/bin/sieveeditor <<'EOF'
         #!/bin/sh
-        # SieveEditor launcher script
         exec /app/jre/bin/java \
           -Dawt.toolkit.name=WLToolkit \
           -Dsun.java2d.vulkan=True \

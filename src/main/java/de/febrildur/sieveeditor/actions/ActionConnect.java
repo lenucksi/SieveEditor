@@ -149,7 +149,7 @@ public class ActionConnect extends AbstractAction {
         }
 
         @Override
-        public void show() {
+        public void display() {
             setVisible(true);
         }
 

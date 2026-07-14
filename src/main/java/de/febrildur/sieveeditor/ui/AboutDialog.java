@@ -118,7 +118,7 @@ public class AboutDialog extends JDialog {
             setSize(getWidth(), 400);
         }
         setResizable(true);
-        setLocationRelativeTo(getParent());
+        setLocationByPlatform(true);
     }
 
     private void openGitHub() {

@@ -31,6 +31,8 @@ import com.formdev.flatlaf.util.UIScale;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
+import org.fife.ui.rsyntaxtextarea.folding.CurlyFoldParser;
+import org.fife.ui.rsyntaxtextarea.folding.FoldParserManager;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import com.fluffypeople.managesieve.ParseException;
@@ -44,6 +46,8 @@ import de.febrildur.sieveeditor.actions.ActionReplace;
 import de.febrildur.sieveeditor.actions.ActionSaveLocalScript;
 import de.febrildur.sieveeditor.actions.ActionSaveScript;
 import de.febrildur.sieveeditor.actions.ActionSaveScriptAs;
+import de.febrildur.sieveeditor.actions.ActionZoom;
+import de.febrildur.sieveeditor.actions.ActionZoom.ZoomOperation;
 import de.febrildur.sieveeditor.actions.InsertMenuBuilder;
 import de.febrildur.sieveeditor.system.ConnectAndListScripts;
 import de.febrildur.sieveeditor.system.PropertiesSieve;
@@ -59,10 +63,11 @@ public class Application extends JFrame {
 	private de.febrildur.sieveeditor.ui.RuleNavigatorPanel ruleNavigator;
 	private javax.swing.Timer parserDebounceTimer;
 	private de.febrildur.sieveeditor.ui.SearchPanel searchPanel;
-	private JSplitPane mainSplitPane; // Horizontal split between editor and navigator
+	private JSplitPane mainSplitPane; // Horizontal scrollPanelit between editor and navigator
 	private boolean userHasManuallyResizedDivider = false; // Track if user manually resized
 	private boolean isAdjustingDividerProgrammatically = false; // Flag to prevent false positives
 	private SieveScript script;
+	private RTextScrollPane scrollPane;
 
 	private AbstractAction actionConnect = new ActionConnect(this);
 	private AbstractAction actionDisconnect = new AbstractAction("Disconnect") {
@@ -94,6 +99,10 @@ public class Application extends JFrame {
 	private AbstractAction actionReplace = new ActionReplace(this);
 	private AbstractAction actionOpenLocal = new ActionOpenLocalScript(this);
 	private AbstractAction actionSaveLocal = new ActionSaveLocalScript(this);
+	private AbstractAction actionZoomIn;
+	private AbstractAction actionZoomOut;
+	private AbstractAction actionZoomReset;
+
 	private AbstractAction actionQuit = new AbstractAction("Quit") {
 		{
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
@@ -107,6 +116,7 @@ public class Application extends JFrame {
 					// Ignore logout errors
 				}
 			}
+			de.febrildur.sieveeditor.system.jbr.JBRSystemUtils.tryCompactMemory();
 			System.exit(0);
 		}
 	};
@@ -178,22 +188,40 @@ public class Application extends JFrame {
 
 		AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
 		atmf.putMapping("text/sieve", SieveTokenMaker.class.getCanonicalName());
+		FoldParserManager.get().addFoldParserMapping("text/sieve", new CurlyFoldParser());
 
 		textArea = new RSyntaxTextArea(20, 60);
 		textArea.setSyntaxEditingStyle("text/sieve");
 		textArea.setCodeFoldingEnabled(true);
 
-		// Set a properly scaled monospace font for the editor
-		// Base size 13pt scales with FlatLaf's UIScale for HiDPI displays
-		int scaledFontSize = UIScale.scale(13);
-		textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, scaledFontSize));
+		// Set a properly scaled monospaced font for the editor.
+		// Base size 13pt (or saved preference) scales with FlatLaf's UIScale for HiDPI.
+		// Read saved font size from profile; default is 13
+		int logicalFontSize = prop.getFontSize();
+		int scaledFontSize = UIScale.scale(logicalFontSize);
 
-		RTextScrollPane sp = new RTextScrollPane(textArea);
+		// Prefer JBR's bundled JetBrains Mono (discovered from java.home/lib/fonts/),
+		// fall back to standard MONOSPACED when running on non-JBR JDK
+		Font jbrMono = de.febrildur.sieveeditor.system.jbr.JBRFontSupport.getJbrMonoFont();
+		Font baseFont;
+		if (jbrMono != null) {
+			baseFont = jbrMono.deriveFont(Font.PLAIN, scaledFontSize);
+		} else {
+			baseFont = new Font(Font.MONOSPACED, Font.PLAIN, scaledFontSize);
+		}
 
-		// Configure line number gutter font size
-		// Set line numbers to 15pt (slightly larger than editor font of 13pt for better readability)
-		int gutterFontSize = UIScale.scale(15);
-		sp.getGutter().setLineNumberFont(new Font(Font.MONOSPACED, Font.PLAIN, gutterFontSize));
+		// Apply JBR font features (ligatures, calt, zero) — always on with JetBrains Mono
+		textArea.setFont(de.febrildur.sieveeditor.system.jbr.JBRFontSupport.deriveEditorFont(baseFont));
+
+		scrollPane = new RTextScrollPane(textArea);
+
+		// Configure line number gutter font size (+2pt relative to editor font)
+		int gutterFontSize = UIScale.scale(logicalFontSize + 2);
+		if (jbrMono != null) {
+			scrollPane.getGutter().setLineNumberFont(jbrMono.deriveFont(Font.PLAIN, gutterFontSize));
+		} else {
+			scrollPane.getGutter().setLineNumberFont(new Font(Font.MONOSPACED, Font.PLAIN, gutterFontSize));
+		}
 
 		// Register global keyboard shortcuts using WHEN_IN_FOCUSED_WINDOW scope
 		// This ensures keystrokes work even when focus is in the text editor
@@ -208,6 +236,34 @@ public class Application extends JFrame {
 		registerGlobalKeystroke(actionSaveScriptAs);
 		registerGlobalKeystroke(actionReplace);
 
+		// Zoom actions with Ctrl++/Ctrl+-/Ctrl+0
+		actionZoomIn = new ActionZoom(this, scrollPane, ZoomOperation.IN, "Zoom In",
+				KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, KeyEvent.CTRL_DOWN_MASK));
+		actionZoomOut = new ActionZoom(this, scrollPane, ZoomOperation.OUT, "Zoom Out",
+				KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK));
+		actionZoomReset = new ActionZoom(this, scrollPane, ZoomOperation.RESET, "Reset Zoom",
+				KeyStroke.getKeyStroke(KeyEvent.VK_0, KeyEvent.CTRL_DOWN_MASK));
+
+		registerGlobalKeystroke(actionZoomIn);
+		registerGlobalKeystroke(actionZoomOut);
+		registerGlobalKeystroke(actionZoomReset);
+
+		// Also bind numpad + and - for zoom in/out
+		textArea.getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK), "zoomInNumpad");
+		textArea.getActionMap().put("zoomInNumpad", actionZoomIn);
+		textArea.getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW)
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, KeyEvent.CTRL_DOWN_MASK), "zoomOutNumpad");
+		textArea.getActionMap().put("zoomOutNumpad", actionZoomOut);
+
+		// View menu - zoom controls (must be after zoom actions are initialized)
+		JMenu view = new JMenu("View");
+		view.add(new JMenuItem(actionZoomIn));
+		view.add(new JMenuItem(actionZoomOut));
+		view.addSeparator();
+		view.add(new JMenuItem(actionZoomReset));
+		menu.add(view, 3); // Insert after Edit (index 3: File=0, Sieve=1, Edit=2, View=3)
+
 		// Create search panel (docked above navigator)
 		searchPanel = new de.febrildur.sieveeditor.ui.SearchPanel();
 		searchPanel.setTargetEditor(textArea);
@@ -219,14 +275,14 @@ public class Application extends JFrame {
 		// Setup auto-regeneration of navigator on text changes (debounced)
 		setupNavigatorAutoUpdate();
 
-		// Create vertical split for right side: search panel on top, navigator below
+		// Create vertical scrollPanelit for right side: search panel on top, navigator below
 		JSplitPane rightSidePane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, searchPanel, ruleNavigator);
-		rightSidePane.setResizeWeight(0.0); // Search panel gets fixed size, navigator gets extra space
+		rightSidePane.setResizeWeight(0.0); // Search panel gets fixed size, navigator gets extra scrollPaneace
 		rightSidePane.setDividerLocation(200); // Search+replace panel height
 
-		// Create main horizontal split: editor on left, right pane on right
-		mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sp, rightSidePane);
-		mainSplitPane.setResizeWeight(1.0); // Give all extra space to editor
+		// Create main horizontal scrollPanelit: editor on left, right pane on right
+		mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, rightSidePane);
+		mainSplitPane.setResizeWeight(1.0); // Give all extra scrollPaneace to editor
 		mainSplitPane.setDividerLocation(-200); // 200px for right side pane (negative = from right)
 
 		// Track manual divider resizing by user
@@ -244,6 +300,15 @@ public class Application extends JFrame {
 		setTitle("Sieve Editor");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		pack();
+
+		// Apply JBR window enhancements (graceful fallback on non-JBR runtimes)
+		de.febrildur.sieveeditor.system.jbr.JBRWindowDecorations.applyCustomTitleBar(this, 0f);
+		de.febrildur.sieveeditor.system.jbr.JBRRoundedCorners.apply(this);
+
+		// Install autocomplete handler directly (no invokeLater needed for key bindings).
+		// Uses JPopupMenu instead of JWindow to avoid Wayland surface issues.
+		new de.febrildur.sieveeditor.system.SieveCompletionHandler(textArea);
+
 		// Set a reasonable minimum window size
 		setMinimumSize(new java.awt.Dimension(UIScale.scale(600), UIScale.scale(400)));
 		setLocationRelativeTo(null);
@@ -314,6 +379,10 @@ public class Application extends JFrame {
 		// This must be called before creating any Swing components
 		FlatLightLaf.setup();
 
+		// Suppress JBR Wayland input method log spam that appears when
+		// AutoCompletion popup windows are shown/hidden on Wayland.
+		Logger.getLogger("sun.awt.wl.im.text_input_unstable_v3").setLevel(Level.OFF);
+
 		// Parse command-line arguments
 		boolean verbose = false;
 		String forcedBackend = null;
@@ -336,8 +405,11 @@ public class Application extends JFrame {
 			LOGGER.log(Level.INFO, "Verbose logging enabled");
 		}
 
+		// Log JBR API availability (graceful fallback if not on full JBR)
+		de.febrildur.sieveeditor.system.jbr.JBRSupport.logStatus();
+
 		// Set global forced backend BEFORE creating any PropertiesSieve instances
-		// This ensures ALL instances throughout the app respect the command-line choice
+		// This ensures ALL instances throughout the app rescrollPaneect the command-line choice
 		if (forcedBackend != null) {
 			de.febrildur.sieveeditor.system.credentials.MasterKeyProviderFactory.setGlobalForcedBackend(forcedBackend);
 			LOGGER.log(Level.INFO, "Global forced backend set to: {0}", forcedBackend);
@@ -359,7 +431,7 @@ public class Application extends JFrame {
 		System.out.println();
 		System.out.println("Options:");
 		System.out.println("  -v, --verbose           Enable verbose logging");
-		System.out.println("  --backend <type>        Force specific credential backend");
+		System.out.println("  --backend <type>        Force scrollPaneecific credential backend");
 		System.out.println("                          Types: keepassxc, keychain, prompt");
 		System.out.println("  -h, --help              Show this help message");
 		System.out.println();
@@ -409,7 +481,7 @@ public class Application extends JFrame {
 	 * - Server operations are disabled
 	 *
 	 * @param content  The script content to load
-	 * @param filename The filename for display in title bar
+	 * @param filename The filename for discrollPanelay in title bar
 	 */
 	public void loadLocalScript(String content, String filename) {
 		textArea.setText(content);
@@ -459,7 +531,7 @@ public class Application extends JFrame {
 	}
 
 	/**
-	 * Jumps to a specific line in the script editor and highlights it.
+	 * Jumps to a scrollPaneecific line in the script editor and highlights it.
 	 * Scrolls the editor so the line appears at the top of the viewport.
 	 *
 	 * @param lineNumber the 1-based line number to jump to

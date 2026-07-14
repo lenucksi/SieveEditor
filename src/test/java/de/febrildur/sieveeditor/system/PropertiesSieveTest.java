@@ -527,6 +527,78 @@ class PropertiesSieveTest {
         assertThat(loaded.getUsername()).isEqualTo("user@example.com");
     }
 
+    // ===== Font Size Tests =====
+
+    @Test
+    void shouldDefaultFontSizeTo13() {
+        assertThat(properties.getFontSize()).isEqualTo(13);
+    }
+
+    @Test
+    void shouldGetAndSetFontSize() {
+        properties.setFontSize(16);
+        assertThat(properties.getFontSize()).isEqualTo(16);
+    }
+
+    @Test
+    void shouldSaveAndLoadFontSize() throws IOException {
+        properties.setFontSize(18);
+        properties.write();
+
+        PropertiesSieve loaded = new PropertiesSieve();
+        loaded.load();
+        assertThat(loaded.getFontSize()).isEqualTo(18);
+    }
+
+    @Test
+    void shouldClampFontSizeToMinimum() {
+        properties.setFontSize(1);
+        assertThat(properties.getFontSize()).isEqualTo(6);
+    }
+
+    @Test
+    void shouldClampFontSizeToMaximum() {
+        properties.setFontSize(100);
+        assertThat(properties.getFontSize()).isEqualTo(72);
+    }
+
+    @Test
+    void shouldFallbackToDefaultFontSizeWhenLoadingInvalidValue() throws IOException {
+        Path profileFile = AppDirectoryService.getProfilesDir().resolve("default.properties");
+        Files.writeString(profileFile, "sieve.fontSize=notanumber");
+
+        properties.load();
+        assertThat(properties.getFontSize()).isEqualTo(13);
+    }
+
+    @Test
+    void shouldFallbackToDefaultFontSizeWhenOutOfRangeLow() throws IOException {
+        Path profileFile = AppDirectoryService.getProfilesDir().resolve("default.properties");
+        Files.writeString(profileFile, "sieve.fontSize=2");
+
+        properties.load();
+        assertThat(properties.getFontSize()).isEqualTo(13);
+    }
+
+    @Test
+    void shouldFallbackToDefaultFontSizeWhenOutOfRangeHigh() throws IOException {
+        Path profileFile = AppDirectoryService.getProfilesDir().resolve("default.properties");
+        Files.writeString(profileFile, "sieve.fontSize=99");
+
+        properties.load();
+        assertThat(properties.getFontSize()).isEqualTo(13);
+    }
+
+    @Test
+    void shouldPersistFontSizeInFile() throws IOException {
+        properties.setFontSize(20);
+        properties.write();
+
+        Path profileFile = AppDirectoryService.getProfilesDir().resolve("default.properties");
+        String rawContent = Files.readString(profileFile);
+        assertThat(rawContent).contains("sieve.fontSize=20");
+    }
+
     @Test
     void shouldHandleSpecialCharactersInPassword() throws IOException {
         // Given

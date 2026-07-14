@@ -44,6 +44,7 @@ Implementation:
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
+
 1. Add wrapper: checks for DISPLAY, falls back to xvfb-run if available
 2. Tag all display-dependent tests with @Tag("gui"): ApplicationTest (display tests), CertificateDialog
 3. Create Maven profile in pom.xml that includes @Tag("gui") tests

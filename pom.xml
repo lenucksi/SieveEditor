@@ -111,6 +111,31 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.4.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.4.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>3.1.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>3.1.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>3.4.1</version>
+				</plugin>
+				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
 					<version>5.6.0.6792</version>
@@ -177,6 +202,12 @@
 			<artifactId>rsyntaxtextarea</artifactId>
 			<version>3.6.2</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.fifesoft/autocomplete -->
+		<dependency>
+			<groupId>com.fifesoft</groupId>
+			<artifactId>autocomplete</artifactId>
+			<version>3.3.3</version>
+		</dependency>
 		<!-- FlatLaf: Modern look-and-feel with automatic HiDPI scaling
 		     Benefits: Native 4K support without launcher script, dark mode, modern UI
 		     Source: https://www.formdev.com/flatlaf/ -->
@@ -229,6 +260,15 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
 			<version>2.0.18</version>
+		</dependency>
+
+		<!-- JBR API: JetBrains Runtime specific features (custom title bar, font ligatures, etc.)
+		     Falls back gracefully on vanilla JBR — JBR.isAvailable() returns false.
+		     Source: https://github.com/JetBrains/JetBrainsRuntimeApi -->
+		<dependency>
+			<groupId>org.jetbrains.runtime</groupId>
+			<artifactId>jbr-api</artifactId>
+			<version>1.10.1</version>
 		</dependency>
 
 		<!-- Test Dependencies -->

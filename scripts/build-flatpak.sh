@@ -81,14 +81,10 @@ if ! flatpak list --runtime | grep -q "org.freedesktop.Sdk.*25.08"; then
     echo "Missing: org.freedesktop.Sdk//25.08"
     MISSING_RUNTIME=true
 fi
-if ! flatpak list --runtime | grep -q "org.freedesktop.Sdk.Extension.openjdk21.*25.08"; then
-    echo "Missing: org.freedesktop.Sdk.Extension.openjdk21//25.08"
-    MISSING_RUNTIME=true
-fi
 
 if [ "$MISSING_RUNTIME" = true ]; then
     echo "Installing missing runtimes..."
-    flatpak install -y flathub org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08 org.freedesktop.Sdk.Extension.openjdk21//25.08
+    flatpak install -y flathub org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08
     echo -e "${GREEN}✓ Runtimes installed${NC}"
 else
     echo -e "${GREEN}✓ All runtimes already installed${NC}"

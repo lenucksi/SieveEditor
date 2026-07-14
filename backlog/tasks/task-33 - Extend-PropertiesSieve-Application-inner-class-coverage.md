@@ -40,6 +40,7 @@ Refactoring plan:
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
+
 1. PropertiesSieve encryption:
    - createEncryptor() has algorithm tier selection (Tier 1: AES-CBC-PBE, Tier 2: AES-CBC, Tier 3: AES)
    - Use reflection or configuration manipulation to trigger each tier

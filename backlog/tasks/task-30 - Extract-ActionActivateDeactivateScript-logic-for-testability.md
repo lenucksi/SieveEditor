@@ -46,6 +46,7 @@ Refactoring plan:
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
+
 1. Extract : list of script names + active status, sorting
 2. Extract interface: showScripts(), showError(), getSelectedRow()→int
 3. Extract : handleActivate(), handleDeactivate(), handleRename(), handleDelete()

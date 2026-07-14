@@ -24,6 +24,7 @@ updated_date: '2026-05-20 14:59'
 | update-metainfo-release.yml | Release PR | AppStream metainfo update |
 
 ## Security
+
 - SLSA Level 3 attestations
 - Harden-Runner (step-security) on every job
 - Pinned action SHAs

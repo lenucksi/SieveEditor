@@ -40,6 +40,7 @@ public class AboutDialog extends JDialog {
         {"java-keyring", "com.github.javakeyring:java-keyring:1.0.4", "MIT"},
         {"appdirs", "net.harawata:appdirs:1.5.0", "Apache 2.0"},
         {"SLF4J Simple", "org.slf4j:slf4j-simple:2.0.18", "MIT"},
+        {"JBR API", "org.jetbrains.runtime:jbr-api:1.10.1", "Apache 2.0"},
     };
 
     public AboutDialog(JFrame parent) {
@@ -118,7 +119,7 @@ public class AboutDialog extends JDialog {
             setSize(getWidth(), 400);
         }
         setResizable(true);
-        setLocationRelativeTo(getParent());
+        setLocationByPlatform(true);
     }
 
     private void openGitHub() {

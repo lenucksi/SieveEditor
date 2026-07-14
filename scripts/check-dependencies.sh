@@ -99,26 +99,18 @@ if command -v flatpak &> /dev/null && command -v flatpak-builder &> /dev/null; t
     echo "Flatpak Runtimes:"
     echo "--------------------------------------"
 
-    if flatpak list --runtime 2>/dev/null | grep -q "org.freedesktop.Platform.*24.08"; then
-        echo -e "${GREEN}✓${NC} org.freedesktop.Platform 24.08"
+    if flatpak list --runtime 2>/dev/null | grep -q "org.freedesktop.Platform.*25.08"; then
+        echo -e "${GREEN}✓${NC} org.freedesktop.Platform 25.08"
     else
-        echo -e "${YELLOW}○${NC} org.freedesktop.Platform 24.08 NOT installed"
+        echo -e "${YELLOW}○${NC} org.freedesktop.Platform 25.08 NOT installed"
         echo "  (Will be auto-installed by build-flatpak.sh)"
         FLATPAK_OK=false
     fi
 
-    if flatpak list --runtime 2>/dev/null | grep -q "org.freedesktop.Sdk.*24.08"; then
-        echo -e "${GREEN}✓${NC} org.freedesktop.Sdk 24.08"
+    if flatpak list --runtime 2>/dev/null | grep -q "org.freedesktop.Sdk.*25.08"; then
+        echo -e "${GREEN}✓${NC} org.freedesktop.Sdk 25.08"
     else
-        echo -e "${YELLOW}○${NC} org.freedesktop.Sdk 24.08 NOT installed"
-        echo "  (Will be auto-installed by build-flatpak.sh)"
-        FLATPAK_OK=false
-    fi
-
-    if flatpak list --runtime 2>/dev/null | grep -q "org.freedesktop.Sdk.Extension.openjdk21"; then
-        echo -e "${GREEN}✓${NC} org.freedesktop.Sdk.Extension.openjdk21"
-    else
-        echo -e "${YELLOW}○${NC} OpenJDK 21 extension NOT installed"
+        echo -e "${YELLOW}○${NC} org.freedesktop.Sdk 25.08 NOT installed"
         echo "  (Will be auto-installed by build-flatpak.sh)"
         FLATPAK_OK=false
     fi

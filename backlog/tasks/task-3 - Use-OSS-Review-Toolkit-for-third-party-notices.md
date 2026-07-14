@@ -1,17 +1,17 @@
 ---
 id: TASK-3
 title: Use OSS Review Toolkit for third-party notices
-status: Done
+status: To Do
 assignee: []
-created_date: '2026-05-20 14:58'
-updated_date: '2026-05-20 22:51'
+created_date: 2026-05-20 14:58
+updated_date: 2026-06-17 07:24
 labels:
   - licensing
 dependencies: []
 references:
   - dev-docs/human-todo-notes.txt
 priority: medium
-ordinal: 3000
+ordinal: 2000
 ---
 
 ## Description

@@ -15,4 +15,3 @@ Enforce conventional commits format (feat, fix, docs, test, chore, refactor, per
 ## Consequences
 
 Automated changelog generation with proper sections. Consistent commit history. PRs require conventional commits (enforced by CI).
-

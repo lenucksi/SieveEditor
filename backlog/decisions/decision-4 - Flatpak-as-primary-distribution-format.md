@@ -15,4 +15,3 @@ Flatpak is primary distribution on Flathub. Also build JAR, DEB, RPM, MSI, DMG v
 ## Consequences
 
 Linux users install from Flathub with automatic updates. Self-contained sandboxed environment. Full network access required for ManageSieve.
-

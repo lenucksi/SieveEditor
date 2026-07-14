@@ -4,8 +4,8 @@
 # SPDX-License-Identifier: LGPL-3.0-or-later
 # SieveEditor launcher
 #
-# This script automatically builds the application if needed and launches it.
-# HiDPI scaling is handled automatically by FlatLaf.
+# Uses JetBrains Runtime (JBR) for native Wayland support when available.
+# Falls back to system Java with X11 if JBR is not installed.
 #
 # USAGE:
 #   ./sieveeditor.sh                   # Launch SieveEditor (builds if needed)
@@ -13,39 +13,38 @@
 #   ./sieveeditor.sh --backend prompt  # Use specific credential backend
 #
 # REQUIREMENTS:
-#   - Java 21 or later
+#   - Java 21 or later (system) OR JBR in jbr/jre/ (recommended for Wayland)
 #   - Maven 3.6+ (only needed if JAR doesn't exist)
 
-set -e  # Exit on error
+set -e
 
-# Get the directory where the script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-echo "Running from $SCRIPT_DIR"
-
-# Define JAR file location
 JARFILE="$SCRIPT_DIR/../target/SieveEditor-jar-with-dependencies.jar"
+JBR_HOME="$SCRIPT_DIR/../jbr/jre"
 
-# Build if JAR doesn't exist
-if [ ! -f "$JARFILE" ]; then
+JBR_FLAGS=(
+    -Dawt.toolkit.name=WLToolkit
+    -Dsun.java2d.vulkan=True
+    -Dawt.useSystemAAFontSettings=lcd
+    -Dswing.aatext=true
+)
+
+build_jar() {
     echo "==================================================="
     echo "  SieveEditor JAR not found - building project..."
     echo "==================================================="
     echo ""
 
-    # Check if Maven is available
     if ! command -v mvn &> /dev/null; then
         echo "Error: Maven (mvn) is not installed or not in PATH"
         echo "Please install Maven 3.6+ to build this project"
         exit 1
     fi
 
-    # Build the project
     echo "Running: mvn clean package -DskipTests"
     echo ""
-    #cd "$SCRIPT_DIR"
     mvn clean package -DskipTests
 
-    # Verify JAR was created
     if [ ! -f "$JARFILE" ]; then
         echo ""
         echo "Error: Build completed but JAR file not found at:"
@@ -58,13 +57,27 @@ if [ ! -f "$JARFILE" ]; then
     echo "  Build completed successfully!"
     echo "==================================================="
     echo ""
+}
+
+# Build if JAR doesn't exist
+if [ ! -f "$JARFILE" ]; then
+    build_jar
 fi
 
-# Launch application with font rendering options
-exec java \
-    -Dawt.toolkit.name=WLToolkit \
-    -Dsun.java2d.vulkan=True \
-    -Dawt.useSystemAAFontSettings=lcd \
-    -Dswing.aatext=true \
-    -Dawt.robot.screenshotMethod=x11 \
+# Check for JBR
+if [ -x "$JBR_HOME/bin/java" ]; then
+    JAVA_CMD="$JBR_HOME/bin/java"
+    JAVA_FLAGS=("${JBR_FLAGS[@]}")
+    echo "Using JBR (Wayland native): $("$JAVA_CMD" -version 2>&1 | head -1)"
+else
+    JAVA_CMD="java"
+    JAVA_FLAGS=()
+    echo "JBR not found at $JBR_HOME"
+    echo "  Install JBR: ./scripts/download-jbr.sh"
+    echo "  Falling back to system Java (X11 via XWayland)"
+    echo ""
+fi
+
+exec "$JAVA_CMD" \
+    "${JAVA_FLAGS[@]}" \
     -jar "$JARFILE" "$@"

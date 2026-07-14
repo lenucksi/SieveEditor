@@ -46,6 +46,7 @@ Goal: 60% effective coverage on the class.
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
+
 1. Create class with package-private access
 2. Move from CertificateDialog to formatter
 3. Extract methods: getSubjectDisplay(), getIssuerDisplay(), getValidityPeriod(), getSerialDisplay(), getFingerprintDisplay()

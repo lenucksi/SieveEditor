@@ -43,6 +43,7 @@ This is the single highest-impact refactoring for coverage: 743 instructions, cu
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
+
 1. Extract interface from public methods
 2. Extract interface with single method
 3. Add constructor + keep no-arg constructor for production

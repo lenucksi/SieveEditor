@@ -1,17 +1,17 @@
 ---
 id: TASK-6
 title: Improve test coverage to 70%
-status: Done
+status: In Progress
 assignee: []
-created_date: '2026-05-20 14:58'
-updated_date: '2026-05-20 19:59'
+created_date: 2026-05-20 14:58
+updated_date: 2026-06-17 07:24
 labels:
   - testing
 dependencies: []
 references:
   - dev-docs/TEST-COVERAGE-ANALYSIS.md
 priority: medium
-ordinal: 6000
+ordinal: 2000
 ---
 
 ## Description

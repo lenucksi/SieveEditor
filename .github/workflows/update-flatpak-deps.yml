@@ -29,6 +29,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          ref: ${{ github.event.release.tag_name }}
           fetch-depth: 0  # Full history for proper commits
 
       - name: Set up Java
@@ -86,6 +87,12 @@ jobs:
             -m "Automated dependency update from GitHub Actions" \
             -m "Triggered by: ${{ github.event_name }}" \
             -m "Workflow: ${{ github.workflow }}"
+
+          # Move the release tag forward so Flathub builds from the correct yaml
+          if [ -n "$RELEASE_TAG" ]; then
+            git tag -f "$RELEASE_TAG" HEAD
+            git push origin "$RELEASE_TAG" --force
+          fi
 
           git push
 

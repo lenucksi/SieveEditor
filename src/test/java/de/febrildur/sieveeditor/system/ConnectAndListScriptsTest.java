@@ -8,6 +8,8 @@ import com.fluffypeople.managesieve.ManageSieveClient;
 import com.fluffypeople.managesieve.ManageSieveResponse;
 import com.fluffypeople.managesieve.ParseException;
 import com.fluffypeople.managesieve.SieveScript;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +18,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +32,21 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ConnectAndListScriptsTest {
+
+    @BeforeAll
+    static void setupTestCertificate() throws IOException {
+        Path target = Paths.get("/tmp/sieve-test.crt");
+        try (InputStream in = ConnectAndListScriptsTest.class.getResourceAsStream("/test-cert.pem")) {
+            if (in != null) {
+                Files.copy(in, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+    }
+
+    @AfterAll
+    static void cleanupTestCertificate() throws IOException {
+        Files.deleteIfExists(Paths.get("/tmp/sieve-test.crt"));
+    }
 
     private ConnectAndListScripts connection;
 

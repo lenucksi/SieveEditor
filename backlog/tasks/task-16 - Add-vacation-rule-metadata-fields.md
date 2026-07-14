@@ -1,16 +1,17 @@
 ---
 id: TASK-16
 title: Add vacation rule metadata fields
-status: Done
+status: In Progress
 assignee: []
-created_date: '2026-05-20 14:58'
+created_date: 2026-05-20 14:58
+updated_date: 2026-06-17 07:25
 labels:
   - feature
 dependencies: []
 references:
   - CHANGELOG.md
 priority: medium
-ordinal: 16000
+ordinal: 4000
 ---
 
 ## Description

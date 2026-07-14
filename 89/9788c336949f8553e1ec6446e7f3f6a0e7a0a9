@@ -1,0 +1,47 @@
+src/test/java/de/febrildur/sieveeditor/system/jbr/JBRSystemUtilsTest.java
+  s_f32d1c1d498f77::t_9c27d584de5e4c 8-9,14-15
+  s_f32d1c1d498f77::t_20b481ffc9d435 1-7,10-13,16-22
+src/test/java/de/febrildur/sieveeditor/system/jbr/JBRFontSupportTest.java
+  s_f32d1c1d498f77::t_c6318ddbce54e3 26-32
+  s_f32d1c1d498f77::t_b34309ba6aee2a 10-11,16-17,21
+  s_f32d1c1d498f77::t_f88ce5769a852b 23
+  s_f32d1c1d498f77::t_c7c4678adfb33b 1-9,12-15,18-20,22,24-25,33
+src/test/java/de/febrildur/sieveeditor/system/jbr/JBRAccessibilitySupportTest.java
+  s_f32d1c1d498f77::t_d0f386091474c9 1-7,10-13,16-22
+  s_e2bdb6dade92b0::t_1997822423340b 8-9,14-15
+src/test/java/de/febrildur/sieveeditor/system/jbr/JBRSupportTest.java
+  s_f32d1c1d498f77::t_a3de6d01259c55 8-9,14-15,20,24-25,29-30
+  s_f32d1c1d498f77::t_c7ea461d50e8f0 1-7,10-13,16-18,21-23,26-28,31-32
+  s_f32d1c1d498f77::t_58bfdb4db81fd7 19
+src/test/java/de/febrildur/sieveeditor/system/jbr/JBRRoundedCornersTest.java
+  s_f32d1c1d498f77::t_473f2f5e1bef9d 1-22
+src/test/java/de/febrildur/sieveeditor/system/jbr/JBRWindowDecorationsTest.java
+  s_f32d1c1d498f77::t_4f069684495323 1-21
+src/test/java/de/febrildur/sieveeditor/system/jbr/JBRDesktopSupportTest.java
+  s_f32d1c1d498f77::t_897aa41c0f932b 1-10,13-16,19-30
+  s_f32d1c1d498f77::t_e7df61150def55 11-12,17-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "899788c336949f8553e1ec6446e7f3f6a0e7a0a9",
+  "prompts": {},
+  "sessions": {
+    "s_e2bdb6dade92b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09ecc9abafferu66DqhjnZve2Y",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_f32d1c1d498f77": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09e82daaeffertZjTpPPhHJWCq",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

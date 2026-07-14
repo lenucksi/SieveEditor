@@ -1,0 +1,50 @@
+src/test/java/de/febrildur/sieveeditor/system/SieveTokenMakerTest.java
+  s_f32d1c1d498f77::t_c937582a398134 624-626,701,1121-1122
+  s_c50b9b84405841::t_5a7a992b9abef0 344-345,350,939,945,951,957,963,969,975
+  s_c50b9b84405841::t_0d2b0df7bef08a 8,43-44,121,127-128,131,133,241,254,325-326,328-329,335-343,346-349,351-623,627-700,702-767,771-938,940-944,946-950,952-956,958-962,964-968,970-974,976-1120
+src/main/java/de/febrildur/sieveeditor/system/SieveTokenMaker.java
+  s_f32d1c1d498f77::t_c937582a398134 277,288,299,311,320-321,350-351
+  s_f32d1c1d498f77::t_56dd2430a778a4 400
+  s_7f00dc7bf62edd::t_d715a3140cdf78 15-20,48-69,95-122,149-150,156-157,162-184,187-188,212-213,219-220,229-233,235-260,265-276,278-287,289-298,300-310,312-319,347-349,364-365,377-380,385-393,395-399,401-402,408-415,425-426
+  s_d173620a06d0ec::t_455eab0691d49f 437,439,441-581
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "de60370a1028aaddf889f3eb8c7c17a79b2b012a",
+  "prompts": {},
+  "sessions": {
+    "s_7f00dc7bf62edd": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09eaeedb1ffedGDDmGO65RVEX5",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_c50b9b84405841": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09ea76adfffeaThokNwpmecuML",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_d173620a06d0ec": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09eb36539ffe3pw9F6OCSqhFQu",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_f32d1c1d498f77": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09e82daaeffertZjTpPPhHJWCq",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

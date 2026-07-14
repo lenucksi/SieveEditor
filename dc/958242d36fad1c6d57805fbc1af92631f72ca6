@@ -1,0 +1,93 @@
+"backlog/tasks/task-6 - Improve-test-coverage-to-70.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 4,6-7,14
+"backlog/tasks/task-33 - Extend-PropertiesSieve-Application-inner-class-coverage.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 43
+.github/workflows/actionlint.yml
+  s_9a9062e3a709f6::t_46d0735f6a1ada 24
+"backlog/docs/ci/doc-2 - CI-CD-Strategy-Overview.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 27
+"backlog/tasks/task-31 - Extract-CertificateDialog-formatting-logic-for-testability.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 49
+THIRD-PARTY.txt
+  s_9a9062e3a709f6::t_46d0735f6a1ada 8-44
+"backlog/tasks/task-3 - Use-OSS-Review-Toolkit-for-third-party-notices.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 4,6-7,14
+"backlog/tasks/task-28 - Refactor-ConnectAndListScripts-for-testability-DI.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 46
+"backlog/tasks/task-29 - Extract-ActionConnect-dialog-logic-for-testability.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 48
+src/main/java/de/febrildur/sieveeditor/system/SieveCompletionHandler.java
+  s_e2bdb6dade92b0::t_42bd066b8cd5e4 165
+  s_e2bdb6dade92b0::t_646746a16a05ce 1-8,10-164
+  s_e2bdb6dade92b0::t_e87ecfa2948840 9
+"backlog/tasks/task-16 - Add-vacation-rule-metadata-fields.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 4,6-7,14
+backlog/config.yml
+  s_9a9062e3a709f6::t_b35305151a354d 15
+"backlog/tasks/task-15 - Publish-Flatpak-to-Flathub.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 4,6-7,14
+"backlog/tasks/task-1 - Add-About-dialog-with-license-compliance-creator-credits.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 4,6-7
+"backlog/tasks/task-2 - Add-SPDX-headers-to-all-Java-and-shell-source-files.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 4,6-7,14
+"backlog/docs/flatpak/doc-1 - Flatpak-Packaging-Guide.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 8,12,16,21,26,33
+.github/workflows/ci.yml
+  s_9a9062e3a709f6::t_46d0735f6a1ada 164
+"backlog/tasks/task-17 - Implement-auto-reconnect-and-keep-alive.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 4,6-7,14
+src/main/java/de/febrildur/sieveeditor/system/SieveCompletionProvider.java
+  s_d6e797ed2590e5::t_143d4effd5e2d2 1-33,35,40,44,46-351
+  s_e2bdb6dade92b0::t_be97a672261606 36-39
+  s_d6e797ed2590e5::t_d8d1d3c0cf0c0e 34
+  s_d6e797ed2590e5::t_6430f8f7949515 41-43
+  s_d6e797ed2590e5::t_826124a7ce857a 45
+"backlog/docs/architecture/doc-3 - Credential-System-Architecture.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 17,24,30
+"backlog/tasks/task-32 - Add-Xvfb-CI-config-for-Swing-integration-tests.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 47
+src/test/java/de/febrildur/sieveeditor/system/SieveCompletionProviderTest.java
+  s_c50b9b84405841::t_1301ea61601bbb 1-311
+"backlog/tasks/task-30 - Extract-ActionActivateDeactivateScript-logic-for-testability.md"
+  s_9a9062e3a709f6::t_46d0735f6a1ada 49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "dc958242d36fad1c6d57805fbc1af92631f72ca6",
+  "prompts": {},
+  "sessions": {
+    "s_9a9062e3a709f6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09eee9a3fffe3xMNZ0U7b5O8ck",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_c50b9b84405841": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09ea76adfffeaThokNwpmecuML",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_d6e797ed2590e5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09eb34f8bffeNZnA58cBFfpJk0",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_e2bdb6dade92b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09ecc9abafferu66DqhjnZve2Y",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

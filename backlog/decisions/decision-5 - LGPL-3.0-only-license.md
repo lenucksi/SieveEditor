@@ -15,4 +15,3 @@ Licensed under LGPL-3.0-only. Allows integration with proprietary software while
 ## Consequences
 
 Compatible with LGPL and MIT dependencies. Proprietary uses must comply with LGPL terms. Flathub requires LGPL-3.0 license declaration.
-

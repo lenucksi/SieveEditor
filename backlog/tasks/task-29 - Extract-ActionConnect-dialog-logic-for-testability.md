@@ -45,6 +45,7 @@ Reference patterns: MVP with Humble Dialog pattern from Swing testability resear
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
+
 1. Extract class: server, port, username, password, selectedProfile, profiles list, currentDisplayedProfile
 2. Extract interface: show(), close(), showError(String), getFieldValues()→Model, setFieldValues(Model)
 3. Extract : handleOk(), handleProfileChange(), handleNewProfile(), handleDeleteProfile(), handleRenameProfile(), handleProfileSwitch()

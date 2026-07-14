@@ -15,4 +15,3 @@ Use JitPack for ManageSieveJ dependency. JitPack repository added to pom.xml. Ve
 ## Consequences
 
 CI builds without authentication. Dependabot and Renovate can manage updates. JitPack builds on-demand from tags.
-

@@ -15,4 +15,3 @@ UserPromptMasterKeyProvider is the only active backend. KeePassXC and OS Keychai
 ## Consequences
 
 Working credential storage via GUI prompt. Users can't use KeePassXC integration or OS keychain. All credential tests @Disabled for inactive backends.
-

@@ -15,4 +15,3 @@ Migrated to FlatLaf 3.7.1, a modern cross-platform Look-and-Feel with excellent 
 ## Consequences
 
 Sharp, scalable UI on 4K/Retina displays. Built-in dark mode. Continuous improvements from FlatLaf upstream.
-

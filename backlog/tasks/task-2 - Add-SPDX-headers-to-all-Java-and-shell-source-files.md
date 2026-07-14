@@ -1,17 +1,17 @@
 ---
 id: TASK-2
 title: Add SPDX headers to all Java and shell source files
-status: Done
+status: In Progress
 assignee: []
-created_date: '2026-05-20 14:58'
-updated_date: '2026-05-20 22:51'
+created_date: 2026-05-20 14:58
+updated_date: 2026-06-17 07:24
 labels:
   - licensing
 dependencies: []
 references:
   - dev-docs/human-todo-notes.txt
 priority: high
-ordinal: 2000
+ordinal: 1000
 ---
 
 ## Description

@@ -15,4 +15,3 @@ Merged all modules into a single-module Maven project. Removed parent POM, simpl
 ## Consequences
 
 Simpler build, faster compilation, easier CI configuration. Single JAR with all dependencies (uber-JAR via maven-assembly-plugin).
-

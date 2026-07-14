@@ -1,16 +1,17 @@
 ---
 id: TASK-17
 title: Implement auto-reconnect and keep-alive
-status: Done
+status: In Progress
 assignee: []
-created_date: '2026-05-20 14:58'
+created_date: 2026-05-20 14:58
+updated_date: 2026-06-17 07:25
 labels:
   - feature
 dependencies: []
 references:
   - CHANGELOG.md
 priority: medium
-ordinal: 17000
+ordinal: 5000
 ---
 
 ## Description

@@ -15,4 +15,3 @@ Host signed Flatpak repository on GitHub Pages. GPG-signed with public key check
 ## Consequences
 
 Users can install directly from GitHub Pages repo without Flathub. Provides fallback if Flathub publishing has delays. GPG signing ensures integrity.
-

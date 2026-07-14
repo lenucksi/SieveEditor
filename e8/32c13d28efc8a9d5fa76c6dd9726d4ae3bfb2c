@@ -1,0 +1,44 @@
+src/main/java/de/febrildur/sieveeditor/system/jbr/JBRAccessibilitySupport.java
+  s_f32d1c1d498f77::t_ebc779000c487d 1-50
+src/main/java/de/febrildur/sieveeditor/system/jbr/JBRDesktopSupport.java
+  s_f32d1c1d498f77::t_1b226ce66c402c 1-86
+src/main/java/de/febrildur/sieveeditor/system/jbr/JBRWindowDecorations.java
+  s_f32d1c1d498f77::t_193c8cb18302d1 1-51
+src/main/java/de/febrildur/sieveeditor/system/jbr/JBRRoundedCorners.java
+  s_f32d1c1d498f77::t_1bb615cf296a37 1-49
+src/main/java/de/febrildur/sieveeditor/system/jbr/JBRFontSupport.java
+  s_f32d1c1d498f77::t_edc0c0ee8a6de0 1-3,7-13,15-28,30-38,45-57,84,87-88
+  s_f32d1c1d498f77::t_db391e283b3ac7 4-6,14,29,39-42,58-83,85-86
+  s_f32d1c1d498f77::t_2e3c18d421653c 43-44
+src/main/java/de/febrildur/sieveeditor/system/jbr/JBRSystemUtils.java
+  s_f32d1c1d498f77::t_147ac982d854b7 1-46
+prek.toml
+  s_9a9062e3a709f6::t_424ab7527e8d15 2-5,7-10,12-13,15-16,18-29,33-40,43
+  s_9a9062e3a709f6::t_895338b488b7a8 1,6,11,14,17,30-32,41-42
+src/main/java/de/febrildur/sieveeditor/system/jbr/JBRSupport.java
+  s_f32d1c1d498f77::t_cab3aa4079a6f4 1-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e832c13d28efc8a9d5fa76c6dd9726d4ae3bfb2c",
+  "prompts": {},
+  "sessions": {
+    "s_9a9062e3a709f6": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09eee9a3fffe3xMNZ0U7b5O8ck",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_f32d1c1d498f77": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09e82daaeffertZjTpPPhHJWCq",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

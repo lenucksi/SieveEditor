@@ -1,0 +1,22 @@
+src/test/java/de/febrildur/sieveeditor/system/ConnectAndListScriptsTest.java
+  s_c403489c3daaf5::t_6b0eaa2bc17378 11-12,21-25
+  s_c403489c3daaf5::t_23c4ea4e812891 36-50
+src/test/resources/test-cert.pem
+  s_c403489c3daaf5::t_297527fcfdaff1 1-19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5a3f119397c1a2b93f5e1e04059d9dd4b8ae970b",
+  "prompts": {},
+  "sessions": {
+    "s_c403489c3daaf5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09f8b5b9effem3gQVtWGUKjSmU",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

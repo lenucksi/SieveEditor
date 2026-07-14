@@ -1,0 +1,19 @@
+src/main/java/de/febrildur/sieveeditor/actions/ActionConnect.java
+  s_e2bdb6dade92b0::t_653dd18d68806e 145-146
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "cb46a78d764f67eef33bc44eb8a3cd0c023ddcbf",
+  "prompts": {},
+  "sessions": {
+    "s_e2bdb6dade92b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09ecc9abafferu66DqhjnZve2Y",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

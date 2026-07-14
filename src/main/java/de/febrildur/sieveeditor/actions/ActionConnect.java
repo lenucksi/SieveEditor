@@ -142,6 +142,8 @@ public class ActionConnect extends AbstractAction {
 
             pack();
             setLocationRelativeTo(parent);
+            getRootPane().setDefaultButton(buttonOK);
+            tfPassword.requestFocusInWindow();
         }
 
         void setPresenter(ConnectionDialogPresenter presenter) {

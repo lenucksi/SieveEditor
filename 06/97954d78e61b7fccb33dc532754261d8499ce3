@@ -1,0 +1,49 @@
+src/main/java/de/febrildur/sieveeditor/actions/ActionConnect.java
+  s_e2bdb6dade92b0::t_e3e5f353b82f5e 11-12
+  s_e2bdb6dade92b0::t_c6faf6c57e2e3e 148-153
+src/main/java/de/febrildur/sieveeditor/system/LayeredCompletionOverlay.java
+  s_e2bdb6dade92b0::t_5b09d1bdf1da14 379-400
+  s_e2bdb6dade92b0::t_e814b006de5f12 6-8,20-22,24,35-36,42,58,63-73,82,89,92,99-100,119-126,132,137-145,147,158-164,167-175,179,190-195,197-221,227-228,290-377,401-434
+  s_e2bdb6dade92b0::t_49db0ddb856dae 378
+src/main/java/de/febrildur/sieveeditor/system/SieveCompletionProvider.java
+  s_e2bdb6dade92b0::t_23f886c73c7e1d 66-68,72-89,168
+  s_e2bdb6dade92b0::t_2b8ced679bdfe5 90,169-249
+  s_435dd8011c507c::t_a51f1f79614677 91
+src/main/java/de/febrildur/sieveeditor/Application.java
+  s_e2bdb6dade92b0::t_5dbfc204e6637c 332-338
+  s_e2bdb6dade92b0::t_e22d2cfe33b441 416-417
+.aislop/history.jsonl
+  s_d9edaadfee6a03::t_79bd5f48f1cb36 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "0697954d78e61b7fccb33dc532754261d8499ce3",
+  "prompts": {},
+  "sessions": {
+    "s_435dd8011c507c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_099b29f72ffeefMYIGcGKMNfSm",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_d9edaadfee6a03": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09a862754ffelgxA0k6HIdVQSb",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_e2bdb6dade92b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09ecc9abafferu66DqhjnZve2Y",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

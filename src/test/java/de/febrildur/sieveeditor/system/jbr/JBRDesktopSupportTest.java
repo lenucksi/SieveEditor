@@ -5,12 +5,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.net.URI;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
  * Under Maven test (JaCoCo agent), JBR.isAvailable() returns false.
  * DesktopActions gracefully falls back to java.awt.Desktop.
  */
+@Tag("gui")
 class JBRDesktopSupportTest {
 
     @Test

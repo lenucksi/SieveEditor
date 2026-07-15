@@ -18,7 +18,7 @@ public final class JBRRoundedCorners {
                 supported = (Boolean) jbrClass.getMethod("isRoundedCornersManagerSupported").invoke(null);
             }
         } catch (Exception e) {
-            // JBR not available
+            LOG.fine("JBR not available: " + e.getMessage());
         }
         SUPPORTED = supported;
     }

@@ -20,7 +20,7 @@ public final class JBRAccessibilitySupport {
                 supported = (Boolean) jbrClass.getMethod("isAccessibleAnnouncerSupported").invoke(null);
             }
         } catch (Exception e) {
-            // JBR not available
+            LOG.fine("JBR not available: " + e.getMessage());
         }
         SUPPORTED = supported;
     }

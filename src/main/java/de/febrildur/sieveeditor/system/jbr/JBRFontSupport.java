@@ -23,7 +23,7 @@ public final class JBRFontSupport {
                 supported = fontExt != null;
             }
         } catch (Exception e) {
-            // JBR not available
+            LOG.fine("JBR not available: " + e.getMessage());
         }
         SUPPORTED = supported;
         jbrMonoFont = discoverJbrMonoFont();

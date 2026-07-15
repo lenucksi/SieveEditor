@@ -1,3 +1,4 @@
+// aislop-ignore-file complexity/function-too-long -- Tokenizer State-Machine ist inhärent lang
 package de.febrildur.sieveeditor.system;
 // SPDX-FileCopyrightText: 2024 Zwixx
 // SPDX-FileCopyrightText: 2025 Claude
@@ -17,6 +18,11 @@ public class SieveTokenMaker extends AbstractTokenMaker {
 
     // Instance variable to track heredoc state across line-by-line getTokenList() calls
     private boolean inMultilineString = false;
+
+    @Override
+    public boolean getCurlyBracesDenoteCodeBlocks(int languageIndex) {
+        return true;
+    }
 
     /**
      * Returns a list of tokens representing the given text.
@@ -45,8 +51,7 @@ public class SieveTokenMaker extends AbstractTokenMaker {
         int currentTokenStart = offset;
         int currentTokenType = startTokenType;
 
-        // --- Handle text: heredoc multi-line string continuation (TASK-35.3) ---
-        if (inMultilineString) {
+		if (inMultilineString) {
             String trimmedLine = new String(array, offset, count).trim();
             // Check for terminator: a line with just "." (optionally with trailing CRLF/whitespace)
             if (trimmedLine.equals(".")) {
@@ -384,8 +389,7 @@ public class SieveTokenMaker extends AbstractTokenMaker {
             }
         }
 
-        // --- Check for text: heredoc start (TASK-35.3) ---
-        if (sawTextBeforeColon && textColonPos >= 0) {
+		if (sawTextBeforeColon && textColonPos >= 0) {
             if (currentTokenType == TokenTypes.ANNOTATION) {
                 // Still in annotation (no whitespace after ':')
                 // If annotation is just ':' (single char at end of line), start heredoc
@@ -427,8 +431,7 @@ public class SieveTokenMaker extends AbstractTokenMaker {
                 addNullToken();
         }
 
-        // Return the first token in our linked list.
-        return firstToken;
+		return firstToken;
 
     }
 
@@ -436,8 +439,7 @@ public class SieveTokenMaker extends AbstractTokenMaker {
     public TokenMap getWordsToHighlight() {
         TokenMap tokenMap = new TokenMap(true); // case-insensitive
 
-        // === Control Flow Commands (RESERVED_WORD) ===
-        tokenMap.put("if", TokenTypes.RESERVED_WORD);
+		tokenMap.put("if", TokenTypes.RESERVED_WORD);
         tokenMap.put("elsif", TokenTypes.RESERVED_WORD);
         tokenMap.put("else", TokenTypes.RESERVED_WORD);
         tokenMap.put("stop", TokenTypes.RESERVED_WORD);
@@ -446,8 +448,7 @@ public class SieveTokenMaker extends AbstractTokenMaker {
         tokenMap.put("foreverypart", TokenTypes.RESERVED_WORD);
         tokenMap.put("require", TokenTypes.RESERVED_WORD);
 
-        // === Action Commands (FUNCTION) ===
-        tokenMap.put("keep", TokenTypes.FUNCTION);
+		tokenMap.put("keep", TokenTypes.FUNCTION);
         tokenMap.put("discard", TokenTypes.FUNCTION);
         tokenMap.put("fileinto", TokenTypes.FUNCTION);
         tokenMap.put("redirect", TokenTypes.FUNCTION);
@@ -472,8 +473,7 @@ public class SieveTokenMaker extends AbstractTokenMaker {
         tokenMap.put("deleteheader", TokenTypes.FUNCTION);
         tokenMap.put("addheader", TokenTypes.FUNCTION);
 
-        // === Test Commands (RESERVED_WORD_2) ===
-        tokenMap.put("address", TokenTypes.RESERVED_WORD_2);
+		tokenMap.put("address", TokenTypes.RESERVED_WORD_2);
         tokenMap.put("envelope", TokenTypes.RESERVED_WORD_2);
         tokenMap.put("exists", TokenTypes.RESERVED_WORD_2);
         tokenMap.put("header", TokenTypes.RESERVED_WORD_2);
@@ -496,14 +496,11 @@ public class SieveTokenMaker extends AbstractTokenMaker {
         tokenMap.put("true", TokenTypes.RESERVED_WORD_2);
         tokenMap.put("false", TokenTypes.RESERVED_WORD_2);
 
-        // === Logical Operators (OPERATOR) ===
-        tokenMap.put("allof", TokenTypes.OPERATOR);
+		tokenMap.put("allof", TokenTypes.OPERATOR);
         tokenMap.put("anyof", TokenTypes.OPERATOR);
         tokenMap.put("not", TokenTypes.OPERATOR);
 
-        // === Tags (ANNOTATION) ===
-        // Match-type
-        tokenMap.put(":is", TokenTypes.ANNOTATION);
+		tokenMap.put(":is", TokenTypes.ANNOTATION);
         tokenMap.put(":contains", TokenTypes.ANNOTATION);
         tokenMap.put(":matches", TokenTypes.ANNOTATION);
         tokenMap.put(":regex", TokenTypes.ANNOTATION);

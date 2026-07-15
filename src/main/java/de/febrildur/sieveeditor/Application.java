@@ -1,3 +1,4 @@
+// aislop-ignore-file complexity/function-too-long -- Swing-Konstruktor mit vielen GUI-Initialisierungen
 package de.febrildur.sieveeditor;
 // SPDX-FileCopyrightText: 2019, 2020, 2024 Zwixx
 // SPDX-FileCopyrightText: 2025 Claude
@@ -103,7 +104,7 @@ public class Application extends JFrame {
 	private AbstractAction actionZoomOut;
 	private AbstractAction actionZoomReset;
 
-	private AbstractAction actionQuit = new AbstractAction("Quit") {
+		private AbstractAction actionQuit = new AbstractAction("Quit") {
 		{
 			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
 		}
@@ -117,6 +118,7 @@ public class Application extends JFrame {
 				}
 			}
 			de.febrildur.sieveeditor.system.jbr.JBRSystemUtils.tryCompactMemory();
+			dispose();
 			System.exit(0);
 		}
 	};
@@ -127,10 +129,7 @@ public class Application extends JFrame {
 
 	public Application(String forcedBackend) {
 
-		// Run migration once
 		PropertiesSieve.migrateOldProperties();
-
-		// Load last used profile
 		String lastProfile = PropertiesSieve.getLastUsedProfile();
 		prop = new PropertiesSieve(lastProfile, forcedBackend);
 
@@ -268,7 +267,6 @@ public class Application extends JFrame {
 		searchPanel = new de.febrildur.sieveeditor.ui.SearchPanel();
 		searchPanel.setTargetEditor(textArea);
 
-		// Create rule navigator panel
 		ruleNavigator = new de.febrildur.sieveeditor.ui.RuleNavigatorPanel();
 		ruleNavigator.setJumpToLineCallback(this::jumpToLine);
 
@@ -298,16 +296,30 @@ public class Application extends JFrame {
 
 		setContentPane(cp);
 		setTitle("Sieve Editor");
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosed(java.awt.event.WindowEvent e) {
+				System.exit(0);
+			}
+		});
 		pack();
 
 		// Apply JBR window enhancements (graceful fallback on non-JBR runtimes)
 		de.febrildur.sieveeditor.system.jbr.JBRWindowDecorations.applyCustomTitleBar(this, 0f);
 		de.febrildur.sieveeditor.system.jbr.JBRRoundedCorners.apply(this);
 
-		// Install autocomplete handler directly (no invokeLater needed for key bindings).
-		// Uses JPopupMenu instead of JWindow to avoid Wayland surface issues.
-		new de.febrildur.sieveeditor.system.SieveCompletionHandler(textArea);
+		// Install autocomplete using the original AutoCompletion library
+		// (patched locally for Wayland JWindow parent-relative positioning)
+		LOGGER.fine("Installing AutoCompletion on textArea: " + textArea.getClass().getName());
+		LOGGER.fine("textArea showing: " + textArea.isShowing() + ", visible: " + textArea.isVisible());
+		de.febrildur.sieveeditor.system.SieveCompletionProvider sieveProvider
+			= new de.febrildur.sieveeditor.system.SieveCompletionProvider();
+		org.fife.ui.autocomplete.AutoCompletion ac = new org.fife.ui.autocomplete.AutoCompletion(sieveProvider);
+		ac.setAutoActivationEnabled(true);
+		ac.setAutoActivationDelay(300);
+		ac.install(textArea);
+		LOGGER.fine("AutoCompletion installed");
 
 		// Set a reasonable minimum window size
 		setMinimumSize(new java.awt.Dimension(UIScale.scale(600), UIScale.scale(400)));
@@ -321,13 +333,10 @@ public class Application extends JFrame {
 				if (ruleNavigator != null) {
 					ruleNavigator.reapplyWarningPanelSize();
 
-					// Auto-resize navigator width on window resize (only if user hasn't manually resized)
-					// and only if a script is loaded
 					if (!userHasManuallyResizedDivider && ruleNavigator.isWidthAutoSized()
 							&& mainSplitPane != null && mainSplitPane.getWidth() > 0) {
 						SwingUtilities.invokeLater(() -> {
 							int recommendedWidth = ruleNavigator.getRecommendedWidth();
-							// Set divider location from right edge
 							isAdjustingDividerProgrammatically = true;
 							try {
 								mainSplitPane.setDividerLocation(
@@ -383,13 +392,12 @@ public class Application extends JFrame {
 		// AutoCompletion popup windows are shown/hidden on Wayland.
 		Logger.getLogger("sun.awt.wl.im.text_input_unstable_v3").setLevel(Level.OFF);
 
-		// Parse command-line arguments
 		boolean verbose = false;
 		String forcedBackend = null;
 
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
-			if (arg.equals("-v") || arg.equals("--verbose")) {
+			if (arg.matches("-v+") || arg.equals("--verbose")) {
 				verbose = true;
 			} else if (arg.equals("--backend") && i + 1 < args.length) {
 				forcedBackend = args[++i];
@@ -399,10 +407,35 @@ public class Application extends JFrame {
 			}
 		}
 
-		// Configure logging level
+		// Count verbosity level: -v=1, -vv=2, -vvv=3
+		int verbosity = 0;
 		if (verbose) {
-			enableVerboseLogging();
-			LOGGER.log(Level.INFO, "Verbose logging enabled");
+			for (String arg : args) {
+				if (arg.equals("--verbose")) {
+					verbosity = 1;
+				} else if (arg.matches("-v+")) {
+					// Each v adds one level
+					int count = 0;
+					for (int j = 1; j < arg.length() && arg.charAt(j) == 'v'; j++) {
+						count++;
+					}
+					verbosity = Math.max(verbosity, count);
+				}
+			}
+		}
+
+		if (verbose) {
+			enableVerboseLogging(verbosity);
+			LOGGER.log(Level.INFO, "Verbose logging enabled (level {0})", verbosity);
+		}
+
+		// Log which autocomplete library version is loaded (confirms patched build)
+		try {
+			java.net.URL acUrl = org.fife.ui.autocomplete.AutoCompletion.class
+				.getProtectionDomain().getCodeSource().getLocation();
+			LOGGER.log(Level.INFO, "AutoCompletion library: {0}", acUrl);
+		} catch (Exception e) {
+			LOGGER.log(Level.FINE, "Could not determine AutoCompletion library source", e);
 		}
 
 		// Log JBR API availability (graceful fallback if not on full JBR)
@@ -430,8 +463,9 @@ public class Application extends JFrame {
 		System.out.println("Usage: java -jar SieveEditor.jar [options]");
 		System.out.println();
 		System.out.println("Options:");
-		System.out.println("  -v, --verbose           Enable verbose logging");
-		System.out.println("  --backend <type>        Force scrollPaneecific credential backend");
+		System.out.println("  -v, -vv, -vvv        Enable verbose logging (more vs = more detail)");
+		System.out.println("  --verbose            Alias for -v");
+		System.out.println("  --backend <type>     Force credential backend");
 		System.out.println("                          Types: keepassxc, keychain, prompt");
 		System.out.println("  -h, --help              Show this help message");
 		System.out.println();
@@ -441,21 +475,26 @@ public class Application extends JFrame {
 		System.out.println("  java -jar SieveEditor.jar -v --backend prompt");
 	}
 
-	private static void enableVerboseLogging() {
-		// Set root logger to INFO level
-		Logger rootLogger = Logger.getLogger("");
-		rootLogger.setLevel(Level.ALL);
+	private static void enableVerboseLogging(int level) {
+		Level ourLevel;
+		if (level >= 3) {
+			ourLevel = Level.FINEST;
+		} else if (level >= 2) {
+			ourLevel = Level.FINER;
+		} else {
+			ourLevel = Level.FINE;
+		}
 
-		// Configure console handler
-		for (var handler : rootLogger.getHandlers()) {
+		// Only set ConsoleHandler level (don't touch root logger — avoids AWT internals spam)
+		for (var handler : Logger.getLogger("").getHandlers()) {
 			if (handler instanceof ConsoleHandler) {
-				handler.setLevel(Level.ALL);
+				handler.setLevel(ourLevel);
 			}
 		}
 
-		// Set our package loggers to FINE level for detailed output
-		Logger.getLogger("de.febrildur.sieveeditor").setLevel(Level.FINE);
-		Logger.getLogger("de.febrildur.sieveeditor.system.credentials").setLevel(Level.FINE);
+		// Set our package loggers to the requested level
+		Logger.getLogger("de.febrildur.sieveeditor").setLevel(ourLevel);
+		Logger.getLogger("de.febrildur.sieveeditor.system").setLevel(ourLevel);
 	}
 
 	public ConnectAndListScripts getServer() {
@@ -530,65 +569,37 @@ public class Application extends JFrame {
 		actionQuit.setEnabled(true);
 	}
 
-	/**
-	 * Jumps to a scrollPaneecific line in the script editor and highlights it.
-	 * Scrolls the editor so the line appears at the top of the viewport.
-	 *
-	 * @param lineNumber the 1-based line number to jump to
-	 */
 	public void jumpToLine(int lineNumber) {
 		if (textArea == null || lineNumber < 1) {
 			return;
 		}
 
 		try {
-			// Convert 1-based line number to 0-based for RSyntaxTextArea
 			int zeroBasedLine = lineNumber - 1;
-
-			// Get the offset of the line start
 			int lineStartOffset = textArea.getLineStartOffset(zeroBasedLine);
 			int lineEndOffset = textArea.getLineEndOffset(zeroBasedLine);
-
-			// Move caret to the line
 			textArea.setCaretPosition(lineStartOffset);
-
-			// Select the entire line to highlight it
 			textArea.setSelectionStart(lineStartOffset);
-			textArea.setSelectionEnd(lineEndOffset - 1); // -1 to exclude newline
-
-			// Scroll to show line at top of viewport
-			// Get the rectangle for this line
+			textArea.setSelectionEnd(lineEndOffset - 1);
 			java.awt.Rectangle lineRect = textArea.modelToView(lineStartOffset);
 			if (lineRect != null) {
-				// Expand rectangle to viewport height so line appears at top
 				java.awt.Rectangle visibleRect = textArea.getVisibleRect();
 				lineRect.height = visibleRect.height;
 				textArea.scrollRectToVisible(lineRect);
 			}
-
-			// Ensure the text area has focus
 			textArea.requestFocusInWindow();
 		} catch (javax.swing.text.BadLocationException e) {
-			// Line number is out of range - ignore silently
-			// This can happen if error message refers to a line that doesn't exist
 		}
 	}
 
-	/**
-	 * Updates the rule navigator with the current script content.
-	 * Auto-sizes the navigator width on first load only.
-	 */
 	public void updateRuleNavigator() {
 		if (ruleNavigator != null) {
 			ruleNavigator.updateRules(getScriptText());
 
-			// Auto-size navigator width based on content (only on first load)
 			if (!ruleNavigator.isWidthAutoSized()) {
-				// Use SwingUtilities.invokeLater to ensure layout is complete
-				SwingUtilities.invokeLater(() -> {
+			SwingUtilities.invokeLater(() -> {
 					if (mainSplitPane != null && mainSplitPane.getWidth() > 0) {
 						int recommendedWidth = ruleNavigator.getRecommendedWidth();
-						// Set divider location from right edge
 						isAdjustingDividerProgrammatically = true;
 						try {
 							mainSplitPane.setDividerLocation(mainSplitPane.getWidth() - recommendedWidth - mainSplitPane.getDividerSize());
@@ -603,14 +614,8 @@ public class Application extends JFrame {
 	}
 
 
-	/**
-	 * Sets up debounced auto-update of the rule navigator when text changes.
-	 * Uses a 500ms delay to avoid parsing on every keystroke.
-	 */
 	private void setupNavigatorAutoUpdate() {
-		// Create debounce timer (500ms delay)
 		parserDebounceTimer = new javax.swing.Timer(500, e -> {
-			// Update navigator with current text
 			updateRuleNavigator();
 		});
 		parserDebounceTimer.setRepeats(false); // Only fire once after delay

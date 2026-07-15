@@ -16,7 +16,7 @@ import hashlib
 import argparse
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Dict, Set, Optional, List, Tuple, Any
+from typing import Dict, Set, Optional, List
 
 
 def extract_relative_path(url: str) -> Optional[str]:

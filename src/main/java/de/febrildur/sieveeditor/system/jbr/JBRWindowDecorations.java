@@ -18,7 +18,7 @@ public final class JBRWindowDecorations {
                 supported = (Boolean) jbrClass.getMethod("isWindowDecorationsSupported").invoke(null);
             }
         } catch (Exception e) {
-            // JBR not available
+            LOG.fine("JBR not available: " + e.getMessage());
         }
         SUPPORTED = supported;
     }

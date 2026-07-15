@@ -62,7 +62,10 @@ class ConnectAndListScriptsTest {
     private ManageSieveResponse mockResponse;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        java.lang.reflect.Field intervalField = ConnectAndListScripts.class.getDeclaredField("KEEP_ALIVE_INTERVAL_MS");
+        intervalField.setAccessible(true);
+        intervalField.set(null, 5 * 60 * 1000L);
         connection = new ConnectAndListScripts();
         lenient().when(mockFactory.create()).thenReturn(mockClient);
         diConnection = new ConnectAndListScripts(mockFactory);

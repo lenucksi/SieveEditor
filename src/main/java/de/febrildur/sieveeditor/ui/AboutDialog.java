@@ -18,8 +18,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AboutDialog extends JDialog {
+
+    private static final Logger LOGGER = Logger.getLogger(AboutDialog.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -126,7 +130,7 @@ public class AboutDialog extends JDialog {
         try {
             Desktop.getDesktop().browse(new java.net.URI(GITHUB_URL));
         } catch (Exception ex) {
-            // Ignore if desktop browse is not supported
+            LOGGER.log(Level.FINE, "Desktop browse not supported: {0}", ex.getMessage());
         }
     }
 

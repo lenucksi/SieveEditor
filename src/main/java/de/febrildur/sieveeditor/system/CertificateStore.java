@@ -23,11 +23,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Manages storage and retrieval of user certificate trust decisions.
- * Stores SHA-256 fingerprints of certificates that users have explicitly
- * trusted or rejected.
- */
 public class CertificateStore {
 
 	private static final Logger LOGGER = Logger.getLogger(CertificateStore.class.getName());
@@ -236,7 +231,7 @@ public class CertificateStore {
 			Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rw-------");
 			Files.setPosixFilePermissions(filePath, perms);
 		} catch (UnsupportedOperationException e) {
-			// Non-POSIX system (Windows) - permissions handled by OS
+			LOGGER.log(Level.FINE, "Non-POSIX system - permissions handled by OS", e);
 		} catch (IOException e) {
 			LOGGER.log(Level.WARNING, "Failed to set file permissions", e);
 		}
@@ -247,7 +242,7 @@ public class CertificateStore {
 			Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwx------");
 			Files.setPosixFilePermissions(dirPath, perms);
 		} catch (UnsupportedOperationException e) {
-			// Non-POSIX system (Windows) - permissions handled by OS
+			LOGGER.log(Level.FINE, "Non-POSIX system - permissions handled by OS", e);
 		} catch (IOException e) {
 			LOGGER.log(Level.WARNING, "Failed to set directory permissions", e);
 		}

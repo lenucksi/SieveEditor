@@ -52,9 +52,6 @@ public interface MasterKeyProvider {
 	 */
 	String getDescription();
 
-	/**
-	 * Closes any resources used by this provider.
-	 */
 	default void close() {
 		// Default: no cleanup needed
 	}

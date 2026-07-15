@@ -101,7 +101,6 @@ public class InteractiveTrustManager implements X509TrustManager {
 
 	@Override
 	public X509Certificate[] getAcceptedIssuers() {
-		// Return accepted issuers from system trust manager
 		return defaultTrustManager.getAcceptedIssuers();
 	}
 

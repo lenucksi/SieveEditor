@@ -185,7 +185,7 @@ public class MasterKeyProviderFactory {
 		MasterKeyProvider userPromptProvider = null;
 
 		// DEACTIVATED: KeePassXC backend (broken)
-		// TODO: Re-enable when fixed
+		// TODO(#117): Re-enable when fixed
 		// if (keepassXCInstance == null) {
 		// keepassXCInstance = new KeePassXCMasterKeyProvider();
 		// }
@@ -194,7 +194,7 @@ public class MasterKeyProviderFactory {
 		// }
 
 		// DEACTIVATED: OS Keychain backend (broken)
-		// TODO: Re-enable when fixed
+		// TODO(#117): Re-enable when fixed
 		// if (osKeychainInstance == null) {
 		// osKeychainInstance = new OSKeychainMasterKeyProvider();
 		// }
@@ -234,7 +234,6 @@ public class MasterKeyProviderFactory {
 			throw new CredentialException("User cancelled");
 		}
 
-		// Save preference
 		saveBackendPreference(userPromptProvider.getName());
 
 		LOGGER.log(Level.INFO, "Using Manual Password Entry backend");

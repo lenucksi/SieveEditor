@@ -25,9 +25,8 @@ public class ActionSaveScript extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// Validate script before saving
 		if (!validateBeforeSave()) {
-			return; // User cancelled or validation failed
+			return;
 		}
 
 		parentFrame.save();
@@ -42,15 +41,10 @@ public class ActionSaveScript extends AbstractAction {
 	 */
 	private boolean validateBeforeSave() {
 		try {
-			// Run script validation
 			String validationResult = parentFrame.getServer().checkScript(parentFrame.getScriptText());
-
-			// Validation passed - show result and continue with save
-			// Note: Some servers return "OK" or empty string on success
 			return true;
 
 		} catch (java.io.IOException | com.fluffypeople.managesieve.ParseException e) {
-			// Validation failed - parse error and ask user
 			return handleValidationError(e.getMessage());
 		}
 	}
@@ -94,7 +88,6 @@ public class ActionSaveScript extends AbstractAction {
 				parentFrame.jumpToLine(errorInfo.getLineNumber().get());
 				return false; // Don't save
 			} else if (choice == 1) {
-				// Save Anyway
 				return true;
 			} else {
 				// Cancel (or dialog closed)

@@ -407,7 +407,6 @@ public class PropertiesSieve {
 	 * @return true if the profile was renamed successfully, false otherwise
 	 */
 	public static boolean renameProfile(String oldName, String newName) {
-		// Validate inputs
 		if (oldName == null || oldName.trim().isEmpty()) {
 			LOGGER.log(Level.WARNING, "Cannot rename profile: old name is null or empty");
 			return false;
@@ -417,7 +416,6 @@ public class PropertiesSieve {
 			return false;
 		}
 
-		// Don't allow renaming to the same name
 		if (oldName.equals(newName)) {
 			LOGGER.log(Level.FINE, "Profile names are identical, no rename needed");
 			return true; // Not an error, just a no-op

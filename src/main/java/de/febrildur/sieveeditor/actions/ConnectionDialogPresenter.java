@@ -5,6 +5,8 @@ package de.febrildur.sieveeditor.actions;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.fluffypeople.managesieve.ParseException;
 import de.febrildur.sieveeditor.Application;
@@ -12,6 +14,8 @@ import de.febrildur.sieveeditor.system.ConnectAndListScripts;
 import de.febrildur.sieveeditor.system.PropertiesSieve;
 
 public class ConnectionDialogPresenter {
+
+    private static final Logger LOGGER = Logger.getLogger(ConnectionDialogPresenter.class.getName());
 
     private final ConnectionDialogView view;
     private final Application application;
@@ -37,7 +41,7 @@ public class ConnectionDialogPresenter {
             try {
                 props.load();
             } catch (IOException e) {
-                // empty
+                LOGGER.log(Level.FINE, "Failed to load profile: {0}", e.getMessage());
             }
             ConnectionDialogModel model = new ConnectionDialogModel();
             model.setServer(props.getServer());
@@ -105,7 +109,7 @@ public class ConnectionDialogPresenter {
         try {
             newProps.load();
         } catch (IOException e) {
-            // empty
+            LOGGER.log(Level.FINE, "Failed to load profile ''{0}'': {1}", new Object[]{newProfile, e.getMessage()});
         }
 
         ConnectionDialogModel newModel = new ConnectionDialogModel();
@@ -159,7 +163,7 @@ public class ConnectionDialogPresenter {
             try {
                 newProps.load();
             } catch (IOException e) {
-                // empty
+                LOGGER.log(Level.FINE, "Failed to load profile ''{0}'': {1}", new Object[]{newSelection, e.getMessage()});
             }
             ConnectionDialogModel model = new ConnectionDialogModel();
             model.setServer(newProps.getServer());

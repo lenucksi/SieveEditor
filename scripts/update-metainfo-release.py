@@ -14,9 +14,8 @@ If version is not specified, it updates the latest release from CHANGELOG.md
 import re
 import sys
 import xml.etree.ElementTree as ET
-from datetime import datetime
 from pathlib import Path
-from typing import Optional, Dict, List
+from typing import Optional, Dict
 
 
 def compare_versions(v1: str, v2: str) -> int:
@@ -34,7 +33,7 @@ def compare_versions(v1: str, v2: str) -> int:
         """Convert version string to list of integers."""
         try:
             return [int(x) for x in v.split('.')]
-        except:
+        except ValueError:
             return [0]
 
     parts1 = normalize(v1)

@@ -39,163 +39,134 @@ public class RuleNavigatorPanel extends JPanel {
 			TitledBorder.DEFAULT_POSITION
 		));
 
-		// Create warnings list FIRST (needed by ruleList listener)
 		warningListModel = new DefaultListModel<>();
 		warningList = new JList<>(warningListModel);
 		warningList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		warningList.setFont(warningList.getFont().deriveFont(Font.ITALIC));
+		warningList.setCellRenderer(new WarningCellRenderer());
 
-		// Custom cell renderer for color-coded warnings
-		warningList.setCellRenderer(new DefaultListCellRenderer() {
-			@Override
-			public Component getListCellRendererComponent(JList<?> list, Object value,
-														  int index, boolean isSelected, boolean cellHasFocus) {
-				super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-				if (value instanceof SieveWarning warning) {
-					setText(warning.getDisplayText());
-
-					// Color-code by severity (only when not selected)
-					if (!isSelected) {
-						if (warning.getSeverity() == SieveWarning.Severity.ERROR) {
-							setForeground(new Color(139, 0, 0)); // Dark red
-						} else {
-							setForeground(new Color(255, 140, 0)); // Dark orange
-						}
-					}
-
-					// Tooltip shows full message
-					setToolTipText(warning.getMessage());
-				}
-				return this;
-			}
-		});
-
-		// Create list model and list for rules
 		listModel = new DefaultListModel<>();
 		ruleList = new JList<>(listModel);
 		ruleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		ruleList.setCellRenderer(new RuleCellRenderer());
 
-		// Custom cell renderer to show rule display text
-		ruleList.setCellRenderer(new DefaultListCellRenderer() {
-			@Override
-			public Component getListCellRendererComponent(JList<?> list, Object value,
-														  int index, boolean isSelected, boolean cellHasFocus) {
-				super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-				if (value instanceof SieveRule rule) {
-					setText(rule.getDisplayText());
+		ruleList.addListSelectionListener(this::handleRuleSelection);
+		warningList.addListSelectionListener(this::handleWarningSelection);
+		warningList.addMouseListener(new WarningMouseAdapter());
 
-					// Build structured multiline tooltip for all rules
-					StringBuilder tooltip = new StringBuilder("<html>");
-
-					// First line: Full comment
-					tooltip.append(rule.getComment()).append("<br><br>");
-
-					// Parsed fields
-					tooltip.append("<b>UniqueId:</b> ").append(rule.getRuleNumber()).append("<br>");
-					tooltip.append("<b>Rulename:</b> ").append(rule.getLabel().isEmpty() ? "(empty)" : rule.getLabel()).append("<br>");
-
-					// Flag (if present and not empty)
-					if (rule.getFlag() != null && !rule.getFlag().trim().isEmpty()) {
-						tooltip.append("<b>Flag:</b> ").append(rule.getFlag()).append("<br>");
-					}
-
-					// Vacation metadata (if present)
-					if (rule.getLastModified() != null) {
-						tooltip.append("<b>Last Modified:</b> ").append(rule.getLastModified()).append("<br>");
-					}
-					if (rule.getModifiedBy() != null) {
-						tooltip.append("<b>Modified By:</b> ").append(rule.getModifiedBy());
-					}
-
-					tooltip.append("</html>");
-					setToolTipText(tooltip.toString());
-				}
-				return this;
-			}
-		});
-
-		// Add click listener for rules
-		ruleList.addListSelectionListener(e -> {
-			if (!e.getValueIsAdjusting() && jumpToLineCallback != null) {
-				SieveRule selected = ruleList.getSelectedValue();
-				if (selected != null) {
-					warningList.clearSelection(); // Clear warning selection
-					jumpToLineCallback.accept(selected.getLineNumber());
-				}
-			}
-		});
-
-		// Scroll pane for rules list
 		JScrollPane scrollPane = new JScrollPane(ruleList);
 		scrollPane.setPreferredSize(new Dimension(200, 200));
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		// Add selection listener for warnings - handles first selection
-		warningList.addListSelectionListener(e -> {
-			if (!e.getValueIsAdjusting() && jumpToLineCallback != null) {
-				SieveWarning selected = warningList.getSelectedValue();
-				if (selected != null && selected != lastClickedWarning) {
-					ruleList.clearSelection(); // Clear rule selection
-
-					// First click on this warning - reset cycle
-					if (lastClickedWarning != null) {
-						lastClickedWarning.resetCycle();
-					}
-					lastClickedWarning = selected;
-
-					// Jump to the current line number
-					Integer lineNumber = selected.getCurrentLineNumber();
-					if (lineNumber != null) {
-						jumpToLineCallback.accept(lineNumber);
-					}
-				}
-			}
-		});
-
-		// Add mouse listener to detect repeated clicks on same warning (for cycling)
-		warningList.addMouseListener(new java.awt.event.MouseAdapter() {
-			@Override
-			public void mouseClicked(java.awt.event.MouseEvent e) {
-				// Filter out horizontal scroll buttons to prevent exceptions
-				if (e.getButton() > 3) {
-					return;
-				}
-
-				if (jumpToLineCallback != null) {
-					int index = warningList.locationToIndex(e.getPoint());
-					if (index >= 0) {
-						SieveWarning selected = warningList.getModel().getElementAt(index);
-						if (selected == lastClickedWarning && selected.hasLineNumbers()) {
-							// Repeated click - cycle to next occurrence
-							ruleList.clearSelection();
-							selected.cycleToNextLine();
-							Integer lineNumber = selected.getCurrentLineNumber();
-							if (lineNumber != null) {
-								jumpToLineCallback.accept(lineNumber);
-							}
-						}
-					}
-				}
-			}
-		});
-
-		// Scroll pane for warnings list - smaller, only shows when warnings exist
 		warningScrollPane = new JScrollPane(warningList);
 		warningScrollPane.setPreferredSize(new Dimension(200, 60));
 		warningScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		warningScrollPane.setVisible(false);
 
-		// Use JSplitPane to make warning panel resizable
 		splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, warningScrollPane);
-		splitPane.setResizeWeight(1.0); // Give all extra space to rules list
+		splitPane.setResizeWeight(1.0);
 		splitPane.setOneTouchExpandable(false);
-		splitPane.setBorder(null); // Remove default border
-
-		// Initially position divider to hide warnings (they'll auto-size when shown)
+		splitPane.setBorder(null);
 		splitPane.setDividerLocation(1.0);
 
-		// Layout: use splitPane instead of BorderLayout
 		add(splitPane, BorderLayout.CENTER);
+	}
+
+	private void handleRuleSelection(javax.swing.event.ListSelectionEvent e) {
+		if (!e.getValueIsAdjusting() && jumpToLineCallback != null) {
+			SieveRule selected = ruleList.getSelectedValue();
+			if (selected != null) {
+				warningList.clearSelection();
+				jumpToLineCallback.accept(selected.getLineNumber());
+			}
+		}
+	}
+
+	private void handleWarningSelection(javax.swing.event.ListSelectionEvent e) {
+		if (!e.getValueIsAdjusting() && jumpToLineCallback != null) {
+			SieveWarning selected = warningList.getSelectedValue();
+			if (selected != null && selected != lastClickedWarning) {
+				ruleList.clearSelection();
+				if (lastClickedWarning != null) {
+					lastClickedWarning.resetCycle();
+				}
+				lastClickedWarning = selected;
+				Integer lineNumber = selected.getCurrentLineNumber();
+				if (lineNumber != null) {
+					jumpToLineCallback.accept(lineNumber);
+				}
+			}
+		}
+	}
+
+	private class WarningMouseAdapter extends java.awt.event.MouseAdapter {
+		@Override
+		public void mouseClicked(java.awt.event.MouseEvent e) {
+			if (e.getButton() > 3) {
+				return;
+			}
+			if (jumpToLineCallback != null) {
+				int index = warningList.locationToIndex(e.getPoint());
+				if (index >= 0) {
+					SieveWarning selected = warningList.getModel().getElementAt(index);
+					if (selected == lastClickedWarning && selected.hasLineNumbers()) {
+						ruleList.clearSelection();
+						selected.cycleToNextLine();
+						Integer lineNumber = selected.getCurrentLineNumber();
+						if (lineNumber != null) {
+							jumpToLineCallback.accept(lineNumber);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private static class WarningCellRenderer extends DefaultListCellRenderer {
+		@Override
+		public Component getListCellRendererComponent(JList<?> list, Object value,
+													  int index, boolean isSelected, boolean cellHasFocus) {
+			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			if (value instanceof SieveWarning warning) {
+				setText(warning.getDisplayText());
+				if (!isSelected) {
+					if (warning.getSeverity() == SieveWarning.Severity.ERROR) {
+						setForeground(new Color(139, 0, 0));
+					} else {
+						setForeground(new Color(255, 140, 0));
+					}
+				}
+				setToolTipText(warning.getMessage());
+			}
+			return this;
+		}
+	}
+
+	private static class RuleCellRenderer extends DefaultListCellRenderer {
+		@Override
+		public Component getListCellRendererComponent(JList<?> list, Object value,
+													  int index, boolean isSelected, boolean cellHasFocus) {
+			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			if (value instanceof SieveRule rule) {
+				setText(rule.getDisplayText());
+				StringBuilder tooltip = new StringBuilder("<html>");
+				tooltip.append(rule.getComment()).append("<br><br>");
+				tooltip.append("<b>UniqueId:</b> ").append(rule.getRuleNumber()).append("<br>");
+				tooltip.append("<b>Rulename:</b> ").append(rule.getLabel().isEmpty() ? "(empty)" : rule.getLabel()).append("<br>");
+				if (rule.getFlag() != null && !rule.getFlag().trim().isEmpty()) {
+					tooltip.append("<b>Flag:</b> ").append(rule.getFlag()).append("<br>");
+				}
+				if (rule.getLastModified() != null) {
+					tooltip.append("<b>Last Modified:</b> ").append(rule.getLastModified()).append("<br>");
+				}
+				if (rule.getModifiedBy() != null) {
+					tooltip.append("<b>Modified By:</b> ").append(rule.getModifiedBy());
+				}
+				tooltip.append("</html>");
+				setToolTipText(tooltip.toString());
+			}
+			return this;
+		}
 	}
 
 	/**

@@ -1,0 +1,10 @@
+version: 1
+
+quality:
+  maxFunctionLoc: 150
+  maxFileLoc: 600
+  maxNesting: 5
+  maxParams: 6
+
+ci:
+  failBelow: 80

@@ -20,7 +20,7 @@ public final class JBRSupport {
             api = (String) jbrClass.getMethod("getApiVersion").invoke(null);
             impl = (String) jbrClass.getMethod("getImplVersion").invoke(null);
         } catch (Exception e) {
-            // JBR API not in classpath or not supported
+            LOG.fine("JBR API not in classpath or not supported: " + e.getMessage());
         }
         AVAILABLE = avail;
         API_VERSION = api;

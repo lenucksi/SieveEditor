@@ -194,7 +194,6 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 	 * of Sieve's syntax for parameterizing operations.
 	 */
 	private void addTagCompletions() {
-		// --- Match-Type Tags (RFC 5228) ---
 		addCompletion(new BasicCompletion(this, ":is",
 			":is - Exact string match (RFC 5228)"));
 		addCompletion(new BasicCompletion(this, ":contains",
@@ -204,13 +203,11 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 		addCompletion(new BasicCompletion(this, ":regex",
 			":regex - Regular expression match (draft)"));
 
-		// --- Relational Tags (RFC 5231) ---
 		addCompletion(new BasicCompletion(this, ":count",
 			":count - Relational count comparison (RFC 5231)"));
 		addCompletion(new BasicCompletion(this, ":value",
 			":value - Relational value comparison (RFC 5231)"));
 
-		// --- Address-Part Tags (RFC 5228) ---
 		addCompletion(new BasicCompletion(this, ":localpart",
 			":localpart - Compare local part of address (RFC 5228)"));
 		addCompletion(new BasicCompletion(this, ":domain",
@@ -222,17 +219,14 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 		addCompletion(new BasicCompletion(this, ":detail",
 			":detail - Compare address detail (RFC 5228)"));
 
-		// --- Comparator Tag (RFC 5228) ---
 		addCompletion(new BasicCompletion(this, ":comparator",
 			":comparator - Specify comparison algorithm (RFC 5228)"));
 
-		// --- Size Tags (RFC 5228) ---
 		addCompletion(new BasicCompletion(this, ":over",
 			":over - Size greater than (RFC 5228)"));
 		addCompletion(new BasicCompletion(this, ":under",
 			":under - Size less than (RFC 5228)"));
 
-		// --- Action Modifier Tags ---
 		addCompletion(new BasicCompletion(this, ":copy",
 			":copy - Copy message without removing original (RFC 3894)"));
 		addCompletion(new BasicCompletion(this, ":create",
@@ -246,7 +240,6 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 		addCompletion(new BasicCompletion(this, ":permissions",
 			":permissions - Set mailbox permissions (RFC 5490)"));
 
-		// --- Vacation Tags (RFC 5230) ---
 		addCompletion(new BasicCompletion(this, ":days",
 			":days - Vacation reply interval (RFC 5230)"));
 		addCompletion(new BasicCompletion(this, ":from",
@@ -282,7 +275,6 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 		addCompletion(new BasicCompletion(this, ":file",
 			":file - Vacation file response template (RFC 5230)"));
 
-		// --- Notification Tags (RFC 5435) ---
 		addCompletion(new BasicCompletion(this, ":importance",
 			":importance - Notification importance level (RFC 5435)"));
 		addCompletion(new BasicCompletion(this, ":message",
@@ -292,7 +284,6 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 		addCompletion(new BasicCompletion(this, ":priority",
 			":priority - Notification priority (RFC 5435)"));
 
-		// --- Date/Timezone Tags (RFC 5260) ---
 		addCompletion(new BasicCompletion(this, ":zone",
 			":zone - Specify timezone for date test (RFC 5260)"));
 		addCompletion(new BasicCompletion(this, ":originalzone",
@@ -302,7 +293,6 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 		addCompletion(new BasicCompletion(this, ":last",
 			":last - Last occurrence (RFC 5293)"));
 
-		// --- MIME Tags (RFC 5703) ---
 		addCompletion(new BasicCompletion(this, ":anychild",
 			":anychild - Match any MIME child part (RFC 5703)"));
 		addCompletion(new BasicCompletion(this, ":type",
@@ -314,7 +304,6 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 		addCompletion(new BasicCompletion(this, ":param",
 			":param - MIME parameter value (RFC 5703)"));
 
-		// --- Foreverypart Tags (RFC 5703) ---
 		addCompletion(new BasicCompletion(this, ":outer",
 			":outer - Match outer MIME part (RFC 5703)"));
 		addCompletion(new BasicCompletion(this, ":first",
@@ -322,7 +311,6 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 		addCompletion(new BasicCompletion(this, ":atleast",
 			":atleast - Match at least N parts (RFC 5703)"));
 
-		// --- Duplicate Tags (RFC 8579) ---
 		addCompletion(new BasicCompletion(this, ":uniqueid",
 			":uniqueid - Duplicate unique ID (RFC 8579)"));
 		addCompletion(new BasicCompletion(this, ":seconds",
@@ -330,7 +318,6 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 		addCompletion(new BasicCompletion(this, ":limit",
 			":limit - Duplicate limit count (RFC 8579)"));
 
-		// --- Editheader Tags (RFC 5293) ---
 		addCompletion(new BasicCompletion(this, ":deleteheaders",
 			":deleteheaders - Delete matching headers (RFC 5293)"));
 		addCompletion(new BasicCompletion(this, ":addheaders",
@@ -340,11 +327,9 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 		addCompletion(new BasicCompletion(this, ":newfield",
 			":newfield - New header field value (RFC 5293)"));
 
-		// --- Extlists Tag (RFC 6134) ---
 		addCompletion(new BasicCompletion(this, ":addrbook",
 			":addrbook - Address book list (RFC 6134)"));
 
-		// --- Convert Tag (RFC 6558) ---
 		addCompletion(new BasicCompletion(this, ":modifier",
 			":modifier - Convert modifier parameter (RFC 6558)"));
 	}

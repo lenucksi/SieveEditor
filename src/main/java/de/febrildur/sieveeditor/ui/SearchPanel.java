@@ -209,9 +209,6 @@ public class SearchPanel extends JPanel {
 		}
 	}
 
-	/**
-	 * Replaces the current selection with the replace text and finds the next occurrence.
-	 */
 	private void performReplace() {
 		if (targetEditor == null) {
 			return;

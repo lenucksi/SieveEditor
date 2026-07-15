@@ -6,6 +6,8 @@ package de.febrildur.sieveeditor.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Utility class for parsing Sieve script error messages from ManageSieve servers.
@@ -15,6 +17,8 @@ import java.util.Optional;
  * common server error message formats.
  */
 public class SieveErrorParser {
+
+	private static final Logger LOGGER = Logger.getLogger(SieveErrorParser.class.getName());
 
 	/**
 	 * Patterns for extracting line numbers from various server error formats.
@@ -79,9 +83,9 @@ public class SieveErrorParser {
 					if (lineNumber > 0) {
 						return new ErrorInfo(errorMessage, lineNumber);
 					}
-				} catch (NumberFormatException e) {
-					// Continue to next pattern
-				}
+            } catch (NumberFormatException e) {
+                LOGGER.log(Level.FINE, "Could not parse line number, trying next pattern: {0}", e.getMessage());
+            }
 			}
 		}
 

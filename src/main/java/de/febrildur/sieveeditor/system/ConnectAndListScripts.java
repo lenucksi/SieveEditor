@@ -152,7 +152,6 @@ public class ConnectAndListScripts {
 	}
 
 	public void logout() throws IOException, ParseException {
-		// Stop keep-alive timer before logout
 		stopKeepAlive();
 
 		ManageSieveResponse resp = client.logout();
@@ -343,7 +342,6 @@ public class ConnectAndListScripts {
 			TrustManagerFactory tmf;
 
 			if (certificatePath != null) {
-				// Load custom certificate into KeyStore
 				Logger.getLogger(ConnectAndListScripts.class.getName())
 					.log(Level.INFO, "Loading custom certificate from: {0}", certificatePath);
 
@@ -401,16 +399,13 @@ public class ConnectAndListScripts {
 	 */
 	public static SSLSocketFactory getInteractiveSSLSocketFactory(String serverName, Component parentComponent) {
 		try {
-			// Get the default trust manager
 			TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 			tmf.init((KeyStore) null);
 			X509TrustManager defaultTrustManager = (X509TrustManager) tmf.getTrustManagers()[0];
 
-			// Wrap it with our interactive trust manager
 			InteractiveTrustManager interactiveTrustManager =
 				new InteractiveTrustManager(defaultTrustManager, serverName, parentComponent);
 
-			// Create SSL context with TLS 1.3
 			SSLContext sc = SSLContext.getInstance("TLSv1.3");
 			sc.init(null, new X509TrustManager[]{interactiveTrustManager}, new SecureRandom());
 			return sc.getSocketFactory();

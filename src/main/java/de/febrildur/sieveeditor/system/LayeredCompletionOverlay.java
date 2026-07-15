@@ -13,7 +13,9 @@ import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
@@ -22,7 +24,6 @@ import javax.swing.ActionMap;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.InputMap;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JLayeredPane;
@@ -59,17 +60,24 @@ public class LayeredCompletionOverlay {
 
     private boolean visible;
     private AWTEventListener dismissListener;
+    private final Map<KeyStroke, SavedBinding> savedBindings = new HashMap<>();
 
     // Key bindings installed while overlay is visible
     private static final String ACTION_PREFIX = "lo-";
     private static final KeyStroke KS_UP = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0);
     private static final KeyStroke KS_DOWN = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0);
     private static final KeyStroke KS_ENTER = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+    private static final KeyStroke KS_TAB = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0);
     private static final KeyStroke KS_PAGE_UP = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0);
     private static final KeyStroke KS_PAGE_DOWN = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0);
     private static final KeyStroke KS_HOME = KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0);
     private static final KeyStroke KS_END = KeyStroke.getKeyStroke(KeyEvent.VK_END, 0);
     private static final KeyStroke KS_ESCAPE = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+
+    private static class SavedBinding {
+        Object key;
+        Action action;
+    }
 
     public LayeredCompletionOverlay(JTextComponent textComponent, CompletionProvider provider, JFrame frame) {
         this.textComponent = textComponent;
@@ -123,9 +131,9 @@ public class LayeredCompletionOverlay {
             }
         };
 
-        // Ctrl+Space always works
+        // Ctrl+Space trigger (WHEN_FOCUSED scope to match overlay navigation bindings)
         KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, java.awt.event.InputEvent.CTRL_DOWN_MASK);
-        textComponent.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(ks, "layered-completion");
+        textComponent.getInputMap().put(ks, "layered-completion");
         textComponent.getActionMap().put("layered-completion", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -288,45 +296,45 @@ public class LayeredCompletionOverlay {
     }
 
     private void installOverlayKeyBindings() {
-        InputMap im = textComponent.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        saveAndReplace(KS_UP, "lo-up", new OverlayAction("up"));
+        saveAndReplace(KS_DOWN, "lo-down", new OverlayAction("down"));
+        saveAndReplace(KS_ENTER, "lo-enter", new OverlayAction("enter"));
+        saveAndReplace(KS_TAB, "lo-tab", new OverlayAction("enter")); // Tab = Enter
+        saveAndReplace(KS_PAGE_UP, "lo-pageUp", new OverlayAction("pageUp"));
+        saveAndReplace(KS_PAGE_DOWN, "lo-pageDown", new OverlayAction("pageDown"));
+        saveAndReplace(KS_HOME, "lo-home", new OverlayAction("home"));
+        saveAndReplace(KS_END, "lo-end", new OverlayAction("end"));
+        saveAndReplace(KS_ESCAPE, "lo-escape", new OverlayAction("escape"));
+    }
+
+    private void saveAndReplace(KeyStroke ks, String actionKey, Action action) {
+        InputMap im = textComponent.getInputMap(); // WHEN_FOCUSED
         ActionMap am = textComponent.getActionMap();
-        im.put(KS_UP, ACTION_PREFIX + "up");
-        am.put(ACTION_PREFIX + "up", new OverlayAction("up"));
-        im.put(KS_DOWN, ACTION_PREFIX + "down");
-        am.put(ACTION_PREFIX + "down", new OverlayAction("down"));
-        im.put(KS_ENTER, ACTION_PREFIX + "enter");
-        am.put(ACTION_PREFIX + "enter", new OverlayAction("enter"));
-        im.put(KS_PAGE_UP, ACTION_PREFIX + "pageUp");
-        am.put(ACTION_PREFIX + "pageUp", new OverlayAction("pageUp"));
-        im.put(KS_PAGE_DOWN, ACTION_PREFIX + "pageDown");
-        am.put(ACTION_PREFIX + "pageDown", new OverlayAction("pageDown"));
-        im.put(KS_HOME, ACTION_PREFIX + "home");
-        am.put(ACTION_PREFIX + "home", new OverlayAction("home"));
-        im.put(KS_END, ACTION_PREFIX + "end");
-        am.put(ACTION_PREFIX + "end", new OverlayAction("end"));
-        im.put(KS_ESCAPE, ACTION_PREFIX + "escape");
-        am.put(ACTION_PREFIX + "escape", new OverlayAction("escape"));
+        SavedBinding saved = new SavedBinding();
+        saved.key = im.get(ks);
+        im.put(ks, actionKey);
+        saved.action = am.get(actionKey);
+        am.put(actionKey, action);
+        savedBindings.put(ks, saved);
     }
 
     private void uninstallOverlayKeyBindings() {
-        InputMap im = textComponent.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        InputMap im = textComponent.getInputMap(); // WHEN_FOCUSED
         ActionMap am = textComponent.getActionMap();
-        im.remove(KS_UP);
-        im.remove(KS_DOWN);
-        im.remove(KS_ENTER);
-        im.remove(KS_PAGE_UP);
-        im.remove(KS_PAGE_DOWN);
-        im.remove(KS_HOME);
-        im.remove(KS_END);
-        im.remove(KS_ESCAPE);
-        am.remove(ACTION_PREFIX + "up");
-        am.remove(ACTION_PREFIX + "down");
-        am.remove(ACTION_PREFIX + "enter");
-        am.remove(ACTION_PREFIX + "pageUp");
-        am.remove(ACTION_PREFIX + "pageDown");
-        am.remove(ACTION_PREFIX + "home");
-        am.remove(ACTION_PREFIX + "end");
-        am.remove(ACTION_PREFIX + "escape");
+        for (Map.Entry<KeyStroke, SavedBinding> entry : savedBindings.entrySet()) {
+            KeyStroke ks = entry.getKey();
+            SavedBinding saved = entry.getValue();
+            Object currentKey = im.get(ks);
+            if (saved.action != null && currentKey != null) {
+                am.put(currentKey, saved.action);
+            }
+            if (saved.key != null) {
+                im.put(ks, saved.key);
+            } else {
+                im.remove(ks);
+            }
+        }
+        savedBindings.clear();
     }
 
     private class OverlayAction extends AbstractAction {

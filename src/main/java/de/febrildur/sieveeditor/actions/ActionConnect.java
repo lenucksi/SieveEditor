@@ -148,7 +148,7 @@ public class ActionConnect extends AbstractAction {
             addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowOpened(WindowEvent e) {
-                    tfPassword.requestFocusInWindow();
+                    tfPassword.requestFocus();
                 }
             });
         }

@@ -239,9 +239,6 @@ public class Application extends JFrame {
 		scrollPane.getGutter().setFoldIndicatorStyle(
 			org.fife.ui.rtextarea.FoldIndicatorStyle.MODERN);
 
-		// Inject ErrorLineNumberList for red line numbers on error lines
-		installErrorLineNumbers();
-
 		// Register global keyboard shortcuts using WHEN_IN_FOCUSED_WINDOW scope
 		// This ensures keystrokes work even when focus is in the text editor
 		registerGlobalKeystroke(actionOpenLocal);
@@ -374,50 +371,6 @@ public class Application extends JFrame {
 	 * Installs ErrorLineNumberList to show red line numbers for parser error lines.
 	 * Uses reflection to inject into Gutter's private lineNumberList field.
 	 */
-	private void installErrorLineNumbers() {
-		try {
-			org.fife.ui.rtextarea.Gutter gutter = scrollPane.getGutter();
-			java.util.Set<Integer> initialErrors = textArea.getParserNotices().stream()
-				.filter(n -> n.getLevel() == org.fife.ui.rsyntaxtextarea.parser.ParserNotice.Level.ERROR)
-				.map(org.fife.ui.rsyntaxtextarea.parser.ParserNotice::getLine)
-				.collect(java.util.stream.Collectors.toSet());
-
-			de.febrildur.sieveeditor.ui.ErrorLineNumberList errorLnl =
-				new de.febrildur.sieveeditor.ui.ErrorLineNumberList(textArea);
-			errorLnl.setFont(gutter.getLineNumberFont());
-			errorLnl.setForeground(gutter.getLineNumberColor());
-			errorLnl.setCurrentLineNumberColor(gutter.getCurrentLineNumberColor());
-
-			java.lang.reflect.Field lnlField = org.fife.ui.rtextarea.Gutter.class
-				.getDeclaredField("lineNumberList");
-			lnlField.setAccessible(true);
-			org.fife.ui.rtextarea.LineNumberList oldList =
-				(org.fife.ui.rtextarea.LineNumberList) lnlField.get(gutter);
-			lnlField.set(gutter, errorLnl);
-
-			// Swap component in gutter panel
-			gutter.remove(oldList);
-			gutter.add(errorLnl);
-			gutter.revalidate();
-
-			errorLnl.setErrorLines(initialErrors);
-
-			// Listen for parser notice changes
-			textArea.addPropertyChangeListener(
-				org.fife.ui.rsyntaxtextarea.RSyntaxTextArea.PARSER_NOTICES_PROPERTY,
-				evt -> {
-					java.util.Set<Integer> errorLines = textArea.getParserNotices().stream()
-						.filter(n -> n.getLevel() == org.fife.ui.rsyntaxtextarea.parser.ParserNotice.Level.ERROR)
-						.map(org.fife.ui.rsyntaxtextarea.parser.ParserNotice::getLine)
-						.collect(java.util.stream.Collectors.toSet());
-					errorLnl.setErrorLines(errorLines);
-				});
-		} catch (Exception e) {
-			LOGGER.log(java.util.logging.Level.WARNING,
-				"Could not install ErrorLineNumberList: {0}", e.getMessage());
-		}
-	}
-
 	/**
 	 * Registers a global keyboard shortcut for the given action.
 	 * Uses WHEN_IN_FOCUSED_WINDOW scope to ensure keystrokes work even when

@@ -6,6 +6,8 @@ package de.febrildur.sieveeditor.system;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.swing.text.BadLocationException;
@@ -31,6 +33,8 @@ import de.febrildur.sieveeditor.parser.SieveRuleParser;
  * </p>
  */
 public class SieveCompletionProvider extends DefaultCompletionProvider {
+
+	private static final Logger LOGGER = Logger.getLogger(SieveCompletionProvider.class.getName());
 
 	/**
 	 * Constructs a new SieveCompletionProvider and populates it with
@@ -75,7 +79,7 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 	 * followed by optional tags and then an opening quote.
 	 */
 	private boolean isInHeaderContext(JTextComponent comp, String lineText) {
-		return lineText.matches("(?is).*\\b(header|address|exists|subaddress)\\s+" +
+		boolean result = lineText.matches("(?is).*\\b(header|address|exists|subaddress)\\s+" +
 			"((:contains|:is|:matches|:regex|:count|:value" +
 			"|:localpart|:domain|:all|:user|:detail)\\s+)*" +
 			"\"\\w*$") ||
@@ -87,6 +91,8 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 			"((:index\\s+\\d+\\s+)?(:last\\s+)?" +
 			"(:contains|:is|:matches|:regex|:comparator\\s+\"[^\"]*\"\\s*)?)" +
 			"\"\\w*$");
+		LOGGER.fine("isInHeaderContext: '" + lineText + "' -> " + result);
+		return result;
 	}
 
 	private String getLineBeforeCaret(JTextComponent comp) {

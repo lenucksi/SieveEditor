@@ -329,17 +329,24 @@ public class Application extends JFrame {
 		de.febrildur.sieveeditor.system.jbr.JBRWindowDecorations.applyCustomTitleBar(this, 0f);
 		de.febrildur.sieveeditor.system.jbr.JBRRoundedCorners.apply(this);
 
-		// Install autocomplete using the original AutoCompletion library
-		// (patched locally for Wayland JWindow parent-relative positioning)
-		LOGGER.fine("Installing AutoCompletion on textArea: " + textArea.getClass().getName());
-		LOGGER.fine("textArea showing: " + textArea.isShowing() + ", visible: " + textArea.isVisible());
+		// Install autocomplete: JLayeredPane overlay for Wayland (no JWindow surface issues),
+		// original AutoCompletion library for X11.
+		LOGGER.fine("Installing autocomplete on textArea: " + textArea.getClass().getName());
 		de.febrildur.sieveeditor.system.SieveCompletionProvider sieveProvider
 			= new de.febrildur.sieveeditor.system.SieveCompletionProvider();
-		org.fife.ui.autocomplete.AutoCompletion ac = new org.fife.ui.autocomplete.AutoCompletion(sieveProvider);
-		ac.setAutoActivationEnabled(true);
-		ac.setAutoActivationDelay(300);
-		ac.install(textArea);
-		LOGGER.fine("AutoCompletion installed");
+		String toolkit = System.getProperty("awt.toolkit.name");
+		if ("WLToolkit".equals(toolkit)) {
+			new de.febrildur.sieveeditor.system.LayeredCompletionOverlay(
+				textArea, sieveProvider, this);
+			LOGGER.fine("LayeredCompletionOverlay installed (Wayland)");
+		} else {
+			org.fife.ui.autocomplete.AutoCompletion ac =
+				new org.fife.ui.autocomplete.AutoCompletion(sieveProvider);
+			ac.setAutoActivationEnabled(true);
+			ac.setAutoActivationDelay(300);
+			ac.install(textArea);
+			LOGGER.fine("AutoCompletion installed (X11)");
+		}
 
 		// Set a reasonable minimum window size
 		setMinimumSize(new java.awt.Dimension(UIScale.scale(600), UIScale.scale(400)));

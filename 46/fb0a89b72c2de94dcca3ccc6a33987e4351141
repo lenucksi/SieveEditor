@@ -1,0 +1,21 @@
+src/main/java/de/febrildur/sieveeditor/Application.java
+  s_e2bdb6dade92b0::t_582172897eaf35 332-334,337-349
+src/main/java/de/febrildur/sieveeditor/system/LayeredCompletionOverlay.java
+  s_e2bdb6dade92b0::t_bd2e4f400f96f1 1-230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "46fb0a89b72c2de94dcca3ccc6a33987e4351141",
+  "prompts": {},
+  "sessions": {
+    "s_e2bdb6dade92b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09ecc9abafferu66DqhjnZve2Y",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

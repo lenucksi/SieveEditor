@@ -4,8 +4,22 @@ package de.febrildur.sieveeditor.system;
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
+import javax.swing.text.JTextComponent;
+
 import org.fife.ui.autocomplete.BasicCompletion;
+import org.fife.ui.autocomplete.Completion;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
+import org.fife.ui.autocomplete.Util;
+
+import de.febrildur.sieveeditor.parser.SieveRule;
+import de.febrildur.sieveeditor.parser.SieveRuleParser;
 
 /**
  * A completion provider for Sieve language keywords.
@@ -40,7 +54,92 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 	 */
 	@Override
 	protected boolean isValidChar(char ch) {
-		return super.isValidChar(ch) || ch == ':';
+		return super.isValidChar(ch) || ch == ':' || ch == '|';
+	}
+
+	@Override
+	protected List<Completion> getCompletionsImpl(JTextComponent comp) {
+		String lineText = getLineBeforeCaret(comp);
+		if (lineText.trim().startsWith("##")) {
+			return getRuleCommentCompletions(comp, lineText);
+		}
+		return super.getCompletionsImpl(comp);
+	}
+
+	private String getLineBeforeCaret(JTextComponent comp) {
+		Document doc = comp.getDocument();
+		int dot = comp.getCaretPosition();
+		Element root = doc.getDefaultRootElement();
+		Element lineElem = root.getElement(root.getElementIndex(dot));
+		int lineStart = lineElem.getStartOffset();
+		try {
+			return doc.getText(lineStart, dot - lineStart);
+		} catch (BadLocationException e) {
+			return "";
+		}
+	}
+
+	private int computeNextId(JTextComponent comp) {
+		try {
+			Document doc = comp.getDocument();
+			String fullText = doc.getText(0, doc.getLength());
+			return SieveRuleParser.extractRules(fullText).stream()
+				.mapToInt(SieveRule::getRuleNumber)
+				.max()
+				.orElse(0) + 1;
+		} catch (BadLocationException e) {
+			return 1;
+		}
+	}
+
+	private List<Completion> getRuleCommentCompletions(JTextComponent comp, String lineText) {
+		int nextId = computeNextId(comp);
+		String entered = getAlreadyEnteredText(comp);
+		List<Completion> result = new ArrayList<>();
+
+		if (lineText.matches("(?is)##\\s*Flag:\\s*" +
+			"(vacation|syscategory|\\s*)\\|\\s*UniqueId:\\s*\\d+\\s*\\|\\s*Rulename:\\s*.*")) {
+			return result;
+		}
+		if (lineText.matches("(?is)##\\s*Flag:\\s*" +
+			"(vacation|syscategory|\\s*)\\|\\s*UniqueId:\\s*\\d+\\s*\\|\\s*Rulename:\\s*")) {
+			return result;
+		}
+		if (lineText.matches("(?is)##\\s*Flag:\\s*.*\\|\\s*UniqueId:\\s*\\d+")) {
+			return result;
+		}
+		if (lineText.matches("(?is)##\\s*Flag:\\s*.*\\|\\s*UniqueId:\\s*")) {
+			result.add(new BasicCompletion(this, String.valueOf(nextId),
+				"Assign next UniqueId: " + nextId));
+			return filterCompletions(result, entered);
+		}
+		if (lineText.matches("(?is)##\\s*Flag:\\s*\\|")) {
+			String tmpl = "## Flag: |UniqueId:" + nextId + "|Rulename: ";
+			result.add(new BasicCompletion(this, tmpl, "Standard rule (ID: " + nextId + ")"));
+			return filterCompletions(result, entered);
+		}
+		if (lineText.matches("(?is)##\\s*")) {
+			result.add(new BasicCompletion(this,
+				"## Flag: vacation|UniqueId:" + nextId + "|Rulename: ",
+				"Vacation auto-reply rule (ID: " + nextId + ")"));
+			result.add(new BasicCompletion(this,
+				"## Flag: syscategory|UniqueId:" + nextId + "|Rulename: ",
+				"Syscategory rule (ID: " + nextId + ")"));
+			result.add(new BasicCompletion(this,
+				"## Flag: |UniqueId:" + nextId + "|Rulename: ",
+				"Standard rule (ID: " + nextId + ")"));
+			return filterCompletions(result, entered);
+		}
+		return result;
+	}
+
+	private List<Completion> filterCompletions(List<Completion> completions, String entered) {
+		if (entered == null || entered.isEmpty()) {
+			return completions;
+		}
+		return completions.stream()
+			.filter(c -> Util.startsWithIgnoreCase(c.getInputText(), entered))
+			.collect(Collectors.toList());
 	}
 
 	/**

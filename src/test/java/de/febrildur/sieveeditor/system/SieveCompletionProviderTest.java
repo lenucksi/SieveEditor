@@ -308,4 +308,42 @@ class SieveCompletionProviderTest {
                 .isNotEmpty();
         }
     }
+
+    // === Rule Comment Completion Tests ===
+
+    @Test
+    void isValidCharShouldIncludePipe() {
+        assertThat(provider.isValidChar('|')).isTrue();
+    }
+
+    @Test
+    void shouldFindControlFlowKeywordOnNonCommentLine() {
+        org.fife.ui.rsyntaxtextarea.RSyntaxTextArea textArea =
+            new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea("if :contains");
+        List<Completion> completions = provider.getCompletions(textArea);
+        assertThat(completions).isNotEmpty();
+    }
+
+    @Test
+    void shouldSuggestRuleTemplatesOnHashHash() {
+        org.fife.ui.rsyntaxtextarea.RSyntaxTextArea textArea =
+            new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea("## ");
+        textArea.setCaretPosition(3);
+        List<Completion> completions = provider.getCompletions(textArea);
+        assertThat(completions).isNotEmpty();
+        boolean hasVacation = completions.stream()
+            .anyMatch(c -> c.getReplacementText().contains("vacation"));
+        assertThat(hasVacation).isTrue();
+    }
+
+    @Test
+    void shouldNotFindKeywordsOnCommentLine() {
+        org.fife.ui.rsyntaxtextarea.RSyntaxTextArea textArea =
+            new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea("## Flag: ");
+        textArea.setCaretPosition(9);
+        List<Completion> completions = provider.getCompletions(textArea);
+        boolean hasIf = completions.stream()
+            .anyMatch(c -> c.getReplacementText().equals("if"));
+        assertThat(hasIf).isFalse();
+    }
 }

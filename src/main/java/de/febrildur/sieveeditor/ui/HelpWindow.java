@@ -158,10 +158,15 @@ public class HelpWindow extends JDialog {
         if (idx < 0 || idx >= sectionOffsets.size()) { return; }
         int offset = sectionOffsets.get(idx);
         textArea.setCaretPosition(offset);
-        try {
-            textArea.scrollRectToVisible(textArea.modelToView(offset));
-        } catch (javax.swing.text.BadLocationException ex) {
-            // ignore — offset came from the content that is in the text area
-        }
+        SwingUtilities.invokeLater(() -> {
+            try {
+                var r = textArea.modelToView(offset);
+                if (r != null) {
+                    textArea.scrollRectToVisible(r);
+                }
+            } catch (javax.swing.text.BadLocationException ex) {
+                // ignore
+            }
+        });
     }
 }

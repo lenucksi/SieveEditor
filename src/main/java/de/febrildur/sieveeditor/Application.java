@@ -50,6 +50,7 @@ import de.febrildur.sieveeditor.actions.ActionSaveScriptAs;
 import de.febrildur.sieveeditor.actions.ActionZoom;
 import de.febrildur.sieveeditor.actions.ActionZoom.ZoomOperation;
 import de.febrildur.sieveeditor.actions.InsertMenuBuilder;
+import de.febrildur.sieveeditor.parser.SieveParser;
 import de.febrildur.sieveeditor.system.ConnectAndListScripts;
 import de.febrildur.sieveeditor.system.PropertiesSieve;
 import de.febrildur.sieveeditor.system.SieveTokenMaker;
@@ -193,6 +194,17 @@ public class Application extends JFrame {
 		textArea.setSyntaxEditingStyle("text/sieve");
 		textArea.setCodeFoldingEnabled(true);
 
+		// Editor typing aids (require getCurlyBracesDenoteCodeBlocks() → true in SieveTokenMaker)
+		textArea.setBracketMatchingEnabled(true);
+		textArea.setCloseCurlyBraces(true);
+		textArea.setInsertPairedCharacters(true);
+
+		// Highlight all occurrences of a selected identifier
+		textArea.setMarkOccurrences(true);
+
+		// Syntax validation parser (brace/paren/bracket balance, string quotes)
+		textArea.addParser(new SieveParser());
+
 		// Set a properly scaled monospaced font for the editor.
 		// Base size 13pt (or saved preference) scales with FlatLaf's UIScale for HiDPI.
 		// Read saved font size from profile; default is 13
@@ -221,6 +233,11 @@ public class Application extends JFrame {
 		} else {
 			scrollPane.getGutter().setLineNumberFont(new Font(Font.MONOSPACED, Font.PLAIN, gutterFontSize));
 		}
+		// Enable icon row header for parser error markers in the gutter
+		scrollPane.getGutter().setIconRowHeaderEnabled(true);
+		// Use modern triangle-style fold indicators instead of +/- (classic)
+		scrollPane.getGutter().setFoldIndicatorStyle(
+			org.fife.ui.rtextarea.FoldIndicatorStyle.MODERN);
 
 		// Register global keyboard shortcuts using WHEN_IN_FOCUSED_WINDOW scope
 		// This ensures keystrokes work even when focus is in the text editor

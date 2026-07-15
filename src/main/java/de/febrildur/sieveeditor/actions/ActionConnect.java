@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import de.febrildur.sieveeditor.Application;
 import de.febrildur.sieveeditor.system.PropertiesSieve;
@@ -143,7 +144,6 @@ public class ActionConnect extends AbstractAction {
             pack();
             setLocationRelativeTo(parent);
             getRootPane().setDefaultButton(buttonOK);
-            tfPassword.requestFocusInWindow();
         }
 
         void setPresenter(ConnectionDialogPresenter presenter) {
@@ -153,6 +153,7 @@ public class ActionConnect extends AbstractAction {
         @Override
         public void display() {
             setVisible(true);
+            SwingUtilities.invokeLater(() -> tfPassword.requestFocusInWindow());
         }
 
         @Override

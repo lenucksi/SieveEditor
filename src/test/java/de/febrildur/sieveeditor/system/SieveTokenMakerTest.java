@@ -1127,6 +1127,13 @@ class SieveTokenMakerTest {
         return new Segment(array, 0, array.length);
     }
 
+    // ===== Curly Braces Denote Code Blocks =====
+
+    @Test
+    void shouldIndicateCurlyBracesDenoteCodeBlocks() {
+        assertThat(tokenMaker.getCurlyBracesDenoteCodeBlocks(0)).isTrue();
+    }
+
     /**
      * Utility to print all tokens (useful for debugging)
      */

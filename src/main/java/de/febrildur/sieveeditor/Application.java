@@ -178,6 +178,14 @@ public class Application extends JFrame {
 		JMenu help = new JMenu("Help");
 		menu.add(help);
 
+		JMenuItem helpItem = new JMenuItem("Sieve Reference...");
+		helpItem.addActionListener(e -> de.febrildur.sieveeditor.ui.HelpWindow.showHelp(this));
+		helpItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(
+			java.awt.event.KeyEvent.VK_F1, 0));
+		help.add(helpItem);
+
+		help.addSeparator();
+
 		JMenuItem aboutItem = new JMenuItem("About SieveEditor...");
 		aboutItem.addActionListener(e -> de.febrildur.sieveeditor.ui.AboutDialog.showAboutDialog(this));
 		help.add(aboutItem);

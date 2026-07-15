@@ -1,0 +1,20 @@
+AGENTS.md
+  s_2c2b7e52e2e38d::t_de8cc7866ecc9f 1-15,17-27,29-37,39-47,49-56,58-66,68-76,78-97
+  s_2c2b7e52e2e38d::t_a14edf5a83583a 16,28,38,48,57,67,77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "0c3653c253d33bc02e255fcf25ce79fe46315f33",
+  "prompts": {},
+  "sessions": {
+    "s_2c2b7e52e2e38d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09e3bc831ffeFlZ9wkGi7Jot7d",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}

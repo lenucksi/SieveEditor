@@ -5,6 +5,60 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0](https://github.com/lenucksi/SieveEditor/compare/v1.3.0...v1.4.0) (2026-07-15)
+
+
+### Features
+
+* About dialog, SPDX headers, ORT, credential backend fixes ([f2cdfec](https://github.com/lenucksi/SieveEditor/commit/f2cdfecfdf598c5290c774dfd186fe248d39b91d))
+* **editor:** add red line numbers in gutter for error lines ([71f6080](https://github.com/lenucksi/SieveEditor/commit/71f608071c9a3e925df7ec2dc79c62bb254b6bc3))
+* **editor:** add rule comment autocomplete for ## Flag: templates ([46f7f3c](https://github.com/lenucksi/SieveEditor/commit/46f7f3ce19d2907b3aac8b800e7615429a9eb02e))
+* **editor:** add Sieve autocomplete with custom popup and tag completion ([dc95824](https://github.com/lenucksi/SieveEditor/commit/dc958242d36fad1c6d57805fbc1af92631f72ca6))
+* **editor:** add Sieve syntax highlighting with all RFC keywords and token types ([de60370](https://github.com/lenucksi/SieveEditor/commit/de60370a1028aaddf889f3eb8c7c17a79b2b012a))
+* **editor:** add SieveParser syntax validation ([2643f8b](https://github.com/lenucksi/SieveEditor/commit/2643f8b73d28937551241aa214c7a657be748638))
+* **editor:** add SieveParser, auto-close braces, bracket matching ([c0b9eb4](https://github.com/lenucksi/SieveEditor/commit/c0b9eb4169775e7c94d0e57753ec4e186ef1f95d))
+* **editor:** use LayeredCompletionOverlay on all platforms, add header completions ([0697954](https://github.com/lenucksi/SieveEditor/commit/0697954d78e61b7fccb33dc532754261d8499ce3))
+* **help:** add Sieve Reference help window with TOC navigation ([c85c698](https://github.com/lenucksi/SieveEditor/commit/c85c69890fb9c8192bcaa5db9f9b12d05a0fa170))
+* initialize Backlog.md project management ([c50f335](https://github.com/lenucksi/SieveEditor/commit/c50f335dacafecc892e291200c863fd81a0b378e))
+* initialize Backlog.md project management ([#230](https://github.com/lenucksi/SieveEditor/issues/230)) ([43bba1d](https://github.com/lenucksi/SieveEditor/commit/43bba1d6d2a78b4eb2f72704c23a75e2d18ee5f0))
+* **jbr:** integrate JBR API with JetBrains Mono font and fallback ([e832c13](https://github.com/lenucksi/SieveEditor/commit/e832c13d28efc8a9d5fa76c6dd9726d4ae3bfb2c))
+* max out Renovate + add security supply-chain CI stack ([c10a7ec](https://github.com/lenucksi/SieveEditor/commit/c10a7ec48ea37beb5ec0a7c14e1f9c42ffc03ed9))
+* max out Renovate + add security supply-chain CI stack ([c10a7ec](https://github.com/lenucksi/SieveEditor/commit/c10a7ec48ea37beb5ec0a7c14e1f9c42ffc03ed9))
+* max out Renovate + add security supply-chain CI stack ([0a3a57b](https://github.com/lenucksi/SieveEditor/commit/0a3a57b14ebe15f066bd4ebc88f7bd71c8c236bc))
+* **ui:** add font size zoom with Ctrl+/- and View menu ([320a41c](https://github.com/lenucksi/SieveEditor/commit/320a41c66e103897371af576d43080b8cd5e62b9))
+* **wayland:** add JBR integration for native Wayland support ([1bdfa75](https://github.com/lenucksi/SieveEditor/commit/1bdfa753fe1b8af1ada8556be24edb568888d2a6))
+
+
+### Bug Fixes
+
+* add test certificate for SSL factory test ([5a3f119](https://github.com/lenucksi/SieveEditor/commit/5a3f119397c1a2b93f5e1e04059d9dd4b8ae970b))
+* address maven-deps.yaml root cause analysis findings ([22a7a89](https://github.com/lenucksi/SieveEditor/commit/22a7a89598d226fe03a8f07b8b338a27bf51a792))
+* cdxgen tag 10.10.7 -&gt; v9.9.4 (tag didn't exist) ([51d8aba](https://github.com/lenucksi/SieveEditor/commit/51d8aba8ba1ed1121918bdb01615ff1cf6721ade))
+* **dialog:** add password field focus and Enter-to-submit in connection dialog ([cb46a78](https://github.com/lenucksi/SieveEditor/commit/cb46a78d764f67eef33bc44eb8a3cd0c023ddcbf))
+* fall back to Syft SBOM when Maven CycloneDX plugin fails, install grype for direct use ([5e531fe](https://github.com/lenucksi/SieveEditor/commit/5e531fe4ae41069e467c0bf7908e66b87dc3f61c))
+* **help:** make help window editable for experimentation ([fbc6310](https://github.com/lenucksi/SieveEditor/commit/fbc6310183fc0f82c91ac0a87458ab4aaeaa7ac5))
+* **help:** wrap scrollRectToVisible in invokeLater to avoid NPE on initial selection ([4dea75e](https://github.com/lenucksi/SieveEditor/commit/4dea75e1ae3850985282989237e496843dd67bdc))
+* ignore jbr/ for jbr runtime ([a7c766d](https://github.com/lenucksi/SieveEditor/commit/a7c766d066c6573723ded7d9b7c410c2e3ccd6f1))
+* **overlay:** use WHEN_FOCUSED key bindings, add Tab, revert gutter, add header debug ([b8e6bc8](https://github.com/lenucksi/SieveEditor/commit/b8e6bc8b6b8da9ec13ed0afb04c6040fa1e834a2))
+* **quality:** desloppification to 100/100 aislop score ([57781b4](https://github.com/lenucksi/SieveEditor/commit/57781b46745688b8cda36e796aed964003e09ece))
+* **renovate:** enable SHA pinning and platform automerge ([397e0ed](https://github.com/lenucksi/SieveEditor/commit/397e0ed923f6d95d9db4a4c61251e8c3792ef0cf))
+* **renovate:** enable SHA pinning and platform automerge ([#228](https://github.com/lenucksi/SieveEditor/issues/228)) ([7753a03](https://github.com/lenucksi/SieveEditor/commit/7753a03931198831e4aa68f385e92c592388290d))
+* **test:** tag JBRDesktopSupportTest as gui to prevent browser opening during mvn test ([9bf113e](https://github.com/lenucksi/SieveEditor/commit/9bf113ee76fd9a0d0fd2c3c2f2e783b7615bc8dc))
+* **wayland:** add JLayeredPane completion overlay for Wayland support ([46fb0a8](https://github.com/lenucksi/SieveEditor/commit/46fb0a89b72c2de94dcca3ccc6a33987e4351141))
+* **wltoolkit:** resolve dialog issues under JBR WLToolkit ([1bdfa75](https://github.com/lenucksi/SieveEditor/commit/1bdfa753fe1b8af1ada8556be24edb568888d2a6))
+
+
+### Dependencies
+
+* **flatpak:** update Maven dependencies ([a60dead](https://github.com/lenucksi/SieveEditor/commit/a60dead776506d8b65eec262cc38ae9b87cb72fd))
+* **flatpak:** update Maven dependencies ([941cfe5](https://github.com/lenucksi/SieveEditor/commit/941cfe57cff9857d84c26b98b89f40794078e5d9))
+* **flatpak:** update Maven dependencies ([49d13d2](https://github.com/lenucksi/SieveEditor/commit/49d13d284efbb7dfb8e89da689b7bc1635249b11))
+
+
+### Documentation
+
+* add AGENTS.md with anti-slop guidelines ([0c3653c](https://github.com/lenucksi/SieveEditor/commit/0c3653c253d33bc02e255fcf25ce79fe46315f33))
+
 ## [1.3.0](https://github.com/lenucksi/SieveEditor/compare/v1.2.0...v1.3.0) (2026-05-18)
 
 

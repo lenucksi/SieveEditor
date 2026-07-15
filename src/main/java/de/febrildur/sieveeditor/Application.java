@@ -329,24 +329,13 @@ public class Application extends JFrame {
 		de.febrildur.sieveeditor.system.jbr.JBRWindowDecorations.applyCustomTitleBar(this, 0f);
 		de.febrildur.sieveeditor.system.jbr.JBRRoundedCorners.apply(this);
 
-		// Install autocomplete: JLayeredPane overlay for Wayland (no JWindow surface issues),
-		// original AutoCompletion library for X11.
-		LOGGER.fine("Installing autocomplete on textArea: " + textArea.getClass().getName());
-		de.febrildur.sieveeditor.system.SieveCompletionProvider sieveProvider
-			= new de.febrildur.sieveeditor.system.SieveCompletionProvider();
-		String toolkit = System.getProperty("awt.toolkit.name");
-		if ("WLToolkit".equals(toolkit)) {
-			new de.febrildur.sieveeditor.system.LayeredCompletionOverlay(
-				textArea, sieveProvider, this);
-			LOGGER.fine("LayeredCompletionOverlay installed (Wayland)");
-		} else {
-			org.fife.ui.autocomplete.AutoCompletion ac =
-				new org.fife.ui.autocomplete.AutoCompletion(sieveProvider);
-			ac.setAutoActivationEnabled(true);
-			ac.setAutoActivationDelay(300);
-			ac.install(textArea);
-			LOGGER.fine("AutoCompletion installed (X11)");
-		}
+		// Install autocomplete overlay (JLayeredPane-based, works on all platforms)
+		LOGGER.fine("Installing autocomplete overlay on textArea: " + textArea.getClass().getName());
+		new de.febrildur.sieveeditor.system.LayeredCompletionOverlay(
+			textArea,
+			new de.febrildur.sieveeditor.system.SieveCompletionProvider(),
+			this);
+		LOGGER.fine("LayeredCompletionOverlay installed");
 
 		// Set a reasonable minimum window size
 		setMinimumSize(new java.awt.Dimension(UIScale.scale(600), UIScale.scale(400)));
@@ -424,7 +413,8 @@ public class Application extends JFrame {
 					errorLnl.setErrorLines(errorLines);
 				});
 		} catch (Exception e) {
-			LOGGER.log(java.util.logging.Level.FINE, "Could not install ErrorLineNumberList", e);
+			LOGGER.log(java.util.logging.Level.WARNING,
+				"Could not install ErrorLineNumberList: {0}", e.getMessage());
 		}
 	}
 

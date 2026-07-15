@@ -63,7 +63,30 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 		if (lineText.trim().startsWith("##")) {
 			return getRuleCommentCompletions(comp, lineText);
 		}
+		if (isInHeaderContext(comp, lineText)) {
+			return getHeaderCompletions(comp);
+		}
 		return super.getCompletionsImpl(comp);
+	}
+
+	/**
+	 * Detects if the caret is inside a quoted string that expects a mail header name.
+	 * True when the line contains header/address/exists/subaddress/date/addheader/deleteheader
+	 * followed by optional tags and then an opening quote.
+	 */
+	private boolean isInHeaderContext(JTextComponent comp, String lineText) {
+		return lineText.matches("(?is).*\\b(header|address|exists|subaddress)\\s+" +
+			"((:contains|:is|:matches|:regex|:count|:value" +
+			"|:localpart|:domain|:all|:user|:detail)\\s+)*" +
+			"\"\\w*$") ||
+			lineText.matches("(?is).*\\bdate\\s+" +
+			"((:zone\\s+\"[^\"]*\"\\s+)?(:originalzone\\s+)?" +
+			"(:contains|:is|:matches|:regex)?\\s+)\"\\w*$") ||
+			lineText.matches("(?is).*\\baddheader\\s+(:last\\s+)?\"\\w*$") ||
+			lineText.matches("(?is).*\\bdeleteheader\\s+" +
+			"((:index\\s+\\d+\\s+)?(:last\\s+)?" +
+			"(:contains|:is|:matches|:regex|:comparator\\s+\"[^\"]*\"\\s*)?)" +
+			"\"\\w*$");
 	}
 
 	private String getLineBeforeCaret(JTextComponent comp) {
@@ -141,6 +164,88 @@ public class SieveCompletionProvider extends DefaultCompletionProvider {
 			.filter(c -> Util.startsWithIgnoreCase(c.getInputText(), entered))
 			.collect(Collectors.toList());
 	}
+
+	/**
+	 * Returns mail header completions when inside a header/address/exists test.
+	 */
+	private List<Completion> getHeaderCompletions(JTextComponent comp) {
+		String entered = getAlreadyEnteredText(comp);
+		List<Completion> result = new ArrayList<>();
+		for (String[] hdr : MAIL_HEADERS) {
+			result.add(new BasicCompletion(this, hdr[0], hdr[1]));
+		}
+		return filterCompletions(result, entered);
+	}
+
+	private static final String[][] MAIL_HEADERS = {
+		// Core (RFC 5322)
+		{"From", "From - Sender address (RFC 5322)"},
+		{"Sender", "Sender - Actual sender (RFC 5322)"},
+		{"Reply-To", "Reply-To - Reply address (RFC 5322)"},
+		{"To", "To - Primary recipients (RFC 5322)"},
+		{"Cc", "Cc - Carbon-copy recipients (RFC 5322)"},
+		{"Bcc", "Bcc - Blind carbon-copy (RFC 5322)"},
+		{"Date", "Date - Message date (RFC 5322)"},
+		{"Message-ID", "Message-ID - Unique identifier (RFC 5322)"},
+		{"In-Reply-To", "In-Reply-To - Original message ID (RFC 5322)"},
+		{"References", "References - Thread reference chain (RFC 5322)"},
+		{"Subject", "Subject - Message topic (RFC 5322)"},
+		// Delivery / Trace
+		{"Received", "Received - Transfer trace (RFC 5322)"},
+		{"Return-Path", "Return-Path - Envelope return address (RFC 5321)"},
+		{"Delivered-To", "Delivered-To - Final delivery recipient"},
+		{"X-Original-To", "X-Original-To - Original recipient before aliasing"},
+		{"Received-SPF", "Received-SPF - SPF verification result (RFC 7208)"},
+		// Mailing List (RFC 2369 / 2919)
+		{"List-Id", "List-Id - Mailing list identifier (RFC 2919)"},
+		{"List-Help", "List-Help - List help contact (RFC 2369)"},
+		{"List-Subscribe", "List-Subscribe - Subscribe URL (RFC 2369)"},
+		{"List-Unsubscribe", "List-Unsubscribe - Unsubscribe URL (RFC 2369)"},
+		{"List-Post", "List-Post - Posting address (RFC 2369)"},
+		{"List-Owner", "List-Owner - List owner contact (RFC 2369)"},
+		{"List-Archive", "List-Archive - Archive URL (RFC 2369)"},
+		{"List-Unsubscribe-Post", "List-Unsubscribe-Post - One-click unsubscribe (RFC 8058)"},
+		{"Archived-At", "Archived-At - Archived copy link (RFC 5064)"},
+		// Authentication (RFC 6376, 8601, 8617)
+		{"Authentication-Results", "Authentication-Results - SPF/DKIM/DMARC (RFC 8601)"},
+		{"DKIM-Signature", "DKIM-Signature - DomainKeys signature (RFC 6376)"},
+		{"ARC-Seal", "ARC-Seal - Chain of custody seal (RFC 8617)"},
+		{"ARC-Message-Signature", "ARC-Message-Signature - ARC signature (RFC 8617)"},
+		{"ARC-Authentication-Results", "ARC-Authentication-Results - ARC auth (RFC 8617)"},
+		{"X-Virus", "X-Virus - Anti-virus scanner result"},
+		// Spam (SpamAssassin)
+		{"X-Spam-Flag", "X-Spam-Flag - Spam flag 'YES' (SpamAssassin)"},
+		{"X-Spam-Status", "X-Spam-Status - Score and tests (SpamAssassin)"},
+		{"X-Spam-Level", "X-Spam-Level - Score as stars (SpamAssassin)"},
+		// Spam (Rspamd)
+		{"X-Spamd-Result", "X-Spamd-Result - Rspamd score details"},
+		{"X-Spamd-Bar", "X-Spamd-Bar - Rspamd visual score bar"},
+		{"X-Rspamd-Server", "X-Rspamd-Server - Rspamd hostname"},
+		{"X-Rspamd-Action", "X-Rspamd-Action - Rspamd action taken"},
+		{"X-Spam", "X-Spam - Rspamd boolean spam flag"},
+		// Auto-reply / Priority (RFC 3834)
+		{"Precedence", "Precedence - bulk/list/junk (RFC 3834)"},
+		{"Auto-Submitted", "Auto-Submitted - auto-generated/replied (RFC 3834)"},
+		{"X-Auto-Response-Suppress", "X-Auto-Response-Suppress - Suppress auto-replies"},
+		{"X-Loop", "X-Loop - Loop prevention marker"},
+		{"X-Priority", "X-Priority - Priority level 1-5"},
+		// Service-specific
+		{"X-Mailer", "X-Mailer - Sending email client"},
+		{"X-Campaign", "X-Campaign - Campaign tracking ID"},
+		// Abuse / Feedback
+		{"X-CSA-Complaints", "X-CSA-Complaints - Complaint reporting"},
+		{"X-Complaints-To", "X-Complaints-To - Complaints address"},
+		{"X-Report-Abuse", "X-Report-Abuse - Abuse reporting"},
+		{"X-No-Archive", "X-No-Archive - Do not archive marker"},
+		// Fastmail
+		{"X-ME-VSCategory", "X-ME-VSCategory - Fastmail category"},
+		{"X-ME-CMCategory", "X-ME-CMCategory - Fastmail content category"},
+		// MIME (RFC 2045)
+		{"Content-Type", "Content-Type - MIME content type (RFC 2045)"},
+		{"Content-Disposition", "Content-Disposition - Attachment disposition (RFC 2183)"},
+		{"Content-Transfer-Encoding", "Content-Transfer-Encoding - Encoding type (RFC 2045)"},
+		{"MIME-Version", "MIME-Version - MIME version (RFC 2045)"},
+	};
 
 	/**
 	 * Adds Sieve control flow commands.

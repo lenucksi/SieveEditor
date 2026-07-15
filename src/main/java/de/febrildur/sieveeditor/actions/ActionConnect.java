@@ -8,6 +8,8 @@ package de.febrildur.sieveeditor.actions;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -20,7 +22,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 import de.febrildur.sieveeditor.Application;
 import de.febrildur.sieveeditor.system.PropertiesSieve;
@@ -144,6 +145,12 @@ public class ActionConnect extends AbstractAction {
             pack();
             setLocationRelativeTo(parent);
             getRootPane().setDefaultButton(buttonOK);
+            addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowOpened(WindowEvent e) {
+                    tfPassword.requestFocusInWindow();
+                }
+            });
         }
 
         void setPresenter(ConnectionDialogPresenter presenter) {
@@ -153,7 +160,6 @@ public class ActionConnect extends AbstractAction {
         @Override
         public void display() {
             setVisible(true);
-            SwingUtilities.invokeLater(() -> tfPassword.requestFocusInWindow());
         }
 
         @Override

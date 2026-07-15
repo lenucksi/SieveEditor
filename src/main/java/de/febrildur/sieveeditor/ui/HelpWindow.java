@@ -68,7 +68,6 @@ public class HelpWindow extends JDialog {
         textArea = new RSyntaxTextArea();
         textArea.setSyntaxEditingStyle("text/sieve");
         textArea.setCodeFoldingEnabled(true);
-        textArea.setEditable(false);
         textArea.setCaretPosition(0);
         textArea.setHighlightCurrentLine(false);
         textArea.setLineWrap(false);

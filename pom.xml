@@ -31,10 +31,6 @@
 	</scm>
 
 	<repositories>
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
 	</repositories>
 
 	<build>
@@ -216,14 +212,12 @@
 			<artifactId>flatlaf</artifactId>
 			<version>3.7.1</version>
 		</dependency>
-		<!-- ManageSieveJ: Java 21 compatible fork from lenucksi (via JitPack)
-		     Source: https://github.com/lenucksi/managesievej
-		     Benefits: Java 21+ support, bug fixes, modernized build
-		     JitPack builds from GitHub releases automatically -->
+		<!-- ManageSieveJ: Java 21 compatible Sieve library from lenucksi
+		     Published to Maven Central since v0.3.13 -->
 		<dependency>
-			<groupId>com.github.lenucksi</groupId>
-			<artifactId>ManageSieveJ</artifactId>
-			<version>managesievej-v0.3.12</version>
+			<groupId>io.github.lenucksi</groupId>
+			<artifactId>managesievej</artifactId>
+			<version>0.3.13</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>

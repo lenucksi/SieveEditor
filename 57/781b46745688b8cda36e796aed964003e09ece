@@ -1,0 +1,78 @@
+src/main/java/de/febrildur/sieveeditor/system/jbr/JBRWindowDecorations.java
+  s_2c2b7e52e2e38d::t_54206107deb852 21
+src/main/java/de/febrildur/sieveeditor/Application.java
+  s_e2bdb6dade92b0::t_698aa327fdfdda 466-468
+  s_e2bdb6dade92b0::t_adf6d299145991 312-314,316-322
+  s_2c2b7e52e2e38d::t_db3408c8d7c292 1
+  s_e2bdb6dade92b0::t_5cadf37914bc99 400,410-426,428-438
+  s_e2bdb6dade92b0::t_1f672efbd5da4a 315
+  s_2c2b7e52e2e38d::t_367f64a5ce42f7 107,121
+  s_2c2b7e52e2e38d::t_e569b3443e3908 299-305
+  s_e2bdb6dade92b0::t_97cd534c3b2adf 478-486,488-489,491,495-497
+src/main/java/de/febrildur/sieveeditor/system/jbr/JBRRoundedCorners.java
+  s_2c2b7e52e2e38d::t_30d3b4cdb4859a 21
+src/main/java/de/febrildur/sieveeditor/system/CertificateStore.java
+  s_2c2b7e52e2e38d::t_27807028da43d6 234,245
+src/main/java/de/febrildur/sieveeditor/system/jbr/JBRAccessibilitySupport.java
+  s_2c2b7e52e2e38d::t_c50938195c2138 23
+src/main/java/de/febrildur/sieveeditor/system/jbr/JBRSupport.java
+  s_2c2b7e52e2e38d::t_9136ba9e037747 23
+src/main/java/de/febrildur/sieveeditor/ui/AboutDialog.java
+  s_2c2b7e52e2e38d::t_80e007ee308ddf 21-22,26-27,133
+src/main/java/de/febrildur/sieveeditor/system/jbr/JBRSystemUtils.java
+  s_2c2b7e52e2e38d::t_0840ca19fb6c04 20
+src/test/java/de/febrildur/sieveeditor/system/ConnectAndListScriptsTest.java
+  s_2c2b7e52e2e38d::t_5eb6a88e282ecd 65-68
+scripts/generate_flatpak_maven_sources.py
+  s_2c2b7e52e2e38d::t_8d132816075c09 19
+src/main/java/de/febrildur/sieveeditor/system/jbr/JBRDesktopSupport.java
+  s_2c2b7e52e2e38d::t_b0bc40bcf920c4 23
+src/main/java/de/febrildur/sieveeditor/util/SieveErrorParser.java
+  s_2c2b7e52e2e38d::t_a22cebb9cf49aa 86,88
+  s_2c2b7e52e2e38d::t_5e110b935d003b 9-10,21-22,87
+scripts/update-metainfo-release.py
+  s_2c2b7e52e2e38d::t_727e7d7765b187 18
+  s_2c2b7e52e2e38d::t_82047650575e44 36
+.aislop/config.yml
+  s_2c2b7e52e2e38d::t_99052f587fd98b 1-7
+  s_2c2b7e52e2e38d::t_b0a1a55174780c 8-10
+src/main/java/de/febrildur/sieveeditor/actions/ConnectionDialogPresenter.java
+  s_2c2b7e52e2e38d::t_19757b544f901d 8-9,18-19,44,112,166
+src/main/java/de/febrildur/sieveeditor/system/jbr/JBRFontSupport.java
+  s_2c2b7e52e2e38d::t_ff42a79e14fc32 26
+src/main/java/de/febrildur/sieveeditor/system/SieveTokenMaker.java
+  s_2c2b7e52e2e38d::t_963a5611f22ba9 434
+  s_2c2b7e52e2e38d::t_9c41aac61371d5 1
+  s_e2bdb6dade92b0::t_6082170520a884 22-26
+src/main/java/de/febrildur/sieveeditor/system/credentials/MasterKeyProviderFactory.java
+  s_2c2b7e52e2e38d::t_1c30e5c3fe1ba9 188,197
+src/main/java/de/febrildur/sieveeditor/ui/RuleNavigatorPanel.java
+  s_2c2b7e52e2e38d::t_7861521a6e7019 46,51,53-55,57-59,61-64,66-70,72-73,75-83,85-91,93-96,99-100,102-118,122-123,125-136,139,141-143,145-169
+src/main/java/de/febrildur/sieveeditor/system/SieveCompletionHandler.java
+  s_2c2b7e52e2e38d::t_f2a4058e7b8fb2 55,59,63,74,78,85,95,103,111,120,126,129,134,137,140,146,152,156,163,167-169,174,180,182,186,190,193,199,204
+  s_e2bdb6dade92b0::t_833a61ed8cb86e 54,56,58,60,68,102,104-105,112,125,127,130,135,138,153-154,161-162,164-166,183,187,189,205
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "57781b46745688b8cda36e796aed964003e09ece",
+  "prompts": {},
+  "sessions": {
+    "s_2c2b7e52e2e38d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09e3bc831ffeFlZ9wkGi7Jot7d",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    },
+    "s_e2bdb6dade92b0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_09ecc9abafferu66DqhjnZve2Y",
+        "model": "deepseek-v4-flash"
+      },
+      "human_author": "Lenucksi <lenucksi@users.noreply.github.com>"
+    }
+  }
+}
